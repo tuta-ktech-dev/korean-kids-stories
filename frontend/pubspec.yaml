@@ -55,6 +55,7 @@ dependencies:
 
   # HTTP client
   dio: ^5.8.0
+  equatable: ^2.0.8
 
 dev_dependencies:
   flutter_test:

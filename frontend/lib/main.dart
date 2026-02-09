@@ -4,9 +4,9 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
-import 'presentation/cubits/auth_cubit.dart';
-import 'presentation/cubits/categories_cubit.dart';
-import 'presentation/cubits/stories_cubit.dart';
+import 'presentation/cubits/auth_cubit/auth_cubit.dart';
+import 'presentation/cubits/categories_cubit/categories_cubit.dart';
+import 'presentation/cubits/stories_cubit/stories_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

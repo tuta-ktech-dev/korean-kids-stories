@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
 import '../components/cards/history_card.dart';
-import '../cubits/auth_cubit.dart';
+import '../cubits/auth_cubit/auth_cubit.dart';
 
 @RoutePage()
 class HistoryScreen extends StatelessWidget {

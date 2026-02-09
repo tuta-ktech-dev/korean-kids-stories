@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
-import '../cubits/auth_cubit.dart';
+import '../cubits/auth_cubit/auth_cubit.dart';
 
 @RoutePage()
 class OtpVerificationScreen extends StatefulWidget {

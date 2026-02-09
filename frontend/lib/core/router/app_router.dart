@@ -11,7 +11,7 @@ import '../../presentation/screens/library_screen.dart';
 import '../../presentation/screens/login_screen.dart';
 import '../../presentation/screens/register_screen.dart';
 import '../../presentation/screens/otp_verification_screen.dart';
-import '../../presentation/cubits/auth_cubit.dart';
+import '../../presentation/cubits/auth_cubit/auth_cubit.dart';
 
 part 'app_router.gr.dart';
 

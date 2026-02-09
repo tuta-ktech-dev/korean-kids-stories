@@ -1,76 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/services/pocketbase_service.dart';
+import '../../../data/services/pocketbase_service.dart';
+import 'categories_state.dart';
+export 'categories_state.dart';
 
-// Category model
-class Category {
-  final String id;
-  final String label;
-  final String icon;
-  final String? filterValue;
-  final bool isSpecial; // e.g., 'favorite' doesn't filter by category field
-
-  const Category({
-    required this.id,
-    required this.label,
-    required this.icon,
-    this.filterValue,
-    this.isSpecial = false,
-  });
-}
-
-// States
-abstract class CategoriesState {}
-
-class CategoriesInitial extends CategoriesState {}
-
-class CategoriesLoading extends CategoriesState {}
-
-class CategoriesLoaded extends CategoriesState {
-  final List<Category> categories;
-  final String? selectedId;
-
-  CategoriesLoaded(this.categories, {this.selectedId});
-
-  Category? get selectedCategory {
-    if (selectedId == null) return null;
-    return categories.firstWhere(
-      (c) => c.id == selectedId,
-      orElse: () => categories.first,
-    );
-  }
-
-  CategoriesLoaded copyWith({List<Category>? categories, String? selectedId}) {
-    return CategoriesLoaded(
-      categories ?? this.categories,
-      selectedId: selectedId ?? this.selectedId,
-    );
-  }
-}
-
-class CategoriesError extends CategoriesState {
-  final String message;
-  CategoriesError(this.message);
-}
-
-// Cubit
 class CategoriesCubit extends Cubit<CategoriesState> {
-  CategoriesCubit() : super(CategoriesInitial()) {
+  CategoriesCubit() : super(const CategoriesInitial()) {
     loadCategories();
   }
 
   final _pbService = PocketbaseService();
 
   Future<void> loadCategories() async {
-    emit(CategoriesLoading());
+    emit(const CategoriesLoading());
 
     try {
       await _pbService.initialize();
 
       // Fetch distinct categories from stories
-      final stories = await _pbService.pb
-          .collection('stories')
-          .getFullList(filter: 'is_published = true', fields: 'category');
+      final stories = await _pbService.pb.collection('stories').getFullList(
+            filter: 'is_published = true',
+            fields: 'category',
+          );
 
       // Extract unique categories
       final uniqueCategories = stories
@@ -87,14 +38,12 @@ class CategoriesCubit extends Cubit<CategoriesState> {
           icon: 'auto_stories',
           filterValue: null,
         ),
-        ...uniqueCategories.map(
-          (cat) => Category(
-            id: cat,
-            label: _getCategoryLabel(cat),
-            icon: _getCategoryIcon(cat),
-            filterValue: cat,
-          ),
-        ),
+        ...uniqueCategories.map((cat) => Category(
+              id: cat,
+              label: _getCategoryLabel(cat),
+              icon: _getCategoryIcon(cat),
+              filterValue: cat,
+            )),
         const Category(
           id: 'favorite',
           label: '즐겨찾기',
@@ -106,7 +55,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       emit(CategoriesLoaded(categories, selectedId: 'all'));
     } catch (e) {
       emit(CategoriesError('Failed to load categories: $e'));
-      print('Error loading categories: $e');
     }
   }
 

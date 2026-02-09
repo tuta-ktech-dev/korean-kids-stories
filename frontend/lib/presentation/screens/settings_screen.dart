@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
 import '../components/buttons/settings_item.dart';
 import '../components/cards/settings_section.dart';
-import '../cubits/auth_cubit.dart';
+import '../cubits/auth_cubit/auth_cubit.dart';
 import '../widgets/report_bottom_sheet.dart';
 
 @RoutePage()
