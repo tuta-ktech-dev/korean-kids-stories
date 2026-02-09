@@ -26,7 +26,38 @@ class StoryCardSkeleton extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: _buildShimmerEffect(context, baseColor, highlightColor),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _buildShimmerEffect(context, baseColor, highlightColor),
+                  // Skeleton badges
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Row(
+                      spacing: 4,
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: highlightColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: highlightColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),

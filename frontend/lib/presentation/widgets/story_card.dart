@@ -10,7 +10,9 @@ class StoryCard extends StatelessWidget {
   final int ageMin;
   final int ageMax;
   final int totalChapters;
-  final VoidCallback? onTap;
+  final bool hasAudio;
+  final bool hasQuiz;
+  final bool hasIllustrations;
 
   const StoryCard({
     super.key,
@@ -21,6 +23,9 @@ class StoryCard extends StatelessWidget {
     required this.ageMin,
     required this.ageMax,
     required this.totalChapters,
+    this.hasAudio = false,
+    this.hasQuiz = false,
+    this.hasIllustrations = false,
     this.onTap,
   });
 
@@ -30,6 +35,42 @@ class StoryCard extends StatelessWidget {
     // Check if URL ends with just / (no filename)
     if (thumbnailUrl!.endsWith('/')) return false;
     return true;
+  }
+
+  Widget _buildFeatureBadges() {
+    return Wrap(
+      spacing: 4,
+      children: [
+        if (hasAudio)
+          _buildBadge(Icons.headphones_rounded, Colors.orange),
+        if (hasQuiz)
+          _buildBadge(Icons.quiz_rounded, Colors.green),
+        if (hasIllustrations)
+          _buildBadge(Icons.palette_rounded, Colors.purple),
+      ],
+    );
+  }
+
+  Widget _buildBadge(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Icon(
+        icon,
+        size: 14,
+        color: color,
+      ),
+    );
   }
 
   // Category colors adapt to theme
@@ -88,29 +129,41 @@ class StoryCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                child: _hasValidThumbnail
-                    ? Image.network(
-                        thumbnailUrl!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) =>
-                            ImagePlaceholder.story(
-                          width: double.infinity,
-                          height: double.infinity,
-                          backgroundColor:
-                              categoryColor.withValues(alpha: 0.2),
-                          iconColor: categoryColor,
-                          borderRadius: 0,
-                        ),
-                      )
-                    : ImagePlaceholder.story(
-                        width: double.infinity,
-                        height: double.infinity,
-                        backgroundColor: categoryColor.withValues(alpha: 0.2),
-                        iconColor: categoryColor,
-                        borderRadius: 0,
-                      ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Image or placeholder
+                    _hasValidThumbnail
+                        ? Image.network(
+                            thumbnailUrl!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                ImagePlaceholder.story(
+                              width: double.infinity,
+                              height: double.infinity,
+                              backgroundColor:
+                                  categoryColor.withValues(alpha: 0.2),
+                              iconColor: categoryColor,
+                              borderRadius: 0,
+                            ),
+                          )
+                        : ImagePlaceholder.story(
+                            width: double.infinity,
+                            height: double.infinity,
+                            backgroundColor: categoryColor.withValues(alpha: 0.2),
+                            iconColor: categoryColor,
+                            borderRadius: 0,
+                          ),
+                    // Feature badges
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _buildFeatureBadges(),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 12),

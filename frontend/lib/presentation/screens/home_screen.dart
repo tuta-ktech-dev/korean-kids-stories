@@ -187,6 +187,9 @@ class HomeScreen extends StatelessWidget {
               ageMin: stories[index].ageMin,
               ageMax: stories[index].ageMax,
               totalChapters: stories[index].totalChapters,
+              hasAudio: stories[index].hasAudio,
+              hasQuiz: stories[index].hasQuiz,
+              hasIllustrations: stories[index].hasIllustrations,
               onTap: () {
                 // TODO: Navigate to story detail
               },

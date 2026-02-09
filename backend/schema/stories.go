@@ -43,6 +43,15 @@ func EnsureStoriesCollection(app core.App) {
 	if AddBoolField(collection, "is_published") {
 		changes = true
 	}
+	if AddBoolField(collection, "has_audio") {
+		changes = true
+	}
+	if AddBoolField(collection, "has_quiz") {
+		changes = true
+	}
+	if AddBoolField(collection, "has_illustrations") {
+		changes = true
+	}
 
 	// Add system fields
 	if AddSystemFields(collection) {

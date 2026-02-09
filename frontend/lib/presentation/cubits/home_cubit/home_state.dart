@@ -29,6 +29,9 @@ class HomeStory extends Equatable {
   final int ageMin;
   final int ageMax;
   final int totalChapters;
+  final bool hasAudio;
+  final bool hasQuiz;
+  final bool hasIllustrations;
 
   const HomeStory({
     required this.id,
@@ -38,10 +41,13 @@ class HomeStory extends Equatable {
     required this.ageMin,
     required this.ageMax,
     required this.totalChapters,
+    this.hasAudio = false,
+    this.hasQuiz = false,
+    this.hasIllustrations = false,
   });
 
   @override
-  List<Object?> get props => [id, title, thumbnailUrl, category, ageMin, ageMax, totalChapters];
+  List<Object?> get props => [id, title, thumbnailUrl, category, ageMin, ageMax, totalChapters, hasAudio, hasQuiz, hasIllustrations];
 }
 
 abstract class HomeState extends Equatable {
