@@ -65,6 +65,11 @@ func EnsureChaptersCollection(app core.App) {
 		changes = true
 	}
 
+	// Add system fields
+	if AddSystemFields(collection) {
+		changes = true
+	}
+
 	if EnsureIndex(collection, "idx_chapters_story", false, "story", "") {
 		changes = true
 	}

@@ -40,6 +40,11 @@ func EnsureBookmarksCollection(app core.App) {
 		changes = true
 	}
 
+	// Add system fields
+	if AddSystemFields(collection) {
+		changes = true
+	}
+
 	if EnsureIndex(collection, "idx_bookmarks_user", false, "user", "") {
 		changes = true
 	}

@@ -132,7 +132,25 @@ func AddJSONField(collection *core.Collection, name string, required bool) bool 
 	return true
 }
 
-// SetRules sets access rules if not already set
+// AddSystemFields adds created and updated timestamp fields if missing
+func AddSystemFields(collection *core.Collection) bool {
+	changes := false
+	// Add created field
+	if collection.Fields.GetByName("created") == nil {
+		collection.Fields.Add(&core.AutodateField{
+			Name: "created",
+		})
+		changes = true
+	}
+	// Add updated field
+	if collection.Fields.GetByName("updated") == nil {
+		collection.Fields.Add(&core.AutodateField{
+			Name: "updated",
+		})
+		changes = true
+	}
+	return changes
+}
 func SetRules(collection *core.Collection, list, view, create, update, delete string) bool {
 	changed := false
 	if collection.ListRule == nil || *collection.ListRule != list {

@@ -45,6 +45,11 @@ func EnsureDictionaryCollection(app core.App) {
 		changes = true
 	}
 
+	// Add system fields
+	if AddSystemFields(collection) {
+		changes = true
+	}
+
 	if changes {
 		SaveCollection(app, collection)
 	}

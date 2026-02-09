@@ -71,6 +71,11 @@ func EnsureReadingProgressCollection(app core.App) {
 		changes = true
 	}
 
+	// Add system fields
+	if AddSystemFields(collection) {
+		changes = true
+	}
+
 	if EnsureIndex(collection, "idx_progress_user_chapter", true, "user,chapter", "") {
 		changes = true
 	}

@@ -44,11 +44,8 @@ func EnsureStoriesCollection(app core.App) {
 		changes = true
 	}
 
-	// Add system fields if missing
-	if AddTextField(collection, "created", false) {
-		changes = true
-	}
-	if AddTextField(collection, "updated", false) {
+	// Add system fields
+	if AddSystemFields(collection) {
 		changes = true
 	}
 
