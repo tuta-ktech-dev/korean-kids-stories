@@ -13,4 +13,5 @@ func EnsureAllSchema(app core.App) {
 	EnsureReadingProgressCollection(app)
 	EnsureDictionaryCollection(app)
 	EnsureReportsCollection(app)
+	EnsureTrackingCollections(app)
 }

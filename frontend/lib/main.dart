@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'data/services/pocketbase_service.dart';
+import 'data/services/tracking_service.dart';
 import 'presentation/cubits/stories_cubit.dart';
 import 'presentation/screens/home_screen.dart';
+import 'presentation/screens/history_screen.dart';
 import 'presentation/screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Pocketbase
+  // Initialize services
   await PocketbaseService().initialize();
+  TrackingService().startSession(null); // Anonymous session initially
   
   runApp(const KoreanKidsStoriesApp());
 }
@@ -49,9 +52,30 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const Center(child: Text('검색')), // Placeholder
-    const Center(child: Text('서재')), // Placeholder
+    const HistoryScreen(),
     const SettingsScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Track initial screen
+    TrackingService().trackScreenView('home');
+  }
+
+  @override
+  void dispose() {
+    TrackingService().endSession();
+    super.dispose();
+  }
+
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
+    
+    // Track screen views
+    final screenNames = ['home', 'search', 'history', 'settings'];
+    TrackingService().trackScreenView(screenNames[index]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +103,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             _buildNavItem(Icons.home_rounded, '홈', 0, primaryColor),
             _buildNavItem(Icons.search_rounded, '탐색', 1, primaryColor),
-            _buildNavItem(Icons.library_books_rounded, '서재', 2, primaryColor),
+            _buildNavItem(Icons.history_rounded, '기록', 2, primaryColor),
             _buildNavItem(Icons.person_rounded, '내정보', 3, primaryColor),
           ],
         ),
@@ -91,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
     final isActive = _currentIndex == index;
 
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () => _onTabChanged(index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: isActive
