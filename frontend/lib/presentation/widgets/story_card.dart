@@ -23,6 +23,14 @@ class StoryCard extends StatelessWidget {
     this.onTap,
   });
 
+  bool get _hasValidThumbnail {
+    if (thumbnailUrl == null) return false;
+    if (thumbnailUrl!.isEmpty) return false;
+    // Check if URL ends with just / (no filename)
+    if (thumbnailUrl!.endsWith('/')) return false;
+    return true;
+  }
+
   // Category colors adapt to theme
   Color _getCategoryColor(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -79,12 +87,19 @@ class StoryCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                child: thumbnailUrl != null
+                child: _hasValidThumbnail
                     ? Image.network(
                         thumbnailUrl!,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(
+                            Icons.auto_stories_rounded,
+                            size: 48,
+                            color: categoryColor,
+                          ),
+                        ),
                       )
                     : Center(
                         child: Icon(
