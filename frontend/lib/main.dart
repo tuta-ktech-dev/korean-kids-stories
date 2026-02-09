@@ -16,6 +16,8 @@ class KoreanKidsStoriesApp extends StatelessWidget {
       title: '한국 동화 - Korean Kids Stories',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system, // Auto switch based on system
       home: const HomeScreen(),
     );
   }

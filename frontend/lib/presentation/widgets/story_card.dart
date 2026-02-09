@@ -21,28 +21,29 @@ class StoryCard extends StatelessWidget {
     this.onTap,
   });
 
-  // Korean pastel colors for categories
-  Color get _categoryColor {
+  // Category colors adapt to theme
+  Color _getCategoryColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     switch (category) {
       case 'folktale':
-        return AppTheme.primaryPink;
+        return isDark ? AppTheme.darkPrimaryPink : AppTheme.primaryPink;
       case 'history':
-        return AppTheme.primarySky;
+        return isDark ? AppTheme.darkPrimarySky : AppTheme.primarySky;
       case 'legend':
-        return AppTheme.primaryMint;
+        return isDark ? AppTheme.darkPrimaryMint : AppTheme.primaryMint;
       default:
-        return AppTheme.primaryLavender;
+        return isDark ? AppTheme.darkPrimaryCoral : AppTheme.primaryLavender;
     }
   }
 
   String get _categoryLabel {
     switch (category) {
       case 'folktale':
-        return '전통동화'; // Traditional folktale
+        return '전통동화';
       case 'history':
-        return '역사'; // History
+        return '역사';
       case 'legend':
-        return '전설'; // Legend
+        return '전설';
       default:
         return category;
     }
@@ -50,6 +51,8 @@ class StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categoryColor = _getCategoryColor(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -63,10 +66,10 @@ class StoryCard extends StatelessWidget {
               height: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                color: _categoryColor.withValues(alpha: 0.2),
+                color: categoryColor.withValues(alpha: 0.2),
                 boxShadow: [
                   BoxShadow(
-                    color: _categoryColor.withValues(alpha: 0.15),
+                    color: categoryColor.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -85,23 +88,23 @@ class StoryCard extends StatelessWidget {
                         child: Icon(
                           Icons.auto_stories_rounded,
                           size: 48,
-                          color: _categoryColor,
+                          color: categoryColor,
                         ),
                       ),
               ),
             ),
             const SizedBox(height: 12),
-            // Category tag - Korean style pill
+            // Category tag
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: _categoryColor.withValues(alpha: 0.15),
+                color: categoryColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 _categoryLabel,
-                style: AppTheme.caption.copyWith(
-                  color: _categoryColor.withValues(alpha: 0.9),
+                style: AppTheme.caption(context).copyWith(
+                  color: categoryColor.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -110,7 +113,7 @@ class StoryCard extends StatelessWidget {
             // Title
             Text(
               title,
-              style: AppTheme.storyTitle.copyWith(fontSize: 16),
+              style: AppTheme.storyTitle(context).copyWith(fontSize: 16),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -121,23 +124,23 @@ class StoryCard extends StatelessWidget {
                 Icon(
                   Icons.child_care_rounded,
                   size: 14,
-                  color: AppTheme.textLight,
+                  color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$ageMin-$ageMax세', // Korean age format
-                  style: AppTheme.caption,
+                  '$ageMin-$ageMax세',
+                  style: AppTheme.caption(context),
                 ),
                 const SizedBox(width: 12),
                 Icon(
                   Icons.menu_book_rounded,
                   size: 14,
-                  color: AppTheme.textLight,
+                  color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$totalChapters화', // Korean episode format
-                  style: AppTheme.caption,
+                  '$totalChapters화',
+                  style: AppTheme.caption(context),
                 ),
               ],
             ),

@@ -7,8 +7,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = AppTheme.backgroundColor(context);
+    final surfaceColor = AppTheme.surfaceColor(context);
+    final primaryColor = AppTheme.primaryColor(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundCream,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -18,18 +23,17 @@ class HomeScreen extends StatelessWidget {
                 margin: const EdgeInsets.all(20),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppTheme.primaryPink,
-                      AppTheme.primaryCoral,
-                    ],
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [AppTheme.darkPrimaryPink, AppTheme.darkPrimaryCoral]
+                        : [AppTheme.primaryPink, AppTheme.primaryCoral],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primaryPink.withValues(alpha: 0.3),
+                      color: primaryColor.withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -59,16 +63,16 @@ class HomeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '안녕하세요! 👋', // Hello!
-                                style: AppTheme.headingMedium.copyWith(
+                                '안녕하세요! 👋',
+                                style: AppTheme.headingMedium(context).copyWith(
                                   color: Colors.white,
                                   fontSize: 18,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '오늘도 즐거운 이야기를 들어볼까요?', // Shall we listen to a fun story today?
-                                style: AppTheme.bodyLarge.copyWith(
+                                '오늘도 즐거운 이야기를 들어볼까요?',
+                                style: AppTheme.bodyLarge(context).copyWith(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 14,
                                 ),
@@ -79,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    // Search bar - Korean apps love big rounded search
+                    // Search bar
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
@@ -90,12 +94,12 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.search_rounded,
-                            color: AppTheme.textLight,
+                            color: AppTheme.textMutedColor(context),
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            '재미있는 동화 찾기...', // Find interesting stories...
-                            style: AppTheme.bodyMedium,
+                            '재미있는 동화 찾기...',
+                            style: AppTheme.bodyMedium(context),
                           ),
                         ],
                       ),
@@ -105,7 +109,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Categories - Korean horizontal scroll
+            // Categories
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -114,24 +118,24 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     _CategoryButton(
                       icon: Icons.auto_stories,
-                      label: '전통동화', // Folktale
-                      color: AppTheme.primaryPink,
+                      label: '전통동화',
+                      color: isDark ? AppTheme.darkPrimaryPink : AppTheme.primaryPink,
                       isSelected: true,
                     ),
                     _CategoryButton(
                       icon: Icons.history_edu,
-                      label: '역사', // History
-                      color: AppTheme.primarySky,
+                      label: '역사',
+                      color: isDark ? AppTheme.darkPrimarySky : AppTheme.primarySky,
                     ),
                     _CategoryButton(
                       icon: Icons.stars,
-                      label: '전설', // Legend
-                      color: AppTheme.primaryMint,
+                      label: '전설',
+                      color: isDark ? AppTheme.darkPrimaryMint : AppTheme.primaryMint,
                     ),
                     _CategoryButton(
                       icon: Icons.favorite,
-                      label: '즐겨찾기', // Favorites
-                      color: AppTheme.primaryCoral,
+                      label: '즐겨찾기',
+                      color: isDark ? AppTheme.darkPrimaryCoral : AppTheme.primaryCoral,
                     ),
                   ],
                 ),
@@ -148,15 +152,15 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '✨ 추천 동화', // Recommended Stories
-                      style: AppTheme.headingMedium,
+                      '✨ 추천 동화',
+                      style: AppTheme.headingMedium(context),
                     ),
                     TextButton(
                       onPressed: () {},
                       child: Text(
-                        '더보기', // See more
-                        style: AppTheme.bodyMedium.copyWith(
-                          color: AppTheme.primaryPink,
+                        '더보기',
+                        style: AppTheme.bodyMedium(context).copyWith(
+                          color: primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -177,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: [
                     StoryCard(
-                      title: '흥부와 놀부', // Heungbu and Nolbu
+                      title: '흥부와 놀부',
                       category: 'folktale',
                       ageMin: 5,
                       ageMax: 8,
@@ -185,7 +189,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {},
                     ),
                     StoryCard(
-                      title: '선녀와 나무꾼', // The Woodcutter and the Fairy
+                      title: '선녀와 나무꾼',
                       category: 'legend',
                       ageMin: 6,
                       ageMax: 10,
@@ -193,7 +197,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {},
                     ),
                     StoryCard(
-                      title: '장화홍련전', // Janghwa Hongryeon
+                      title: '장화홍련전',
                       category: 'folktale',
                       ageMin: 7,
                       ageMax: 10,
@@ -201,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {},
                     ),
                     StoryCard(
-                      title: '세종대왕', // King Sejong
+                      title: '세종대왕',
                       category: 'history',
                       ageMin: 8,
                       ageMax: 10,
@@ -218,8 +222,8 @@ class HomeScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
                 child: Text(
-                  '📚 최근에 들은 이야기', // Recently listened
-                  style: AppTheme.headingMedium,
+                  '📚 최근에 들은 이야기',
+                  style: AppTheme.headingMedium(context),
                 ),
               ),
             ),
@@ -230,7 +234,7 @@ class HomeScreen extends StatelessWidget {
                 child: _RecentStoryItem(
                   title: '흥부와 놀부 - 제1화',
                   progress: 0.7,
-                  color: AppTheme.primaryPink,
+                  color: primaryColor,
                 ),
               ),
             ),
@@ -240,12 +244,12 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      // Korean-style bottom nav - rounded and floating
+      // Bottom nav
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
           boxShadow: [
             BoxShadow(
@@ -315,9 +319,9 @@ class _CategoryButton extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: AppTheme.caption.copyWith(
+          style: AppTheme.caption(context).copyWith(
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected ? color : AppTheme.textMedium,
+            color: isSelected ? color : AppTheme.textMutedColor(context),
           ),
         ),
       ],
@@ -339,10 +343,12 @@ class _RecentStoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final surfaceColor = AppTheme.surfaceColor(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         boxShadow: [
           BoxShadow(
@@ -373,7 +379,7 @@ class _RecentStoryItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTheme.bodyLarge.copyWith(
+                  style: AppTheme.bodyLarge(context).copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -423,11 +429,13 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = AppTheme.primaryColor(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: isActive
           ? BoxDecoration(
-              color: AppTheme.primaryPink.withValues(alpha: 0.15),
+              color: primaryColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
             )
           : null,
@@ -436,14 +444,14 @@ class _NavItem extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isActive ? AppTheme.primaryPink : AppTheme.textLight,
+            color: isActive ? primaryColor : AppTheme.textMutedColor(context),
             size: 24,
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: AppTheme.caption.copyWith(
-              color: isActive ? AppTheme.primaryPink : AppTheme.textLight,
+            style: AppTheme.caption(context).copyWith(
+              color: isActive ? primaryColor : AppTheme.textMutedColor(context),
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
