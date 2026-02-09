@@ -152,6 +152,7 @@ class HomeScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final story = stories[index];
                           return StoryCard(
+                            id: story.id,
                             title: story.title,
                             thumbnailUrl: story.thumbnailUrl,
                             category: story.category,
@@ -160,7 +161,6 @@ class HomeScreen extends StatelessWidget {
                             totalChapters: story.totalChapters,
                             onTap: () {
                               // Navigate to story detail
-                              print('Tapped: ${story.title}');
                             },
                           );
                         },

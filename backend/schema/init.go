@@ -12,4 +12,5 @@ func EnsureAllSchema(app core.App) {
 	EnsureChaptersCollection(app)
 	EnsureReadingProgressCollection(app)
 	EnsureDictionaryCollection(app)
+	EnsureReportsCollection(app)
 }

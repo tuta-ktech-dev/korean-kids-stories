@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
 class StoryCard extends StatelessWidget {
+  final String id;
   final String title;
   final String? thumbnailUrl;
   final String category;
@@ -12,6 +13,7 @@ class StoryCard extends StatelessWidget {
 
   const StoryCard({
     super.key,
+    required this.id,
     required this.title,
     this.thumbnailUrl,
     required this.category,
