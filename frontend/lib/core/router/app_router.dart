@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../presentation/components/navigation/app_bottom_nav.dart';
 import '../../presentation/screens/landing_screen.dart';
 import '../../presentation/screens/home_screen.dart';
+import '../../presentation/screens/search_screen.dart';
 import '../../presentation/screens/history_screen.dart';
 import '../../presentation/screens/settings_screen.dart';
 import '../../presentation/screens/library_screen.dart';
