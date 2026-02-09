@@ -1,0 +1,156 @@
+package main
+
+import (
+	"log"
+	"time"
+
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
+)
+
+// SetupHooks configures all Pocketbase hooks
+func SetupHooks(app *pocketbase.PocketBase) {
+	// Hook: Auto increment view_count when a view is created
+	app.OnRecordCreateRequest("views").BindFunc(func(e *core.RecordRequestEvent) error {
+		// Get the story being viewed
+		storyId := e.Record.GetString("story")
+		if storyId == "" {
+			return e.Next()
+		}
+
+		// Check for duplicate view (same user or IP within 1 hour)
+		if !isDuplicateView(app, e.Record, storyId) {
+			// Increment view_count
+			if err := incrementViewCount(app, storyId); err != nil {
+				log.Printf("Failed to increment view count: %v", err)
+			}
+		}
+
+		return e.Next()
+	})
+
+	// Hook: Update story average rating when a review is created/updated/deleted
+	app.OnRecordCreateRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := updateStoryRating(app, e.Record.GetString("story")); err != nil {
+			log.Printf("Failed to update story rating: %v", err)
+		}
+		return e.Next()
+	})
+
+	app.OnRecordUpdateRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := updateStoryRating(app, e.Record.GetString("story")); err != nil {
+			log.Printf("Failed to update story rating: %v", err)
+		}
+		return e.Next()
+	})
+
+	app.OnRecordDeleteRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := updateStoryRating(app, e.Record.GetString("story")); err != nil {
+			log.Printf("Failed to update story rating: %v", err)
+		}
+		return e.Next()
+	})
+
+	log.Println("✅ Hooks configured successfully")
+}
+
+// isDuplicateView checks if this is a duplicate view (same user/IP within 1 hour)
+func isDuplicateView(app core.App, viewRecord *core.Record, storyId string) bool {
+	userId := viewRecord.GetString("user")
+	ipAddress := viewRecord.GetString("ip_address")
+
+	viewsCollection, err := app.FindCollectionByNameOrId("views")
+	if err != nil {
+		return false
+	}
+
+	// Build filter
+	var filter string
+	if userId != "" {
+		filter = `story="` + storyId + `" && user="` + userId + `" && created>="` + 
+			time.Now().Add(-1*time.Hour).Format(time.RFC3339) + `"`
+	} else if ipAddress != "" {
+		filter = `story="` + storyId + `" && ip_address="` + ipAddress + `" && created>="` + 
+			time.Now().Add(-1*time.Hour).Format(time.RFC3339) + `"`
+	} else {
+		return false // No way to track uniqueness
+	}
+
+	existing, err := app.FindRecordsByFilter(
+		viewsCollection.Id,
+		filter,
+		"-created",
+		1,
+		0,
+	)
+
+	return err == nil && len(existing) > 0
+}
+
+// incrementViewCount increments the view_count for a story
+func incrementViewCount(app core.App, storyId string) error {
+	storiesCollection, err := app.FindCollectionByNameOrId("stories")
+	if err != nil {
+		return err
+	}
+
+	story, err := app.FindRecordById(storiesCollection, storyId)
+	if err != nil {
+		return err
+	}
+
+	currentCount := story.GetInt("view_count")
+	story.Set("view_count", currentCount+1)
+
+	return app.Save(story)
+}
+
+// updateStoryRating recalculates average rating for a story
+func updateStoryRating(app core.App, storyId string) error {
+	if storyId == "" {
+		return nil
+	}
+
+	storiesCollection, err := app.FindCollectionByNameOrId("stories")
+	if err != nil {
+		return err
+	}
+
+	story, err := app.FindRecordById(storiesCollection, storyId)
+	if err != nil {
+		return err
+	}
+
+	reviewsCollection, err := app.FindCollectionByNameOrId("reviews")
+	if err != nil {
+		return err
+	}
+
+	// Get all reviews for this story
+	reviews, err := app.FindRecordsByFilter(
+		reviewsCollection.Id,
+		`story="`+storyId+`"`,
+		"-created",
+		1000,
+		0,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Calculate average
+	if len(reviews) == 0 {
+		story.Set("average_rating", nil)
+		story.Set("review_count", 0)
+	} else {
+		var total float64
+		for _, review := range reviews {
+			total += review.GetFloat("rating")
+		}
+		average := total / float64(len(reviews))
+		story.Set("average_rating", average)
+		story.Set("review_count", len(reviews))
+	}
+
+	return app.Save(story)
+}

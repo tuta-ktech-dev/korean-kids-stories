@@ -15,4 +15,6 @@ func EnsureAllSchema(app core.App) {
 	EnsureReportsCollection(app)
 	EnsureTrackingCollections(app)
 	EnsureBookmarksCollection(app)
+	EnsureReviewsCollection(app)
+	EnsureViewsCollection(app)
 }

@@ -14,15 +14,13 @@ import (
 func main() {
 	app := pocketbase.New()
 
+	// Setup hooks for auto-updating counts
+	SetupHooks(app)
+
 	// Ensure schema on startup
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		schema.EnsureAllSchema(app)
-		
-		// Seed sample data if empty
-		if err := SeedStories(app); err != nil {
-			log.Printf("Failed to seed stories: %v", err)
-		}
-		
+
 		return se.Next()
 	})
 
