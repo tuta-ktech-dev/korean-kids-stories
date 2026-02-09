@@ -5,6 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
 import 'presentation/cubits/auth_cubit.dart';
+import 'presentation/cubits/categories_cubit.dart';
 import 'presentation/cubits/stories_cubit.dart';
 
 void main() async {
@@ -27,6 +28,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => AuthCubit()),
+        BlocProvider(create: (_) => CategoriesCubit()),
         BlocProvider(create: (_) => StoriesCubit()..loadStories()),
       ],
       child: MaterialApp.router(

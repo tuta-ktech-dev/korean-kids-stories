@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
+import '../cubits/auth_cubit.dart';
 
 @RoutePage()
 class RegisterScreen extends StatefulWidget {
@@ -15,7 +17,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
@@ -43,32 +44,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-    
-    // TODO: Call register API to send OTP
-    await Future.delayed(const Duration(seconds: 1));
-    
-    setState(() => _isLoading = false);
-    
-    if (mounted) {
-      // Navigate to OTP verification
-      // TODO: Pass email to OTP screen using state management or arguments
-      context.router.pushNamed('/verify-otp');
-    }
+    await context.read<AuthCubit>().register(
+      _nameController.text,
+      _emailController.text,
+      _passwordController.text,
+    );
   }
 
   Future<void> _registerWithGoogle() async {
-    setState(() => _isLoading = true);
     // TODO: Google OAuth
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   Future<void> _registerWithApple() async {
-    setState(() => _isLoading = true);
     // TODO: Apple OAuth
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   void _showError(String message) {
@@ -82,7 +70,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is OtpSent) {
+          context.router.pushNamed('/verify-otp');
+        } else if (state is AuthError) {
+          _showError(state.message);
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        
+        return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -205,14 +204,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _register,
+                  onPressed: isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: _isLoading
+                  child: isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -281,6 +280,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 

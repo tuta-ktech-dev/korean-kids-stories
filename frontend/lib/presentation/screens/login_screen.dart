@@ -15,7 +15,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   Future<void> _login() async {
@@ -24,33 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-
     await context.read<AuthCubit>().login(
           _emailController.text,
           _passwordController.text,
         );
-
-    setState(() => _isLoading = false);
-
-    // Navigate to main screen if login successful
-    if (mounted && context.read<AuthCubit>().isAuthenticated) {
-      context.router.replaceNamed("/main");
-    }
   }
 
   Future<void> _loginWithGoogle() async {
-    setState(() => _isLoading = true);
     // TODO: Google OAuth
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   Future<void> _loginWithApple() async {
-    setState(() => _isLoading = true);
     // TODO: Apple OAuth
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   void _showError(String message) {
@@ -64,7 +48,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is Authenticated) {
+          context.router.replaceNamed("/main");
+        } else if (state is AuthError) {
+          _showError(state.message);
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        
+        return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -157,14 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
+                  onPressed: isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: _isLoading
+                  child: isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -256,6 +251,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 
