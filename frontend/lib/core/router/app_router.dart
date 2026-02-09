@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../presentation/components/navigation/app_bottom_nav.dart';
 import '../../presentation/screens/landing_screen.dart';
@@ -9,6 +10,7 @@ import '../../presentation/screens/settings_screen.dart';
 import '../../presentation/screens/login_screen.dart';
 import '../../presentation/screens/register_screen.dart';
 import '../../presentation/screens/otp_verification_screen.dart';
+import '../../presentation/cubits/auth_cubit.dart';
 
 part 'app_router.gr.dart';
 
@@ -44,22 +46,32 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AutoTabsRouter(
-      routes: const [
-        HomeRoute(),
-        SearchRoute(),
-        HistoryRoute(),
-        SettingsRoute(),
-      ],
-      builder: (context, child) {
-        final tabsRouter = AutoTabsRouter.of(context);
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final isAuthenticated = state is Authenticated;
         
-        return Scaffold(
-          body: child,
-          bottomNavigationBar: AppBottomNav(
-            currentIndex: tabsRouter.activeIndex,
-            onTap: tabsRouter.setActiveIndex,
-          ),
+        // Build routes list based on auth state
+        final routes = [
+          const HomeRoute(),
+          const SearchRoute(),
+          const HistoryRoute(),
+          if (isAuthenticated) const SettingsRoute(),
+        ];
+
+        return AutoTabsRouter(
+          routes: routes,
+          builder: (context, child) {
+            final tabsRouter = AutoTabsRouter.of(context);
+            
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: AppBottomNav(
+                currentIndex: tabsRouter.activeIndex,
+                onTap: tabsRouter.setActiveIndex,
+                showSettings: isAuthenticated,
+              ),
+            );
+          },
         );
       },
     );

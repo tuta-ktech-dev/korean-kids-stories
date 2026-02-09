@@ -4,15 +4,24 @@ import '../../../core/theme/app_theme.dart';
 class AppBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final bool showSettings;
 
   const AppBottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    this.showSettings = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final items = [
+      _NavItemData(icon: Icons.home_rounded, label: '홈'),
+      _NavItemData(icon: Icons.search_rounded, label: '탐색'),
+      _NavItemData(icon: Icons.history_rounded, label: '기록'),
+      if (showSettings) _NavItemData(icon: Icons.person_rounded, label: '내정보'),
+    ];
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -29,35 +38,25 @@ class AppBottomNav extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavItem(
-            icon: Icons.home_rounded,
-            label: '홈',
-            isActive: currentIndex == 0,
-            onTap: () => onTap(0),
+        children: List.generate(
+          items.length,
+          (index) => _NavItem(
+            icon: items[index].icon,
+            label: items[index].label,
+            isActive: currentIndex == index,
+            onTap: () => onTap(index),
           ),
-          _NavItem(
-            icon: Icons.search_rounded,
-            label: '탐색',
-            isActive: currentIndex == 1,
-            onTap: () => onTap(1),
-          ),
-          _NavItem(
-            icon: Icons.history_rounded,
-            label: '기록',
-            isActive: currentIndex == 2,
-            onTap: () => onTap(2),
-          ),
-          _NavItem(
-            icon: Icons.person_rounded,
-            label: '내정보',
-            isActive: currentIndex == 3,
-            onTap: () => onTap(3),
-          ),
-        ],
+        ),
       ),
     );
   }
+}
+
+class _NavItemData {
+  final IconData icon;
+  final String label;
+
+  _NavItemData({required this.icon, required this.label});
 }
 
 class _NavItem extends StatelessWidget {
