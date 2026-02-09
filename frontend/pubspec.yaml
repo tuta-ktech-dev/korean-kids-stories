@@ -38,8 +38,8 @@ dependencies:
   # Pocketbase Dart SDK
   pocketbase: ^0.22.0
 
-  # State management
-  flutter_riverpod: ^2.6.1
+  # State management - Cubit/Bloc
+  flutter_bloc: ^9.0.0
 
   # Audio player for stories
   just_audio: ^0.9.46
