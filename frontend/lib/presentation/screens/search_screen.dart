@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../cubits/search_cubit/search_cubit.dart';
 import '../widgets/story_card.dart';
@@ -46,7 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
-          onPressed: () => context.router.pop(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: TextField(
           controller: _searchController,
@@ -180,7 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Text(
                           '최근 검색',
-                          style: AppTheme.headingSmall(context),
+                          style: AppTheme.headingMedium(context),
                         ),
                         TextButton(
                           onPressed: () {
@@ -194,16 +193,18 @@ class _SearchScreenState extends State<SearchScreen> {
                     Wrap(
                       spacing: 8,
                       children: state.history.map((query) {
-                        return ActionChip(
-                          label: Text(query),
-                          onPressed: () {
+                        return GestureDetector(
+                          onTap: () {
                             _searchController.text = query;
                             _performSearch(query);
                           },
-                          deleteIcon: const Icon(Icons.close, size: 18),
-                          onDeleted: () {
-                            context.read<SearchCubit>().removeFromHistory(query);
-                          },
+                          child: Chip(
+                            label: Text(query),
+                            deleteIcon: const Icon(Icons.close, size: 18),
+                            onDeleted: () {
+                              context.read<SearchCubit>().removeFromHistory(query);
+                            },
+                          ),
                         );
                       }).toList(),
                     ),
@@ -218,7 +219,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Popular searches
           Text(
             '인기 검색어',
-            style: AppTheme.headingSmall(context),
+            style: AppTheme.headingMedium(context),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -239,7 +240,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Categories
           Text(
             '카테고리',
-            style: AppTheme.headingSmall(context),
+            style: AppTheme.headingMedium(context),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -256,7 +257,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Age filters
           Text(
             '연령대',
-            style: AppTheme.headingSmall(context),
+            style: AppTheme.headingMedium(context),
           ),
           const SizedBox(height: 12),
           Wrap(
