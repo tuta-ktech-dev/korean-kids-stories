@@ -77,33 +77,32 @@ class MainRoute extends PageRouteInfo<void> {
 /// generated route for
 /// [OtpVerificationScreen]
 class OtpVerificationRoute extends PageRouteInfo<OtpVerificationRouteArgs> {
-  OtpVerificationRoute({
-    Key? key,
-    required String email,
-    List<PageRouteInfo>? children,
-  }) : super(
-         OtpVerificationRoute.name,
-         args: OtpVerificationRouteArgs(key: key, email: email),
-         initialChildren: children,
-       );
+  OtpVerificationRoute({Key? key, String? email, List<PageRouteInfo>? children})
+    : super(
+        OtpVerificationRoute.name,
+        args: OtpVerificationRouteArgs(key: key, email: email),
+        initialChildren: children,
+      );
 
   static const String name = 'OtpVerificationRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<OtpVerificationRouteArgs>();
+      final args = data.argsAs<OtpVerificationRouteArgs>(
+        orElse: () => const OtpVerificationRouteArgs(),
+      );
       return OtpVerificationScreen(key: args.key, email: args.email);
     },
   );
 }
 
 class OtpVerificationRouteArgs {
-  const OtpVerificationRouteArgs({this.key, required this.email});
+  const OtpVerificationRouteArgs({this.key, this.email});
 
   final Key? key;
 
-  final String email;
+  final String? email;
 
   @override
   String toString() {
