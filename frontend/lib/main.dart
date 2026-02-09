@@ -32,7 +32,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         BlocProvider(create: (_) => StoriesCubit()..loadStories()),
       ],
       child: MaterialApp.router(
-        title: '한국 동화 - Korean Kids Stories',
+        title: '꼬마 한동화',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
