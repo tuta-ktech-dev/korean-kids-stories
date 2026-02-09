@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
 import '../components/cards/history_card.dart';
+import '../cubits/auth_cubit.dart';
 
 @RoutePage()
 class HistoryScreen extends StatelessWidget {
@@ -9,30 +11,110 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor(context),
+      appBar: AppBar(
+        title: Text('내 활동', style: AppTheme.headingMedium(context)),
         backgroundColor: AppTheme.backgroundColor(context),
-        appBar: AppBar(
-          title: Text('내 활동', style: AppTheme.headingMedium(context)),
-          backgroundColor: AppTheme.backgroundColor(context),
-          elevation: 0,
-          bottom: TabBar(
-            labelColor: AppTheme.primaryColor(context),
-            unselectedLabelColor: AppTheme.textMutedColor(context),
-            indicatorColor: AppTheme.primaryColor(context),
-            tabs: const [
-              Tab(text: '읽은 이야기', icon: Icon(Icons.menu_book)),
-              Tab(text: '들은 내용', icon: Icon(Icons.headphones)),
-              Tab(text: '검색 기록', icon: Icon(Icons.search)),
-            ],
-          ),
-        ),
-        body: TabBarView(
+        elevation: 0,
+      ),
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if (state is Unauthenticated || state is AuthInitial) {
+            return _buildGuestPrompt(context);
+          }
+
+          // Show history tabs for authenticated users
+          return DefaultTabController(
+            length: 3,
+            child: Column(
+              children: [
+                TabBar(
+                  labelColor: AppTheme.primaryColor(context),
+                  unselectedLabelColor: AppTheme.textMutedColor(context),
+                  indicatorColor: AppTheme.primaryColor(context),
+                  tabs: const [
+                    Tab(text: '읽은 이야기', icon: Icon(Icons.menu_book)),
+                    Tab(text: '들은 내용', icon: Icon(Icons.headphones)),
+                    Tab(text: '검색 기록', icon: Icon(Icons.search)),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _ReadingHistoryTab(),
+                      _ListeningHistoryTab(),
+                      _SearchHistoryTab(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildGuestPrompt(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _ReadingHistoryTab(),
-            _ListeningHistoryTab(),
-            _SearchHistoryTab(),
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppTheme.textMutedColor(context).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.lock_outline,
+                size: 48,
+                color: AppTheme.textMutedColor(context),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              '로그인이 필요합니다',
+              style: AppTheme.headingMedium(context),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '읽기 기록을 저장하려면\n로그인해주세요',
+              style: AppTheme.bodyLarge(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.router.pushNamed('/login');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text('로그인하기'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                context.router.pushNamed('/register');
+              },
+              child: Text(
+                '회원가입',
+                style: AppTheme.bodyLarge(context).copyWith(
+                  color: AppTheme.primaryColor(context),
+                ),
+              ),
+            ),
           ],
         ),
       ),
