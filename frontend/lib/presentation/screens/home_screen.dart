@@ -2,22 +2,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
-import '../cubits/categories_cubit/categories_cubit.dart';
-import '../cubits/stories_cubit/stories_cubit.dart';
+import '../cubits/home_cubit/home_cubit.dart';
 import '../widgets/story_card.dart';
 import '../components/buttons/category_button.dart';
 import '../components/headers/gradient_header.dart';
 import '../components/inputs/app_search_bar.dart';
 
 @RoutePage()
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Stories List
-            BlocBuilder<StoriesCubit, StoriesState>(
+            BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildStoriesList(context, state),
             ),
 
@@ -62,23 +56,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCategories() {
-    return BlocConsumer<CategoriesCubit, CategoriesState>(
+    return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
-        if (state is CategoriesError) {
+        if (state is HomeError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
       builder: (context, state) {
-        if (state is CategoriesLoading) {
+        if (state is HomeLoading) {
           return const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Center(child: CircularProgressIndicator()),
           );
         }
 
-        if (state is CategoriesLoaded) {
+        if (state is HomeLoaded) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SingleChildScrollView(
@@ -88,27 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: state.categories.asMap().entries.map((entry) {
                   final index = entry.key;
                   final category = entry.value;
-                  final isSelected = state.selectedId == category.id;
+                  final isSelected = state.selectedCategoryId == category.id;
 
                   return CategoryButton(
-                    icon: CategoriesCubit.getIconData(category.icon),
+                    icon: HomeCubit.getIconData(category.icon),
                     label: category.label,
-                    color: _getCategoryColor(index),
+                    color: _getCategoryColor(context, index),
                     isSelected: isSelected,
                     onTap: () {
-                      context.read<CategoriesCubit>().selectCategory(
-                        category.id,
-                      );
-
-                      // Filter stories by category
-                      if (category.isSpecial) {
-                        // TODO: Load favorites
-                        context.read<StoriesCubit>().loadStories();
-                      } else {
-                        context.read<StoriesCubit>().loadStories(
-                          category: category.filterValue,
-                        );
-                      }
+                      context.read<HomeCubit>().selectCategory(category.id);
                     },
                   );
                 }).toList(),
@@ -122,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Color _getCategoryColor(int index) {
+  Color _getCategoryColor(BuildContext context, int index) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = [
       isDark ? AppTheme.darkPrimaryPink : AppTheme.primaryPink,
@@ -134,29 +116,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSectionTitle() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('✨ 추천 동화', style: AppTheme.headingMedium(context)),
-          TextButton(
-            onPressed: () => context.read<StoriesCubit>().refresh(),
-            child: Text(
-              '새로고침',
-              style: AppTheme.bodyMedium(context).copyWith(
-                color: AppTheme.primaryColor(context),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('✨ 추천 동화', style: AppTheme.headingMedium(context)),
+              if (state is HomeLoaded && !state.isLoadingStories)
+                TextButton(
+                  onPressed: () => context.read<HomeCubit>().refresh(),
+                  child: Text(
+                    '새로고침',
+                    style: AppTheme.bodyMedium(context).copyWith(
+                      color: AppTheme.primaryColor(context),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildStoriesList(BuildContext context, StoriesState state) {
-    if (state is StoriesLoading) {
+  Widget _buildStoriesList(BuildContext context, HomeState state) {
+    if (state is HomeLoading) {
       return const SliverToBoxAdapter(
         child: Center(
           child: Padding(
@@ -167,11 +154,22 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    if (state is StoriesError) {
+    if (state is HomeError) {
       return SliverToBoxAdapter(child: _buildErrorState(context, state));
     }
 
-    if (state is StoriesLoaded) {
+    if (state is HomeLoaded) {
+      if (state.isLoadingStories) {
+        return const SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      }
+
       final stories = state.stories;
 
       if (stories.isEmpty) {
@@ -205,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return const SliverToBoxAdapter();
   }
 
-  Widget _buildErrorState(BuildContext context, StoriesError state) {
+  Widget _buildErrorState(BuildContext context, HomeError state) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -222,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('백엔드 서버가 실행 중인지 확인해주세요', style: AppTheme.caption(context)),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => context.read<StoriesCubit>().loadStories(),
+              onPressed: () => context.read<HomeCubit>().initialize(),
               child: const Text('다시 시도'),
             ),
           ],
