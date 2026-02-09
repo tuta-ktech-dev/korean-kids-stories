@@ -16,6 +16,7 @@ class StoryCard extends StatelessWidget {
   final bool hasIllustrations;
   final double? averageRating;
   final int reviewCount;
+  final int viewCount;
   final VoidCallback? onTap;
 
   const StoryCard({
@@ -33,6 +34,7 @@ class StoryCard extends StatelessWidget {
     this.hasIllustrations = false,
     this.averageRating,
     this.reviewCount = 0,
+    this.viewCount = 0,
     this.onTap,
   });
 
@@ -42,6 +44,15 @@ class StoryCard extends StatelessWidget {
     // Check if URL ends with just / (no filename)
     if (thumbnailUrl!.endsWith('/')) return false;
     return true;
+  }
+
+  String _formatViewCount(int count) {
+    if (count >= 1000000) {
+      return '${(count / 1000000).toStringAsFixed(1)}M';
+    } else if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}K';
+    }
+    return count.toString();
   }
 
   Widget _buildFeatureBadges() {
@@ -268,6 +279,23 @@ class StoryCard extends StatelessWidget {
             if (averageRating != null) ...[
               const SizedBox(height: 4),
               _buildRatingStars(context),
+            ],
+            if (viewCount > 0) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    Icons.visibility_rounded,
+                    size: 12,
+                    color: AppTheme.textMutedColor(context),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${_formatViewCount(viewCount)}',
+                    style: AppTheme.caption(context).copyWith(fontSize: 11),
+                  ),
+                ],
+              ),
             ],
           ],
         ),

@@ -49,55 +49,53 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildStoriesList(context, state),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
             // 🔥 Featured Stories
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
-                context, 
-                state, 
-                '🔥 인기', 
-                (s) => s.sections.featured
+                context,
+                state,
+                '🔥 인기',
+                (s) => s.sections.featured,
               ),
             ),
 
             // 🎧 Stories with Audio
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
-                context, 
-                state, 
-                '🎧 오디오', 
-                (s) => s.sections.withAudio
+                context,
+                state,
+                '🎧 오디오',
+                (s) => s.sections.withAudio,
               ),
             ),
 
             // ⭐ Most Reviewed
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
-                context, 
-                state, 
-                '⭐ 리뷰 많은', 
-                (s) => s.sections.mostReviewed
+                context,
+                state,
+                '⭐ 리뷰 많은',
+                (s) => s.sections.mostReviewed,
               ),
             ),
 
             // 👁 Most Viewed
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
-                context, 
-                state, 
-                '👁 조회수 많은', 
-                (s) => s.sections.mostViewed
+                context,
+                state,
+                '👁 조회수 많은',
+                (s) => s.sections.mostViewed,
               ),
             ),
 
             // 🆕 Recent Stories
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
-                context, 
-                state, 
-                '🆕 최신', 
-                (s) => s.sections.recent
+                context,
+                state,
+                '🆕 최신',
+                (s) => s.sections.recent,
               ),
             ),
 
@@ -177,7 +175,9 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(title, style: AppTheme.headingMedium(context)),
-              if (state is HomeLoaded && !state.isLoadingStories && title == '✨ 추천 동화')
+              if (state is HomeLoaded &&
+                  !state.isLoadingStories &&
+                  title == '✨ 추천 동화')
                 TextButton(
                   onPressed: () => context.read<HomeCubit>().refresh(),
                   child: Text(
@@ -213,9 +213,7 @@ class HomeScreen extends StatelessWidget {
 
     if (state is HomeLoaded) {
       if (state.isLoadingStories) {
-        return const SliverToBoxAdapter(
-          child: StoryCardSkeletonList(count: 3),
-        );
+        return const SliverToBoxAdapter(child: StoryCardSkeletonList(count: 3));
       }
 
       final stories = state.stories;
@@ -255,6 +253,7 @@ class HomeScreen extends StatelessWidget {
       hasIllustrations: story.hasIllustrations,
       averageRating: story.averageRating,
       reviewCount: story.reviewCount,
+      viewCount: story.viewCount,
       onTap: () {
         // TODO: Navigate to story detail
       },
@@ -275,7 +274,6 @@ class HomeScreen extends StatelessWidget {
 
     return SliverList(
       delegate: SliverChildListDelegate([
-        const SizedBox(height: 32),
         _buildSectionTitle(title),
         const SizedBox(height: 16),
         SizedBox(
