@@ -35,6 +35,7 @@ class HomeStory extends Equatable {
   final bool hasIllustrations;
   final double? averageRating;
   final int reviewCount;
+  final int viewCount;
 
   const HomeStory({
     required this.id,
@@ -50,10 +51,47 @@ class HomeStory extends Equatable {
     this.hasIllustrations = false,
     this.averageRating,
     this.reviewCount = 0,
+    this.viewCount = 0,
   });
 
   @override
-  List<Object?> get props => [id, title, thumbnailUrl, category, ageMin, ageMax, totalChapters, isFeatured, hasAudio, hasQuiz, hasIllustrations, averageRating, reviewCount];
+  List<Object?> get props => [id, title, thumbnailUrl, category, ageMin, ageMax, totalChapters, isFeatured, hasAudio, hasQuiz, hasIllustrations, averageRating, reviewCount, viewCount];
+}
+
+// Story sections
+class StorySections extends Equatable {
+  final List<HomeStory> featured;      // 🔥 Nổi bật
+  final List<HomeStory> withAudio;     // 🎧 Có Audio
+  final List<HomeStory> mostReviewed;  // ⭐ Review nhiều
+  final List<HomeStory> mostViewed;    // 👁 Lượt xem nhiều
+  final List<HomeStory> recent;        // 🆕 Mới nhất
+
+  const StorySections({
+    this.featured = const [],
+    this.withAudio = const [],
+    this.mostReviewed = const [],
+    this.mostViewed = const [],
+    this.recent = const [],
+  });
+
+  @override
+  List<Object?> get props => [featured, withAudio, mostReviewed, mostViewed, recent];
+
+  StorySections copyWith({
+    List<HomeStory>? featured,
+    List<HomeStory>? withAudio,
+    List<HomeStory>? mostReviewed,
+    List<HomeStory>? mostViewed,
+    List<HomeStory>? recent,
+  }) {
+    return StorySections(
+      featured: featured ?? this.featured,
+      withAudio: withAudio ?? this.withAudio,
+      mostReviewed: mostReviewed ?? this.mostReviewed,
+      mostViewed: mostViewed ?? this.mostViewed,
+      recent: recent ?? this.recent,
+    );
+  }
 }
 
 abstract class HomeState extends Equatable {
@@ -74,12 +112,14 @@ class HomeLoading extends HomeState {
 class HomeLoaded extends HomeState {
   final List<Category> categories;
   final List<HomeStory> stories;
+  final StorySections sections;
   final String? selectedCategoryId;
   final bool isLoadingStories;
 
   const HomeLoaded({
     required this.categories,
     required this.stories,
+    this.sections = const StorySections(),
     this.selectedCategoryId,
     this.isLoadingStories = false,
   });
@@ -93,17 +133,19 @@ class HomeLoaded extends HomeState {
   }
 
   @override
-  List<Object?> get props => [categories, stories, selectedCategoryId, isLoadingStories];
+  List<Object?> get props => [categories, stories, sections, selectedCategoryId, isLoadingStories];
 
   HomeLoaded copyWith({
     List<Category>? categories,
     List<HomeStory>? stories,
+    StorySections? sections,
     String? selectedCategoryId,
     bool? isLoadingStories,
   }) {
     return HomeLoaded(
       categories: categories ?? this.categories,
       stories: stories ?? this.stories,
+      sections: sections ?? this.sections,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       isLoadingStories: isLoadingStories ?? this.isLoadingStories,
     );

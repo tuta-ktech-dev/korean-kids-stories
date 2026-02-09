@@ -18,16 +18,22 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await _pbService.initialize();
 
-      // Fetch categories and stories in parallel
-      final results = await Future.wait([_fetchCategories(), _fetchStories()]);
+      // Fetch categories, stories and sections in parallel
+      final results = await Future.wait([
+        _fetchCategories(),
+        _fetchStories(),
+        _fetchSections(),
+      ]);
 
       final categories = results[0] as List<Category>;
       final stories = results[1] as List<HomeStory>;
+      final sections = results[2] as StorySections;
 
       emit(
         HomeLoaded(
           categories: categories,
           stories: stories,
+          sections: sections,
           selectedCategoryId: categories.isNotEmpty
               ? categories.first.id
               : null,
@@ -82,6 +88,54 @@ class HomeCubit extends Cubit<HomeState> {
     return stories.map((s) => _mapToHomeStory(s)).toList();
   }
 
+  Future<StorySections> _fetchSections() async {
+    try {
+      // Fetch all stories for processing
+      final allStories = await _pbService.pb.collection('stories').getFullList(
+        filter: 'is_published=true',
+        sort: '-created',
+      );
+
+      final homeStories = allStories.map((r) => _mapToHomeStoryFromRecord(r)).toList();
+
+      // 🔥 Featured stories
+      final featured = homeStories
+          .where((s) => s.isFeatured)
+          .take(5)
+          .toList();
+
+      // 🎧 Stories with audio
+      final withAudio = homeStories
+          .where((s) => s.hasAudio)
+          .take(5)
+          .toList();
+
+      // ⭐ Most reviewed (sorted by review count)
+      final mostReviewed = List<HomeStory>.from(homeStories)
+        ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+      mostReviewed.removeRange(5, mostReviewed.length.clamp(5, mostReviewed.length));
+
+      // 👁 Most viewed (sorted by view count)
+      final mostViewed = List<HomeStory>.from(homeStories)
+        ..sort((a, b) => b.viewCount.compareTo(a.viewCount));
+      mostViewed.removeRange(5, mostViewed.length.clamp(5, mostViewed.length));
+
+      // 🆕 Recent stories
+      final recent = homeStories.take(5).toList();
+
+      return StorySections(
+        featured: featured,
+        withAudio: withAudio,
+        mostReviewed: mostReviewed.take(5).toList(),
+        mostViewed: mostViewed.take(5).toList(),
+        recent: recent,
+      );
+    } catch (e) {
+      debugPrint('Error fetching sections: $e');
+      return const StorySections();
+    }
+  }
+
   HomeStory _mapToHomeStory(Story story) {
     return HomeStory(
       id: story.id,
@@ -97,6 +151,33 @@ class HomeCubit extends Cubit<HomeState> {
       hasIllustrations: story.hasIllustrations,
       averageRating: story.averageRating,
       reviewCount: story.reviewCount,
+      viewCount: story.viewCount,
+    );
+  }
+
+  HomeStory _mapToHomeStoryFromRecord(dynamic record) {
+    final files = record.getListValue<String>('thumbnail');
+    final baseUrl = _pbService.pb.baseUrl;
+
+    return HomeStory(
+      id: record.id,
+      title: record.getStringValue('title'),
+      thumbnailUrl: files.isNotEmpty
+          ? '$baseUrl/api/files/stories/${record.id}/${files.first}'
+          : null,
+      category: record.getStringValue('category'),
+      ageMin: record.getIntValue('age_min'),
+      ageMax: record.getIntValue('age_max'),
+      totalChapters: record.getIntValue('total_chapters'),
+      isFeatured: record.getBoolValue('is_featured'),
+      hasAudio: record.getBoolValue('has_audio'),
+      hasQuiz: record.getBoolValue('has_quiz'),
+      hasIllustrations: record.getBoolValue('has_illustrations'),
+      averageRating: record.data['average_rating'] != null
+          ? (record.data['average_rating'] as num).toDouble()
+          : null,
+      reviewCount: record.getIntValue('review_count'),
+      viewCount: record.getIntValue('view_count'),
     );
   }
 

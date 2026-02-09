@@ -40,13 +40,58 @@ class HomeScreen extends StatelessWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
             // Section Title
-            SliverToBoxAdapter(child: _buildSectionTitle()),
+            SliverToBoxAdapter(child: _buildSectionTitle('✨ 추천 동화')),
 
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Stories List
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildStoriesList(context, state),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // 🔥 Featured Stories
+            SliverToBoxAdapter(child: _buildSectionTitle('🔥 Nổi bật')),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildFeaturedSection(context, state),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // 🎧 Stories with Audio
+            SliverToBoxAdapter(child: _buildSectionTitle('🎧 Có Audio')),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildAudioSection(context, state),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ⭐ Most Reviewed
+            SliverToBoxAdapter(child: _buildSectionTitle('⭐ Review nhiều')),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildMostReviewedSection(context, state),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // 👁 Most Viewed
+            SliverToBoxAdapter(child: _buildSectionTitle('👁 Xem nhiều')),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildMostViewedSection(context, state),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // 🆕 Recent Stories
+            SliverToBoxAdapter(child: _buildSectionTitle('🆕 Mới nhất')),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildRecentSection(context, state),
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
@@ -116,7 +161,7 @@ class HomeScreen extends StatelessWidget {
     return colors[index % colors.length];
   }
 
-  Widget _buildSectionTitle() {
+  Widget _buildSectionTitle(String title) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Padding(
@@ -124,8 +169,8 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('✨ 추천 동화', style: AppTheme.headingMedium(context)),
-              if (state is HomeLoaded && !state.isLoadingStories)
+              Text(title, style: AppTheme.headingMedium(context)),
+              if (state is HomeLoaded && !state.isLoadingStories && title == '✨ 추천 동화')
                 TextButton(
                   onPressed: () => context.read<HomeCubit>().refresh(),
                   child: Text(
@@ -179,30 +224,130 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: stories.length,
-            itemBuilder: (context, index) => StoryCard(
-              id: stories[index].id,
-              title: stories[index].title,
-              thumbnailUrl: stories[index].thumbnailUrl,
-              category: stories[index].category,
-              ageMin: stories[index].ageMin,
-              ageMax: stories[index].ageMax,
-              totalChapters: stories[index].totalChapters,
-              isFeatured: stories[index].isFeatured,
-              hasAudio: stories[index].hasAudio,
-              hasQuiz: stories[index].hasQuiz,
-              hasIllustrations: stories[index].hasIllustrations,
-              averageRating: stories[index].averageRating,
-              reviewCount: stories[index].reviewCount,
-              onTap: () {
-                // TODO: Navigate to story detail
-              },
-            ),
+            itemBuilder: (context, index) => _buildStoryCard(stories[index]),
           ),
         ),
       );
     }
 
     return const SliverToBoxAdapter();
+  }
+
+  Widget _buildStoryCard(HomeStory story) {
+    return StoryCard(
+      id: story.id,
+      title: story.title,
+      thumbnailUrl: story.thumbnailUrl,
+      category: story.category,
+      ageMin: story.ageMin,
+      ageMax: story.ageMax,
+      totalChapters: story.totalChapters,
+      isFeatured: story.isFeatured,
+      hasAudio: story.hasAudio,
+      hasQuiz: story.hasQuiz,
+      hasIllustrations: story.hasIllustrations,
+      averageRating: story.averageRating,
+      reviewCount: story.reviewCount,
+      onTap: () {
+        // TODO: Navigate to story detail
+      },
+    );
+  }
+
+  // Section builders
+  Widget _buildFeaturedSection(BuildContext context, HomeState state) {
+    if (state is! HomeLoaded) return const SliverToBoxAdapter();
+    
+    final stories = state.sections.featured;
+    if (stories.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          scrollDirection: Axis.horizontal,
+          itemCount: stories.length,
+          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAudioSection(BuildContext context, HomeState state) {
+    if (state is! HomeLoaded) return const SliverToBoxAdapter();
+    
+    final stories = state.sections.withAudio;
+    if (stories.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          scrollDirection: Axis.horizontal,
+          itemCount: stories.length,
+          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMostReviewedSection(BuildContext context, HomeState state) {
+    if (state is! HomeLoaded) return const SliverToBoxAdapter();
+    
+    final stories = state.sections.mostReviewed;
+    if (stories.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          scrollDirection: Axis.horizontal,
+          itemCount: stories.length,
+          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMostViewedSection(BuildContext context, HomeState state) {
+    if (state is! HomeLoaded) return const SliverToBoxAdapter();
+    
+    final stories = state.sections.mostViewed;
+    if (stories.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          scrollDirection: Axis.horizontal,
+          itemCount: stories.length,
+          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentSection(BuildContext context, HomeState state) {
+    if (state is! HomeLoaded) return const SliverToBoxAdapter();
+    
+    final stories = state.sections.recent;
+    if (stories.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 280,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          scrollDirection: Axis.horizontal,
+          itemCount: stories.length,
+          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+        ),
+      ),
+    );
   }
 
   Widget _buildErrorState(BuildContext context, HomeError state) {
