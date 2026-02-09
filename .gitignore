@@ -53,6 +53,7 @@ build/
 
 # Temp files
 tmp/
+tmp/*
 temp/
 *.tmp
 
