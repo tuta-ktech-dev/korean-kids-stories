@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
+@RoutePage()
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 

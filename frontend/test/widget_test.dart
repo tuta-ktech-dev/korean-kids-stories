@@ -3,7 +3,7 @@ import 'package:korean_kids_stories/main.dart';
 
 void main() {
   testWidgets('App starts and shows home screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const KoreanKidsStoriesApp());
+    await tester.pumpWidget(KoreanKidsStoriesApp());
 
     // Verify Korean welcome text appears
     expect(find.textContaining('안녕하세요'), findsOneWidget);

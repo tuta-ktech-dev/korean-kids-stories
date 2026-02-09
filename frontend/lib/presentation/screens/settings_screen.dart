@@ -1,7 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../widgets/report_bottom_sheet.dart';
 
+@RoutePage()
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
