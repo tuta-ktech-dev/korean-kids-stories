@@ -44,6 +44,9 @@ dependencies:
   # Audio player for stories
   just_audio: ^0.9.46
 
+  # Google Fonts (Korean fonts: Noto Sans KR, Gmarket Sans)
+  google_fonts: ^6.2.1
+
   # Image caching
   cached_network_image: ^3.4.1
 
