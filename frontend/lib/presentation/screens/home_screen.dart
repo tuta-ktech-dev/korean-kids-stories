@@ -174,7 +174,7 @@ class HomeScreen extends StatelessWidget {
 
       return SliverToBoxAdapter(
         child: SizedBox(
-          height: 320,
+          height: 280,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
@@ -193,14 +193,6 @@ class HomeScreen extends StatelessWidget {
               hasIllustrations: stories[index].hasIllustrations,
               averageRating: stories[index].averageRating,
               reviewCount: stories[index].reviewCount,
-              onTap: () {
-                // TODO: Navigate to story detail
-              },
-            ),
-              isFeatured: stories[index].isFeatured,
-              hasAudio: stories[index].hasAudio,
-              hasQuiz: stories[index].hasQuiz,
-              hasIllustrations: stories[index].hasIllustrations,
               onTap: () {
                 // TODO: Navigate to story detail
               },

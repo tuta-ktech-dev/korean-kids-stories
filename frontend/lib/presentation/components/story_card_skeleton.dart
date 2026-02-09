@@ -17,9 +17,10 @@ class StoryCardSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Skeleton thumbnail
+          // Square skeleton thumbnail
           Container(
-            height: 200,
+            width: 160,
+            height: 160,
             decoration: BoxDecoration(
               color: baseColor,
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -145,7 +146,7 @@ class StoryCardSkeletonList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 320,
+      height: 280,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,

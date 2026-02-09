@@ -16,6 +16,7 @@ class StoryCard extends StatelessWidget {
   final bool hasIllustrations;
   final double? averageRating;
   final int reviewCount;
+  final VoidCallback? onTap;
 
   const StoryCard({
     super.key,
@@ -159,9 +160,10 @@ class StoryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thumbnail with soft shadow and rounded corners
+            // Square thumbnail
             Container(
-              height: 200,
+              width: 160,
+              height: 160,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 color: categoryColor.withValues(alpha: 0.2),
