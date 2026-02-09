@@ -233,6 +233,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
+              
+              // Skip/Guest button
+              TextButton(
+                onPressed: () {
+                  // Continue as guest
+                  context.router.replaceNamed('/main');
+                },
+                child: Text(
+                  '로그인 없이 둘러보기',
+                  style: AppTheme.bodyMedium(context).copyWith(
+                    color: AppTheme.textMutedColor(context),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
