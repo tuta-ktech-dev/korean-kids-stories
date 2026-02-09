@@ -143,6 +143,65 @@ class OtpVerificationRouteArgs {
 }
 
 /// generated route for
+/// [ReaderScreen]
+class ReaderRoute extends PageRouteInfo<ReaderRouteArgs> {
+  ReaderRoute({
+    Key? key,
+    required String storyId,
+    required String chapterId,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ReaderRoute.name,
+         args: ReaderRouteArgs(
+           key: key,
+           storyId: storyId,
+           chapterId: chapterId,
+         ),
+         rawPathParams: {'storyId': storyId, 'chapterId': chapterId},
+         initialChildren: children,
+       );
+
+  static const String name = 'ReaderRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<ReaderRouteArgs>(
+        orElse: () => ReaderRouteArgs(
+          storyId: pathParams.getString('storyId'),
+          chapterId: pathParams.getString('chapterId'),
+        ),
+      );
+      return ReaderScreen(
+        key: args.key,
+        storyId: args.storyId,
+        chapterId: args.chapterId,
+      );
+    },
+  );
+}
+
+class ReaderRouteArgs {
+  const ReaderRouteArgs({
+    this.key,
+    required this.storyId,
+    required this.chapterId,
+  });
+
+  final Key? key;
+
+  final String storyId;
+
+  final String chapterId;
+
+  @override
+  String toString() {
+    return 'ReaderRouteArgs{key: $key, storyId: $storyId, chapterId: $chapterId}';
+  }
+}
+
+/// generated route for
 /// [RegisterScreen]
 class RegisterRoute extends PageRouteInfo<void> {
   const RegisterRoute({List<PageRouteInfo>? children})
@@ -188,4 +247,45 @@ class SettingsRoute extends PageRouteInfo<void> {
       return const SettingsScreen();
     },
   );
+}
+
+/// generated route for
+/// [StoryDetailScreen]
+class StoryDetailRoute extends PageRouteInfo<StoryDetailRouteArgs> {
+  StoryDetailRoute({
+    Key? key,
+    required String storyId,
+    List<PageRouteInfo>? children,
+  }) : super(
+         StoryDetailRoute.name,
+         args: StoryDetailRouteArgs(key: key, storyId: storyId),
+         rawPathParams: {'id': storyId},
+         initialChildren: children,
+       );
+
+  static const String name = 'StoryDetailRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<StoryDetailRouteArgs>(
+        orElse: () => StoryDetailRouteArgs(storyId: pathParams.getString('id')),
+      );
+      return StoryDetailScreen(key: args.key, storyId: args.storyId);
+    },
+  );
+}
+
+class StoryDetailRouteArgs {
+  const StoryDetailRouteArgs({this.key, required this.storyId});
+
+  final Key? key;
+
+  final String storyId;
+
+  @override
+  String toString() {
+    return 'StoryDetailRouteArgs{key: $key, storyId: $storyId}';
+  }
 }

@@ -6,6 +6,8 @@ import '../../presentation/components/navigation/app_bottom_nav.dart';
 import '../../presentation/screens/landing_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/search_screen.dart';
+import '../../presentation/screens/story_detail_screen.dart';
+import '../../presentation/screens/reader_screen.dart';
 import '../../presentation/screens/history_screen.dart';
 import '../../presentation/screens/settings_screen.dart';
 import '../../presentation/screens/library_screen.dart';
@@ -22,21 +24,22 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
     // Landing screen (initial - no auth required)
     AutoRoute(path: '/', page: LandingRoute.page, initial: true),
-    
+
     // Auth routes
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
     AutoRoute(path: '/verify-otp', page: OtpVerificationRoute.page),
-    
+
     // Search (standalone)
     AutoRoute(path: '/search', page: SearchRoute.page),
-    
+
     // Main app - accessible to guests too
     AutoRoute(
       path: '/main',
       page: MainRoute.page,
       children: [
         AutoRoute(path: 'home', page: HomeRoute.page),
+        AutoRoute(path: 'search', page: SearchRoute.page),
         AutoRoute(path: 'history', page: HistoryRoute.page),
         AutoRoute(path: 'library', page: LibraryRoute.page),
         AutoRoute(path: 'settings', page: SettingsRoute.page),
@@ -54,7 +57,7 @@ class MainScreen extends StatelessWidget {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         final isAuthenticated = state is Authenticated;
-        
+
         return AutoTabsRouter(
           routes: [
             const HomeRoute(),
@@ -65,7 +68,7 @@ class MainScreen extends StatelessWidget {
           ],
           builder: (context, child) {
             final tabsRouter = AutoTabsRouter.of(context);
-            
+
             return Scaffold(
               body: child,
               bottomNavigationBar: AppBottomNav(
@@ -87,8 +90,6 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('검색 화면')),
-    );
+    return const Scaffold(body: Center(child: Text('검색 화면')));
   }
 }

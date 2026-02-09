@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../cubits/home_cubit/home_cubit.dart';
 import '../widgets/story_card.dart';
@@ -255,7 +256,7 @@ class HomeScreen extends StatelessWidget {
       reviewCount: story.reviewCount,
       viewCount: story.viewCount,
       onTap: () {
-        // TODO: Navigate to story detail
+        context.router.push(StoryDetailRoute(storyId: story.id));
       },
     );
   }
