@@ -35,6 +35,7 @@ class HomeCubit extends Cubit<HomeState> {
       );
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
+      debugPrint('HomeCubit initialization error: $e');
     }
   }
 
