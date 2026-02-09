@@ -1,0 +1,73 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+pocketbase
+tmp/main
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# PocketBase data
+data/
+pb_data/
+pb_public/uploads/
+*.db
+*.db-shm
+*.db-wal
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+dist/
+build/
+
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# Flutter
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/build/
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/android/.gradle/
+frontend/android/app/debug/
+frontend/android/app/profile/
+frontend/android/app/release/
+
+# Node
+node_modules/

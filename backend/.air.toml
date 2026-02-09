@@ -1,0 +1,16 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/kids ."
+  entrypoint = "tmp/kids"  # Thay bin bằng cái này
+  full_bin = "./tmp/kids serve"
+  include_ext = ["go"]
+  exclude_dir = ["pb_data", "pb_public", "pb_migrations", "tmp", ".git"]
+  exclude_file = ["go.sum"]
+  delay = 1000
+  send_interrupt = true
+  stop_on_error = false
+
+[log]
+  time = true
