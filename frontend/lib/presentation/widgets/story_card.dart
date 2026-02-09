@@ -156,7 +156,7 @@ class StoryCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 160,
-        margin: const EdgeInsets.only(right: 16),
+        margin: const EdgeInsets.only(right: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

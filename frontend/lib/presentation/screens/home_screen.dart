@@ -52,46 +52,53 @@ class HomeScreen extends StatelessWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             // 🔥 Featured Stories
-            SliverToBoxAdapter(child: _buildSectionTitle('🔥 Nổi bật')),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) => _buildFeaturedSection(context, state),
+              builder: (context, state) => _buildSectionWithTitle(
+                context, 
+                state, 
+                '🔥 Nổi bật', 
+                (s) => s.sections.featured
+              ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             // 🎧 Stories with Audio
-            SliverToBoxAdapter(child: _buildSectionTitle('🎧 Có Audio')),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) => _buildAudioSection(context, state),
+              builder: (context, state) => _buildSectionWithTitle(
+                context, 
+                state, 
+                '🎧 Có Audio', 
+                (s) => s.sections.withAudio
+              ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             // ⭐ Most Reviewed
-            SliverToBoxAdapter(child: _buildSectionTitle('⭐ Review nhiều')),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) => _buildMostReviewedSection(context, state),
+              builder: (context, state) => _buildSectionWithTitle(
+                context, 
+                state, 
+                '⭐ Review nhiều', 
+                (s) => s.sections.mostReviewed
+              ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             // 👁 Most Viewed
-            SliverToBoxAdapter(child: _buildSectionTitle('👁 Xem nhiều')),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) => _buildMostViewedSection(context, state),
+              builder: (context, state) => _buildSectionWithTitle(
+                context, 
+                state, 
+                '👁 Xem nhiều', 
+                (s) => s.sections.mostViewed
+              ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
             // 🆕 Recent Stories
-            SliverToBoxAdapter(child: _buildSectionTitle('🆕 Mới nhất')),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) => _buildRecentSection(context, state),
+              builder: (context, state) => _buildSectionWithTitle(
+                context, 
+                state, 
+                '🆕 Mới nhất', 
+                (s) => s.sections.recent
+              ),
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
@@ -254,99 +261,33 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Section builders
-  Widget _buildFeaturedSection(BuildContext context, HomeState state) {
+  // Section with title - hides if empty
+  Widget _buildSectionWithTitle(
+    BuildContext context,
+    HomeState state,
+    String title,
+    List<HomeStory> Function(HomeLoaded) getStories,
+  ) {
     if (state is! HomeLoaded) return const SliverToBoxAdapter();
-    
-    final stories = state.sections.featured;
+
+    final stories = getStories(state);
     if (stories.isEmpty) return const SliverToBoxAdapter();
 
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: stories.length,
-          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+    return SliverList(
+      delegate: SliverChildListDelegate([
+        const SizedBox(height: 32),
+        _buildSectionTitle(title),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 280,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            scrollDirection: Axis.horizontal,
+            itemCount: stories.length,
+            itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAudioSection(BuildContext context, HomeState state) {
-    if (state is! HomeLoaded) return const SliverToBoxAdapter();
-    
-    final stories = state.sections.withAudio;
-    if (stories.isEmpty) return const SliverToBoxAdapter();
-
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: stories.length,
-          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMostReviewedSection(BuildContext context, HomeState state) {
-    if (state is! HomeLoaded) return const SliverToBoxAdapter();
-    
-    final stories = state.sections.mostReviewed;
-    if (stories.isEmpty) return const SliverToBoxAdapter();
-
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: stories.length,
-          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMostViewedSection(BuildContext context, HomeState state) {
-    if (state is! HomeLoaded) return const SliverToBoxAdapter();
-    
-    final stories = state.sections.mostViewed;
-    if (stories.isEmpty) return const SliverToBoxAdapter();
-
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: stories.length,
-          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRecentSection(BuildContext context, HomeState state) {
-    if (state is! HomeLoaded) return const SliverToBoxAdapter();
-    
-    final stories = state.sections.recent;
-    if (stories.isEmpty) return const SliverToBoxAdapter();
-
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 280,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          scrollDirection: Axis.horizontal,
-          itemCount: stories.length,
-          itemBuilder: (context, index) => _buildStoryCard(stories[index]),
-        ),
-      ),
+      ]),
     );
   }
 
