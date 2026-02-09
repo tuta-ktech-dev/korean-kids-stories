@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context, 
                 state, 
-                '🔥 Nổi bật', 
+                '🔥 인기', 
                 (s) => s.sections.featured
               ),
             ),
@@ -66,7 +66,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context, 
                 state, 
-                '🎧 Có Audio', 
+                '🎧 오디오', 
                 (s) => s.sections.withAudio
               ),
             ),
@@ -76,7 +76,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context, 
                 state, 
-                '⭐ Review nhiều', 
+                '⭐ 리뷰 많은', 
                 (s) => s.sections.mostReviewed
               ),
             ),
@@ -86,7 +86,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context, 
                 state, 
-                '👁 Xem nhiều', 
+                '👁 조회수 많은', 
                 (s) => s.sections.mostViewed
               ),
             ),
@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context, 
                 state, 
-                '🆕 Mới nhất', 
+                '🆕 최신', 
                 (s) => s.sections.recent
               ),
             ),
@@ -305,7 +305,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text('이야기를 불러올 수 없어요', style: AppTheme.bodyLarge(context)),
             const SizedBox(height: 8),
-            Text('백엔드 서버가 실행 중인지 확인해주세요', style: AppTheme.caption(context)),
+            Text('서버 연결을 확인해주세요', style: AppTheme.caption(context)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.read<HomeCubit>().initialize(),
@@ -329,7 +329,7 @@ class HomeScreen extends StatelessWidget {
               color: AppTheme.textMutedColor(context),
             ),
             const SizedBox(height: 16),
-            Text('아직 등록된 이야기가 없어요', style: AppTheme.bodyLarge(context)),
+            Text('등록된 이야기가 없어요', style: AppTheme.bodyLarge(context)),
             const SizedBox(height: 8),
             Text('관리자 페이지에서 이야기를 추가해주세요', style: AppTheme.caption(context)),
           ],
