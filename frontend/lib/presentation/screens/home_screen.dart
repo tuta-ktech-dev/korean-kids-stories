@@ -7,6 +7,7 @@ import '../widgets/story_card.dart';
 import '../components/buttons/category_button.dart';
 import '../components/headers/gradient_header.dart';
 import '../components/inputs/app_search_bar.dart';
+import '../components/story_card_skeleton.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
@@ -161,12 +162,7 @@ class HomeScreen extends StatelessWidget {
     if (state is HomeLoaded) {
       if (state.isLoadingStories) {
         return const SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(40),
-              child: CircularProgressIndicator(),
-            ),
-          ),
+          child: StoryCardSkeletonList(count: 3),
         );
       }
 
