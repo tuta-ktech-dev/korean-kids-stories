@@ -34,12 +34,6 @@ func EnsureReportsCollection(app core.App) {
 		changes = true
 	}
 	if AddSelectField(collection, "status", true, []string{"pending", "reviewing", "resolved", "rejected"}, 1) {
-		// Set default
-		if f := collection.Fields.GetByName("status"); f != nil {
-			if sf, ok := f.(*core.SelectField); ok {
-				sf.Default = "pending"
-			}
-		}
 		changes = true
 	}
 	if f := collection.Fields.GetByName("admin_note"); f == nil {
