@@ -19,19 +19,20 @@ class HomeCubit extends Cubit<HomeState> {
       await _pbService.initialize();
 
       // Fetch categories and stories in parallel
-      final results = await Future.wait([
-        _fetchCategories(),
-        _fetchStories(),
-      ]);
+      final results = await Future.wait([_fetchCategories(), _fetchStories()]);
 
       final categories = results[0] as List<Category>;
       final stories = results[1] as List<HomeStory>;
 
-      emit(HomeLoaded(
-        categories: categories,
-        stories: stories,
-        selectedCategoryId: categories.isNotEmpty ? categories.first.id : null,
-      ));
+      emit(
+        HomeLoaded(
+          categories: categories,
+          stories: stories,
+          selectedCategoryId: categories.isNotEmpty
+              ? categories.first.id
+              : null,
+        ),
+      );
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
     }
@@ -39,10 +40,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<List<Category>> _fetchCategories() async {
     // Fetch distinct categories from stories
-    final stories = await _pbService.pb.collection('stories').getFullList(
-          filter: 'is_published = true',
-          fields: 'category',
-        );
+    final stories = await _pbService.pb
+        .collection('stories')
+        .getFullList(filter: 'is_published=true', fields: 'category');
 
     // Extract unique categories
     final uniqueCategories = stories
@@ -59,12 +59,14 @@ class HomeCubit extends Cubit<HomeState> {
         icon: 'auto_stories',
         filterValue: null,
       ),
-      ...uniqueCategories.map((cat) => Category(
-            id: cat,
-            label: _getCategoryLabel(cat),
-            icon: _getCategoryIcon(cat),
-            filterValue: cat,
-          )),
+      ...uniqueCategories.map(
+        (cat) => Category(
+          id: cat,
+          label: _getCategoryLabel(cat),
+          icon: _getCategoryIcon(cat),
+          filterValue: cat,
+        ),
+      ),
       const Category(
         id: 'favorite',
         label: '즐겨찾기',
@@ -135,14 +137,13 @@ class HomeCubit extends Cubit<HomeState> {
     );
 
     // Emit loading state for stories
-    emit(current.copyWith(
-      selectedCategoryId: categoryId,
-      isLoadingStories: true,
-    ));
+    emit(
+      current.copyWith(selectedCategoryId: categoryId, isLoadingStories: true),
+    );
 
     try {
       List<HomeStory> stories;
-      
+
       if (category.isSpecial) {
         // TODO: Load favorites from local storage
         stories = await _fetchStories();
@@ -150,11 +151,13 @@ class HomeCubit extends Cubit<HomeState> {
         stories = await _fetchStories(category: category.filterValue);
       }
 
-      emit(current.copyWith(
-        selectedCategoryId: categoryId,
-        stories: stories,
-        isLoadingStories: false,
-      ));
+      emit(
+        current.copyWith(
+          selectedCategoryId: categoryId,
+          stories: stories,
+          isLoadingStories: false,
+        ),
+      );
     } catch (e) {
       emit(HomeError('Failed to load stories: $e'));
     }
