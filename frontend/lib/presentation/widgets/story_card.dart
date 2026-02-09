@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../components/image_placeholder.dart';
 
 class StoryCard extends StatelessWidget {
   final String id;
@@ -93,20 +94,22 @@ class StoryCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) => Center(
-                          child: Icon(
-                            Icons.auto_stories_rounded,
-                            size: 48,
-                            color: categoryColor,
-                          ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            ImagePlaceholder.story(
+                          width: double.infinity,
+                          height: double.infinity,
+                          backgroundColor:
+                              categoryColor.withValues(alpha: 0.2),
+                          iconColor: categoryColor,
+                          borderRadius: 0,
                         ),
                       )
-                    : Center(
-                        child: Icon(
-                          Icons.auto_stories_rounded,
-                          size: 48,
-                          color: categoryColor,
-                        ),
+                    : ImagePlaceholder.story(
+                        width: double.infinity,
+                        height: double.infinity,
+                        backgroundColor: categoryColor.withValues(alpha: 0.2),
+                        iconColor: categoryColor,
+                        borderRadius: 0,
                       ),
               ),
             ),
