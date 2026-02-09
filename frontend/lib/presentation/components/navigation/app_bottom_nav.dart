@@ -4,23 +4,31 @@ import '../../../core/theme/app_theme.dart';
 class AppBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
-  final bool showSettings;
+  final bool isAuthenticated;
 
   const AppBottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    this.showSettings = true,
+    this.isAuthenticated = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _NavItemData(icon: Icons.home_rounded, label: '홈'),
-      _NavItemData(icon: Icons.search_rounded, label: '탐색'),
-      _NavItemData(icon: Icons.history_rounded, label: '기록'),
-      if (showSettings) _NavItemData(icon: Icons.person_rounded, label: '내정보'),
-    ];
+    // Build nav items based on auth state
+    final items = isAuthenticated
+        ? [
+            _NavItemData(icon: Icons.home_rounded, label: '홈'),
+            _NavItemData(icon: Icons.search_rounded, label: '탐색'),
+            _NavItemData(icon: Icons.history_rounded, label: '기록'),
+            _NavItemData(icon: Icons.library_books_rounded, label: '서재'),
+            _NavItemData(icon: Icons.person_rounded, label: '내정보'),
+          ]
+        : [
+            _NavItemData(icon: Icons.home_rounded, label: '홈'),
+            _NavItemData(icon: Icons.search_rounded, label: '탐색'),
+            _NavItemData(icon: Icons.history_rounded, label: '기록'),
+          ];
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -79,7 +87,7 @@ class _NavItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: isActive
             ? BoxDecoration(
                 color: primaryColor.withValues(alpha: 0.15),

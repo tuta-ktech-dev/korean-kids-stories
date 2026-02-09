@@ -7,6 +7,7 @@ import '../../presentation/screens/landing_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/history_screen.dart';
 import '../../presentation/screens/settings_screen.dart';
+import '../../presentation/screens/library_screen.dart';
 import '../../presentation/screens/login_screen.dart';
 import '../../presentation/screens/register_screen.dart';
 import '../../presentation/screens/otp_verification_screen.dart';
@@ -34,6 +35,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: 'home', page: HomeRoute.page),
         AutoRoute(path: 'search', page: SearchRoute.page),
         AutoRoute(path: 'history', page: HistoryRoute.page),
+        AutoRoute(path: 'library', page: LibraryRoute.page),
         AutoRoute(path: 'settings', page: SettingsRoute.page),
       ],
     ),
@@ -50,16 +52,14 @@ class MainScreen extends StatelessWidget {
       builder: (context, state) {
         final isAuthenticated = state is Authenticated;
         
-        // Build routes list based on auth state
-        final routes = [
-          const HomeRoute(),
-          const SearchRoute(),
-          const HistoryRoute(),
-          if (isAuthenticated) const SettingsRoute(),
-        ];
-
         return AutoTabsRouter(
-          routes: routes,
+          routes: [
+            const HomeRoute(),
+            const SearchRoute(),
+            const HistoryRoute(),
+            if (isAuthenticated) const LibraryRoute(),
+            if (isAuthenticated) const SettingsRoute(),
+          ],
           builder: (context, child) {
             final tabsRouter = AutoTabsRouter.of(context);
             
@@ -68,7 +68,7 @@ class MainScreen extends StatelessWidget {
               bottomNavigationBar: AppBottomNav(
                 currentIndex: tabsRouter.activeIndex,
                 onTap: tabsRouter.setActiveIndex,
-                showSettings: isAuthenticated,
+                isAuthenticated: isAuthenticated,
               ),
             );
           },
