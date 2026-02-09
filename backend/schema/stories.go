@@ -44,6 +44,14 @@ func EnsureStoriesCollection(app core.App) {
 		changes = true
 	}
 
+	// Add system fields if missing
+	if AddTextField(collection, "created", false) {
+		changes = true
+	}
+	if AddTextField(collection, "updated", false) {
+		changes = true
+	}
+
 	if EnsureIndex(collection, "idx_stories_category", false, "category", "") {
 		changes = true
 	}
