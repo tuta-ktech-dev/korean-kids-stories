@@ -14,6 +14,8 @@ class StoryCard extends StatelessWidget {
   final bool hasAudio;
   final bool hasQuiz;
   final bool hasIllustrations;
+  final double? averageRating;
+  final int reviewCount;
 
   const StoryCard({
     super.key,
@@ -28,6 +30,8 @@ class StoryCard extends StatelessWidget {
     this.hasAudio = false,
     this.hasQuiz = false,
     this.hasIllustrations = false,
+    this.averageRating,
+    this.reviewCount = 0,
     this.onTap,
   });
 
@@ -74,6 +78,44 @@ class StoryCard extends StatelessWidget {
         size: 14,
         color: color,
       ),
+    );
+  }
+
+  Widget _buildRatingStars(BuildContext context) {
+    final fullStars = averageRating!.floor();
+    final hasHalfStar = (averageRating! - fullStars) >= 0.5;
+
+    return Row(
+      children: [
+        ...List.generate(5, (index) {
+          if (index < fullStars) {
+            return Icon(
+              Icons.star_rounded,
+              size: 14,
+              color: Colors.amber,
+            );
+          } else if (index == fullStars && hasHalfStar) {
+            return Icon(
+              Icons.star_half_rounded,
+              size: 14,
+              color: Colors.amber,
+            );
+          } else {
+            return Icon(
+              Icons.star_outline_rounded,
+              size: 14,
+              color: Colors.amber.withValues(alpha: 0.3),
+            );
+          }
+        }),
+        const SizedBox(width: 4),
+        Text(
+          '($reviewCount)',
+          style: AppTheme.caption(context).copyWith(
+            fontSize: 11,
+          ),
+        ),
+      ],
     );
   }
 
@@ -195,7 +237,7 @@ class StoryCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            // Age range + chapters
+            // Age range + chapters + rating
             Row(
               children: [
                 Icon(
@@ -221,6 +263,10 @@ class StoryCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (averageRating != null) ...[
+              const SizedBox(height: 4),
+              _buildRatingStars(context),
+            ],
           ],
         ),
       ),

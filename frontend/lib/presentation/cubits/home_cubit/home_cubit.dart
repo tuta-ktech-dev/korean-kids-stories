@@ -95,6 +95,8 @@ class HomeCubit extends Cubit<HomeState> {
       hasAudio: story.hasAudio,
       hasQuiz: story.hasQuiz,
       hasIllustrations: story.hasIllustrations,
+      averageRating: story.averageRating,
+      reviewCount: story.reviewCount,
     );
   }
 
