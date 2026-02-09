@@ -63,10 +63,10 @@ class StoryCard extends StatelessWidget {
               height: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                color: _categoryColor.withOpacity(0.2),
+                color: _categoryColor.withValues(alpha: 0.2),
                 boxShadow: [
                   BoxShadow(
-                    color: _categoryColor.withOpacity(0.15),
+                    color: _categoryColor.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -95,13 +95,13 @@ class StoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: _categoryColor.withOpacity(0.15),
+                color: _categoryColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 _categoryLabel,
                 style: AppTheme.caption.copyWith(
-                  color: _categoryColor.withOpacity(0.9),
+                  color: _categoryColor.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
                 ),
               ),

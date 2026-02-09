@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primaryPink.withOpacity(0.3),
+                      color: AppTheme.primaryPink.withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.25),
+                            color: Colors.white.withValues(alpha: 0.25),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -69,7 +69,7 @@ class HomeScreen extends StatelessWidget {
                               Text(
                                 '오늘도 즐거운 이야기를 들어볼까요?', // Shall we listen to a fun story today?
                                 style: AppTheme.bodyLarge.copyWith(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 14,
                                 ),
                               ),
@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
                       ),
                       child: Row(
@@ -249,7 +249,7 @@ class HomeScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -291,7 +291,7 @@ class _CategoryButton extends StatelessWidget {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color: isSelected ? color : color.withOpacity(0.15),
+            color: isSelected ? color : color.withValues(alpha: 0.15),
             shape: BoxShape.circle,
             border: isSelected
                 ? Border.all(color: color, width: 3)
@@ -299,7 +299,7 @@ class _CategoryButton extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: color.withOpacity(0.4),
+                      color: color.withValues(alpha: 0.4),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -346,7 +346,7 @@ class _RecentStoryItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -358,7 +358,7 @@ class _RecentStoryItem extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
             ),
             child: Icon(
@@ -382,7 +382,7 @@ class _RecentStoryItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: color.withOpacity(0.15),
+                    backgroundColor: color.withValues(alpha: 0.15),
                     valueColor: AlwaysStoppedAnimation<Color>(color),
                     minHeight: 6,
                   ),
@@ -427,7 +427,7 @@ class _NavItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: isActive
           ? BoxDecoration(
-              color: AppTheme.primaryPink.withOpacity(0.15),
+              color: AppTheme.primaryPink.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
             )
           : null,

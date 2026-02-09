@@ -33,15 +33,15 @@ class AppTheme {
         primary: primaryPink,
         secondary: primaryMint,
         surface: Colors.white,
-        background: backgroundCream,
+        surfaceTint: backgroundCream,
         onPrimary: Colors.white,
         onSecondary: textDark,
       ),
       // Korean apps love rounded everything
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+          borderRadius: BorderRadius.all(Radius.circular(radiusMedium)),
         ),
         color: Colors.white,
       ),
@@ -89,16 +89,16 @@ class AppTheme {
   }
 
   // Text styles with Korean fonts
-  static TextStyle get headingLarge => GoogleFonts.gmarketSans(
+  static TextStyle get headingLarge => GoogleFonts.notoSansKr(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: textDark,
         height: 1.3,
       );
 
-  static TextStyle get headingMedium => GoogleFonts.gmarketSans(
+  static TextStyle get headingMedium => GoogleFonts.notoSansKr(
         fontSize: 22,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: textDark,
         height: 1.3,
       );
@@ -123,8 +123,8 @@ class AppTheme {
         color: textLight,
       );
 
-  // Korean children's book style - rounded, friendly
-  static TextStyle get storyTitle => GoogleFonts.cafe24Ssurround(
+  // Korean children's book style
+  static TextStyle get storyTitle => GoogleFonts.notoSansKr(
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: textDark,
