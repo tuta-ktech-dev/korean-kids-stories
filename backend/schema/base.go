@@ -138,19 +138,24 @@ func AddSystemFields(collection *core.Collection) bool {
 	// Add created field
 	if collection.Fields.GetByName("created") == nil {
 		collection.Fields.Add(&core.AutodateField{
-			Name: "created",
+			Name:     "created",
+			OnCreate: true,
+			OnUpdate: false,
 		})
 		changes = true
 	}
 	// Add updated field
 	if collection.Fields.GetByName("updated") == nil {
 		collection.Fields.Add(&core.AutodateField{
-			Name: "updated",
+			Name:     "updated",
+			OnCreate: true,
+			OnUpdate: true,
 		})
 		changes = true
 	}
 	return changes
 }
+
 func SetRules(collection *core.Collection, list, view, create, update, delete string) bool {
 	changed := false
 	if collection.ListRule == nil || *collection.ListRule != list {
