@@ -91,6 +91,7 @@ class HomeCubit extends Cubit<HomeState> {
       ageMin: story.ageMin,
       ageMax: story.ageMax,
       totalChapters: story.totalChapters,
+      isFeatured: story.isFeatured,
       hasAudio: story.hasAudio,
       hasQuiz: story.hasQuiz,
       hasIllustrations: story.hasIllustrations,

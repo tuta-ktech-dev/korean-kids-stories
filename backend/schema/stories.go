@@ -43,6 +43,9 @@ func EnsureStoriesCollection(app core.App) {
 	if AddBoolField(collection, "is_published") {
 		changes = true
 	}
+	if AddBoolField(collection, "is_featured") {
+		changes = true
+	}
 	if AddBoolField(collection, "has_audio") {
 		changes = true
 	}

@@ -187,6 +187,7 @@ class HomeScreen extends StatelessWidget {
               ageMin: stories[index].ageMin,
               ageMax: stories[index].ageMax,
               totalChapters: stories[index].totalChapters,
+              isFeatured: stories[index].isFeatured,
               hasAudio: stories[index].hasAudio,
               hasQuiz: stories[index].hasQuiz,
               hasIllustrations: stories[index].hasIllustrations,

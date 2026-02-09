@@ -10,6 +10,7 @@ class StoryCard extends StatelessWidget {
   final int ageMin;
   final int ageMax;
   final int totalChapters;
+  final bool isFeatured;
   final bool hasAudio;
   final bool hasQuiz;
   final bool hasIllustrations;
@@ -23,6 +24,7 @@ class StoryCard extends StatelessWidget {
     required this.ageMin,
     required this.ageMax,
     required this.totalChapters,
+    this.isFeatured = false,
     this.hasAudio = false,
     this.hasQuiz = false,
     this.hasIllustrations = false,
@@ -41,6 +43,8 @@ class StoryCard extends StatelessWidget {
     return Wrap(
       spacing: 4,
       children: [
+        if (isFeatured)
+          _buildBadge(Icons.star_rounded, Colors.amber),
         if (hasAudio)
           _buildBadge(Icons.headphones_rounded, Colors.orange),
         if (hasQuiz)
