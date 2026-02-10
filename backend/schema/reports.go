@@ -1,11 +1,19 @@
 package schema
 
 import (
+	"log"
+
 	"github.com/pocketbase/pocketbase/core"
 )
 
 // EnsureReportsCollection ensures the reports collection exists
 func EnsureReportsCollection(app core.App) {
+	usersCol, err := app.FindCollectionByNameOrId("users")
+	if err != nil {
+		log.Printf("Users collection not found, skipping reports creation")
+		return
+	}
+
 	collection, err := app.FindCollectionByNameOrId("reports")
 	if err != nil {
 		collection = core.NewBaseCollection("reports")
@@ -17,7 +25,14 @@ func EnsureReportsCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, false) {
+	if collection.Fields.GetByName("user") == nil {
+		collection.Fields.Add(&core.RelationField{
+			Name:          "user",
+			CollectionId:  usersCol.Id,
+			Required:      true,
+			MaxSelect:     1,
+			CascadeDelete: false,
+		})
 		changes = true
 	}
 	if AddSelectField(collection, "type", true, []string{"story", "chapter", "app", "question", "other"}, 1) {

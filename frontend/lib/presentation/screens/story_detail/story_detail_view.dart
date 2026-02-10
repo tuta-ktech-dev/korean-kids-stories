@@ -108,7 +108,7 @@ class _StoryDetailViewState extends State<StoryDetailView> {
       slivers: [
         // App Bar with thumbnail
         SliverAppBar(
-          expandedHeight: 280,
+          expandedHeight: context.width,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(background: _buildThumbnail()),
         ),

@@ -72,3 +72,5 @@ frontend/android/app/release/
 
 # Node
 node_modules/
+
+backend/pocketbase_linux
