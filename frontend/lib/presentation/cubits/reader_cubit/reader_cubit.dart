@@ -36,4 +36,18 @@ class ReaderCubit extends Cubit<ReaderState> {
       emit(currentState.copyWith(fontSize: fontSize, isDarkMode: isDarkMode));
     }
   }
+
+  void updateProgress(double progress) {
+    if (state is ReaderLoaded) {
+      final currentState = state as ReaderLoaded;
+      emit(currentState.copyWith(progress: progress));
+    }
+  }
+
+  void togglePlaying() {
+    if (state is ReaderLoaded) {
+      final currentState = state as ReaderLoaded;
+      emit(currentState.copyWith(isPlaying: !currentState.isPlaying));
+    }
+  }
 }

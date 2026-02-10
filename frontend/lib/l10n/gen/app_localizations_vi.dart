@@ -100,7 +100,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get termsOfService => 'Điều khoản dịch vụ';
 
   @override
-  String get and => 'and';
+  String get and => 'và';
 
   @override
   String get privacyPolicy => 'Chính sách bảo mật';

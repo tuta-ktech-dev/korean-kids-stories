@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"log"
-
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -16,22 +14,6 @@ func EnsureTrackingCollections(app core.App) {
 
 // Reading history - what user has read
 func EnsureReadingHistoryCollection(app core.App) {
-	usersCol, err := app.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Users collection not found, skipping reading_history creation")
-		return
-	}
-	storiesCol, err := app.FindCollectionByNameOrId("stories")
-	if err != nil {
-		log.Printf("Stories collection not found, skipping reading_history creation")
-		return
-	}
-	chaptersCol, err := app.FindCollectionByNameOrId("chapters")
-	if err != nil {
-		log.Printf("Chapters collection not found, skipping reading_history creation")
-		return
-	}
-
 	collection, err := app.FindCollectionByNameOrId("reading_history")
 	if err != nil {
 		collection = core.NewBaseCollection("reading_history")
@@ -42,34 +24,13 @@ func EnsureReadingHistoryCollection(app core.App) {
 		changes = true
 	}
 
-	if collection.Fields.GetByName("user") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "user",
-			CollectionId:  usersCol.Id,
-			Required:      true,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "user", "users", true, 1, true) {
 		changes = true
 	}
-	if collection.Fields.GetByName("story") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "story",
-			CollectionId:  storiesCol.Id,
-			Required:      true,
-			MaxSelect:     1,
-			CascadeDelete: false,
-		})
+	if AddRelationField(collection, "story", "stories", true, 1, false) {
 		changes = true
 	}
-	if collection.Fields.GetByName("chapter") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "chapter",
-			CollectionId:  chaptersCol.Id,
-			Required:      false,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "chapter", "chapters", false, 1, true) {
 		changes = true
 	}
 	if AddSelectField(collection, "action", true, []string{"view", "read", "listen", "complete"}, 1) {
@@ -99,17 +60,6 @@ func EnsureReadingHistoryCollection(app core.App) {
 
 // Listening sessions - track audio listening
 func EnsureListeningSessionsCollection(app core.App) {
-	usersCol, err := app.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Users collection not found, skipping listening_sessions creation")
-		return
-	}
-	chaptersCol, err := app.FindCollectionByNameOrId("chapters")
-	if err != nil {
-		log.Printf("Chapters collection not found, skipping listening_sessions creation")
-		return
-	}
-
 	collection, err := app.FindCollectionByNameOrId("listening_sessions")
 	if err != nil {
 		collection = core.NewBaseCollection("listening_sessions")
@@ -120,24 +70,10 @@ func EnsureListeningSessionsCollection(app core.App) {
 		changes = true
 	}
 
-	if collection.Fields.GetByName("user") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "user",
-			CollectionId:  usersCol.Id,
-			Required:      true,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "user", "users", true, 1, true) {
 		changes = true
 	}
-	if collection.Fields.GetByName("chapter") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "chapter",
-			CollectionId:  chaptersCol.Id,
-			Required:      true,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "chapter", "chapters", true, 1, true) {
 		changes = true
 	}
 	if AddNumberField(collection, "start_position", false, nil, nil) {
@@ -163,12 +99,6 @@ func EnsureListeningSessionsCollection(app core.App) {
 
 // Search history
 func EnsureSearchHistoryCollection(app core.App) {
-	usersCol, err := app.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Users collection not found, skipping search_history creation")
-		return
-	}
-
 	collection, err := app.FindCollectionByNameOrId("search_history")
 	if err != nil {
 		collection = core.NewBaseCollection("search_history")
@@ -179,14 +109,7 @@ func EnsureSearchHistoryCollection(app core.App) {
 		changes = true
 	}
 
-	if collection.Fields.GetByName("user") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "user",
-			CollectionId:  usersCol.Id,
-			Required:      true,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "user", "users", true, 1, true) {
 		changes = true
 	}
 	if AddTextField(collection, "query", true) {
@@ -213,12 +136,6 @@ func EnsureSearchHistoryCollection(app core.App) {
 
 // App events - general analytics
 func EnsureAppEventsCollection(app core.App) {
-	usersCol, err := app.FindCollectionByNameOrId("users")
-	if err != nil {
-		log.Printf("Users collection not found, skipping app_events creation")
-		return
-	}
-
 	collection, err := app.FindCollectionByNameOrId("app_events")
 	if err != nil {
 		collection = core.NewBaseCollection("app_events")
@@ -230,14 +147,7 @@ func EnsureAppEventsCollection(app core.App) {
 		changes = true
 	}
 
-	if collection.Fields.GetByName("user") == nil {
-		collection.Fields.Add(&core.RelationField{
-			Name:          "user",
-			CollectionId:  usersCol.Id,
-			Required:      false,
-			MaxSelect:     1,
-			CascadeDelete: true,
-		})
+	if AddRelationField(collection, "user", "users", false, 1, true) {
 		changes = true
 	}
 	if AddSelectField(collection, "event_type", true, []string{
