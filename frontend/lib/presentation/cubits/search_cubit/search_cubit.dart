@@ -44,16 +44,16 @@ class SearchCubit extends Cubit<SearchState> {
 
   // Save search query to history
   Future<void> _saveToHistory(String query) async {
-    if (query.trim().isEmpty) return;
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
 
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String> history = prefs.getStringList(_historyKey) ?? [];
 
-      // Remove if already exists (to move to top)
-      history.remove(query);
-      // Add to beginning
-      history.insert(0, query);
+      // Remove if already exists (to move to top), normalize for dedup
+      history.removeWhere((h) => h.trim().toLowerCase() == trimmed.toLowerCase());
+      history.insert(0, trimmed);
       // Keep only max items
       if (history.length > _maxHistoryItems) {
         history = history.sublist(0, _maxHistoryItems);

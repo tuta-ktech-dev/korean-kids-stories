@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
-import '../../components/buttons/bookmark_buttons.dart';
+import '../../cubits/favorite_cubit/favorite_cubit.dart';
+import '../../widgets/story_card.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class LibraryView extends StatelessWidget {
@@ -124,32 +126,100 @@ class LibraryView extends StatelessWidget {
   }
 }
 
-class _FavoritesTab extends StatelessWidget {
+class _FavoritesTab extends StatefulWidget {
   const _FavoritesTab();
 
   @override
+  State<_FavoritesTab> createState() => _FavoritesTabState();
+}
+
+class _FavoritesTabState extends State<_FavoritesTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FavoriteCubit>().loadFavoriteStories();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: Load favorites from API
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _StoryCard(
-          title: '흥부와 놀부',
-          subtitle: '전통동화 • 5-8세',
-          isFavorite: true,
-          onFavorite: () {},
-          onBookmark: () {},
-          onNote: () {},
-        ),
-        _StoryCard(
-          title: '선녀와 나무꾼',
-          subtitle: '전설 • 6-10세',
-          isFavorite: true,
-          onFavorite: () {},
-          onBookmark: () {},
-          onNote: () {},
-        ),
-      ],
+    return BlocBuilder<FavoriteCubit, FavoriteState>(
+      buildWhen: (prev, curr) => curr is FavoriteLoaded,
+      builder: (context, state) {
+        if (state is! FavoriteLoaded || state.stories == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final stories = state.stories!;
+        if (stories.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.favorite_border,
+                  size: 64,
+                  color: AppTheme.textMutedColor(context),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.tabFavorites,
+                  style: AppTheme.bodyLarge(context),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.favoritesEmpty,
+                  style: AppTheme.caption(context),
+                ),
+              ],
+            ),
+          );
+        }
+        return RefreshIndicator(
+          onRefresh: () => context.read<FavoriteCubit>().loadFavoriteStories(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = 2;
+              final padding = 16.0;
+              final spacing = 12.0;
+              final cellWidth =
+                  (constraints.maxWidth - padding * 2 - spacing) / crossAxisCount;
+              return GridView.builder(
+                padding: EdgeInsets.all(padding),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  childAspectRatio: 0.55,
+                ),
+                itemCount: stories.length,
+                itemBuilder: (context, index) {
+                  final story = stories[index];
+                  return StoryCard(
+                    id: story.id,
+                    title: story.title,
+                    thumbnailUrl: story.thumbnailUrl,
+                    category: story.category,
+                    ageMin: story.ageMin,
+                    ageMax: story.ageMax,
+                    totalChapters: story.totalChapters,
+                    isFeatured: story.isFeatured,
+                    hasAudio: story.hasAudio,
+                    hasQuiz: story.hasQuiz,
+                    hasIllustrations: story.hasIllustrations,
+                    averageRating: story.averageRating,
+                    reviewCount: story.reviewCount,
+                    viewCount: story.viewCount,
+                    width: cellWidth,
+                    onTap: () => context.router.root
+                        .push(StoryDetailRoute(storyId: story.id)),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -160,22 +230,30 @@ class _BookmarksTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: Load bookmarks from API
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: const [
-        _BookmarkItem(
-          storyTitle: '세종대왕 이야기',
-          chapterTitle: '제2화 - 한글 창제',
-          position: '05:32',
-          note: '아이가 이 부분을 좋아했음',
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.bookmark_border,
+              size: 64,
+              color: AppTheme.textMutedColor(context),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.tabBookmarks,
+              style: AppTheme.bodyLarge(context),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.noBookmarksYet,
+              style: AppTheme.caption(context),
+            ),
+          ],
         ),
-        _BookmarkItem(
-          storyTitle: '흥부와 놀부',
-          chapterTitle: '제1화',
-          position: '12:15',
-          note: '',
-        ),
-      ],
+      ),
     );
   }
 }
@@ -186,220 +264,31 @@ class _NotesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: Load notes from API
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: const [
-        _NoteCard(
-          storyTitle: '흥부와 놀부',
-          note: '아이가 선녀 캐릭터를 좋아함. 다음에 비슷한 전설 찾아주기.',
-          date: '2026-02-09',
-        ),
-        _NoteCard(
-          storyTitle: '세종대왕 이야기',
-          note: '한글 창제 부분에서 질문 많이 함.',
-          date: '2026-02-08',
-        ),
-      ],
-    );
-  }
-}
-
-class _StoryCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final bool isFavorite;
-  final VoidCallback? onFavorite;
-  final VoidCallback? onBookmark;
-  final VoidCallback? onNote;
-
-  const _StoryCard({
-    required this.title,
-    required this.subtitle,
-    this.isFavorite = false,
-    this.onFavorite,
-    this.onBookmark,
-    this.onNote,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor(context),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 100,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryPink.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.note_outlined,
+              size: 64,
+              color: AppTheme.textMutedColor(context),
             ),
-            child: const Icon(Icons.book, color: AppTheme.primaryPink),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTheme.bodyLarge(
-                    context,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(subtitle, style: AppTheme.bodyMedium(context)),
-              ],
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.tabNotes,
+              style: AppTheme.bodyLarge(context),
             ),
-          ),
-          Row(
-            children: [
-              FavoriteButton(isFavorite: isFavorite, onTap: onFavorite),
-              const SizedBox(width: 8),
-              BookmarkButton(isBookmarked: false, onTap: onBookmark),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BookmarkItem extends StatelessWidget {
-  final String storyTitle;
-  final String chapterTitle;
-  final String position;
-  final String note;
-
-  const _BookmarkItem({
-    required this.storyTitle,
-    required this.chapterTitle,
-    required this.position,
-    required this.note,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor(context),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.bookmark,
-                color: AppTheme.primaryColor(context),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  storyTitle,
-                  style: AppTheme.bodyLarge(
-                    context,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor(context).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  position,
-                  style: AppTheme.caption(context).copyWith(
-                    color: AppTheme.primaryColor(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(chapterTitle, style: AppTheme.bodyMedium(context)),
-          if (note.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundColor(context),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.note,
-                    size: 16,
-                    color: AppTheme.textMutedColor(context),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(note, style: AppTheme.bodyMedium(context)),
-                  ),
-                ],
-              ),
+            Text(
+              context.l10n.noNotesYet,
+              style: AppTheme.caption(context),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
 }
 
-class _NoteCard extends StatelessWidget {
-  final String storyTitle;
-  final String note;
-  final String date;
-
-  const _NoteCard({
-    required this.storyTitle,
-    required this.note,
-    required this.date,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor(context),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.note, color: Colors.amber, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  storyTitle,
-                  style: AppTheme.bodyLarge(
-                    context,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
-              ),
-              Text(date, style: AppTheme.caption(context)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(note, style: AppTheme.bodyMedium(context)),
-        ],
-      ),
-    );
-  }
-}

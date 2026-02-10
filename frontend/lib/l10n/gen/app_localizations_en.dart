@@ -375,6 +375,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please login to save favorites and bookmarks';
 
   @override
+  String get favoritesEmpty => 'No favorites yet';
+
+  @override
+  String get noBookmarksYet => 'No bookmarks yet';
+
+  @override
+  String get noNotesYet => 'No notes yet';
+
+  @override
   String get fontSize => 'Font Size';
 
   @override

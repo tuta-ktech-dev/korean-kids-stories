@@ -371,6 +371,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get libraryLoginPrompt => '즐겨찾기와 북마크를 저장하려면\n로그인해주세요';
 
   @override
+  String get favoritesEmpty => '즐겨찾기가 비어 있어요';
+
+  @override
+  String get noBookmarksYet => '북마크가 없어요';
+
+  @override
+  String get noNotesYet => '메모가 없어요';
+
+  @override
   String get fontSize => '글자 크기';
 
   @override

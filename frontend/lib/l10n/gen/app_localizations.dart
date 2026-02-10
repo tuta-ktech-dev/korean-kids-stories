@@ -814,6 +814,24 @@ abstract class AppLocalizations {
   /// **'Please login to save favorites and bookmarks'**
   String get libraryLoginPrompt;
 
+  /// No description provided for @favoritesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get favoritesEmpty;
+
+  /// No description provided for @noBookmarksYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookmarks yet'**
+  String get noBookmarksYet;
+
+  /// No description provided for @noNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes yet'**
+  String get noNotesYet;
+
   /// No description provided for @fontSize.
   ///
   /// In en, this message translates to:

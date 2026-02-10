@@ -59,6 +59,14 @@ func EnsureStoriesCollection(app core.App) {
 		changes = true
 	}
 
+	// Rating fields (auto-updated by hooks)
+	if AddNumberField(collection, "average_rating", false, Ptr(0.0), Ptr(5.0)) {
+		changes = true
+	}
+	if AddNumberField(collection, "review_count", false, Ptr(0.0), nil) {
+		changes = true
+	}
+
 	// Add system fields
 	if AddSystemFields(collection) {
 		changes = true

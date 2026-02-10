@@ -374,6 +374,15 @@ class AppLocalizationsVi extends AppLocalizations {
       'Vui lòng đăng nhập để lưu mục yêu thích và dấu trang';
 
   @override
+  String get favoritesEmpty => 'Chưa có truyện yêu thích';
+
+  @override
+  String get noBookmarksYet => 'Chưa có dấu trang';
+
+  @override
+  String get noNotesYet => 'Chưa có ghi chú';
+
+  @override
   String get fontSize => 'Cỡ chữ';
 
   @override

@@ -7,6 +7,8 @@ import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'presentation/cubits/auth_cubit/auth_cubit.dart';
+import 'presentation/cubits/favorite_cubit/favorite_cubit.dart';
+import 'presentation/cubits/history_cubit/history_cubit.dart';
 import 'presentation/cubits/home_cubit/home_cubit.dart';
 import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
@@ -33,13 +35,25 @@ class KoreanKidsStoriesApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => AuthCubit()),
         BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => FavoriteCubit()),
         BlocProvider(create: (_) => ProgressCubit()),
+        BlocProvider(create: (_) => HistoryCubit()),
         BlocProvider(create: (_) => SearchCubit()),
         BlocProvider(create: (_) => SettingsCubit()..loadSettings()),
       ],
-      child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return MaterialApp.router(
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (p, c) => p.runtimeType != c.runtimeType,
+        listener: (context, state) {
+          if (state is Authenticated) {
+            context.read<FavoriteCubit>().loadFavorites();
+          } else if (state is Unauthenticated) {
+            context.read<FavoriteCubit>().clearFavorites();
+          }
+          // Don't clear on AuthLoading/AuthInitial - only on explicit logout
+        },
+        child: BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) {
+            return MaterialApp.router(
             title: '꼬마 한동화',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
@@ -60,6 +74,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
             ],
           );
         },
+        ),
       ),
     );
   }

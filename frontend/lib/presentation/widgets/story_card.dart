@@ -19,6 +19,10 @@ class StoryCard extends StatelessWidget {
   final int viewCount;
   final VoidCallback? onTap;
 
+  /// Optional width. When null (e.g. in horizontal list), uses 160.
+  /// Set for grid layout to fill the cell.
+  final double? width;
+
   const StoryCard({
     super.key,
     required this.id,
@@ -36,6 +40,7 @@ class StoryCard extends StatelessWidget {
     this.reviewCount = 0,
     this.viewCount = 0,
     this.onTap,
+    this.width,
   });
 
   bool get _hasValidThumbnail {
@@ -145,18 +150,19 @@ class StoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final categoryColor = _getCategoryColor(context);
 
+    final cardWidth = width ?? 160;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
-        margin: const EdgeInsets.only(right: 12),
+        width: cardWidth,
+        margin: EdgeInsets.only(right: width == null ? 12 : 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Square thumbnail
             Container(
-              width: 160,
-              height: 160,
+              width: cardWidth,
+              height: cardWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 color: categoryColor.withValues(alpha: 0.2),
