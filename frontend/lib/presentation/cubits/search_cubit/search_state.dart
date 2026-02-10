@@ -68,3 +68,16 @@ class SearchHistoryLoaded extends SearchState {
   @override
   List<Object?> get props => [history];
 }
+
+class SearchSuggestionsLoaded extends SearchState {
+  final List<String> history;
+  final List<String> popular;
+
+  const SearchSuggestionsLoaded({
+    required this.history,
+    required this.popular,
+  });
+
+  @override
+  List<Object?> get props => [history, popular];
+}

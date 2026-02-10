@@ -1,5 +1,34 @@
-Một vài biến môi trường hữu ích:
-GOOS=linux – hệ điều hành đích (Linux)
-GOARCH=amd64 – CPU 64-bit, dùng cho hầu hết server
-GOARCH=arm64 – nếu chạy trên ARM (ví dụ Raspberry Pi, AWS Graviton)
-Chạy trên Linux: ./pocketbase_linux serve --http="0.0.0.0:8090"
+# Backend (PocketBase + Go)
+
+## Build
+
+```bash
+GOOS=linux GOARCH=amd64 go build -o pocketbase_linux .
+```
+
+## Chạy local
+
+```bash
+./pocketbase_linux serve --http="0.0.0.0:8090"
+```
+
+## Deploy
+
+1. Build: `GOOS=linux GOARCH=amd64 go build -o pocketbase_linux .`
+2. Upload `pocketbase_linux` lên server (thay binary cũ)
+3. Restart: `./pocketbase_linux serve --http="0.0.0.0:8090"`
+
+## API
+
+- `GET /api/popular-searches` – Popular search terms (cache 24h)
+- `POST /api/internal/refresh-popular` – Refresh cache (header `X-Cron-Secret`)
+
+## Test
+
+```bash
+curl http://trananhtu.vn:8090/api/popular-searches
+```
+
+## Biến môi trường
+
+- `CRON_SECRET` – Secret cho refresh API (mặc định: change-me-in-production)

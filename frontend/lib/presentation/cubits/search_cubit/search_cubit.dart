@@ -6,22 +6,39 @@ import 'search_state.dart';
 export 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({StoryRepository? storyRepository})
-    : _storyRepository = storyRepository ?? StoryRepository(),
-      super(const SearchInitial());
+  SearchCubit({
+    StoryRepository? storyRepository,
+    PocketbaseService? pocketbaseService,
+  })  : _storyRepository = storyRepository ?? StoryRepository(),
+        _pbService = pocketbaseService ?? PocketbaseService(),
+        super(const SearchInitial());
 
   final StoryRepository _storyRepository;
+  final PocketbaseService _pbService;
+  List<String> _popularCache = _fallbackPopular;
   static const String _historyKey = 'search_history';
   static const int _maxHistoryItems = 10;
+  static const List<String> _fallbackPopular = [
+    '흥부와 놀부',
+    '선녀와 나무꾼',
+    '이순신',
+    '거북선',
+    '토끼',
+  ];
 
-  // Load search history from local storage
+  // Load search suggestions (history from local + popular from API)
   Future<void> loadSearchHistory() async {
     try {
+      await _pbService.initialize();
       final prefs = await SharedPreferences.getInstance();
       final history = prefs.getStringList(_historyKey) ?? [];
-      emit(SearchHistoryLoaded(history));
+      final popular = await _pbService.getPopularSearches();
+      _popularCache = popular.isNotEmpty ? popular : _fallbackPopular;
+      emit(SearchSuggestionsLoaded(history: history, popular: _popularCache));
     } catch (e) {
-      emit(const SearchHistoryLoaded([]));
+      final prefs = await SharedPreferences.getInstance();
+      final history = prefs.getStringList(_historyKey) ?? [];
+      emit(SearchSuggestionsLoaded(history: history, popular: _popularCache));
     }
   }
 
@@ -55,7 +72,7 @@ class SearchCubit extends Cubit<SearchState> {
       List<String> history = prefs.getStringList(_historyKey) ?? [];
       history.remove(query);
       await prefs.setStringList(_historyKey, history);
-      emit(SearchHistoryLoaded(history));
+      emit(SearchSuggestionsLoaded(history: history, popular: _popularCache));
     } catch (e) {
       // Ignore errors
     }
@@ -66,7 +83,7 @@ class SearchCubit extends Cubit<SearchState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_historyKey);
-      emit(const SearchHistoryLoaded([]));
+      emit(SearchSuggestionsLoaded(history: [], popular: _popularCache));
     } catch (e) {
       // Ignore errors
     }
@@ -80,7 +97,7 @@ class SearchCubit extends Cubit<SearchState> {
     int? maxAge,
   }) async {
     if (query.trim().isEmpty && category == null) {
-      emit(const SearchInitial());
+      loadSearchHistory();
       return;
     }
 
@@ -125,8 +142,4 @@ class SearchCubit extends Cubit<SearchState> {
     await search(query: '', minAge: minAge, maxAge: maxAge);
   }
 
-  // Get popular searches (mock - in real app, this would come from backend)
-  List<String> getPopularSearches() {
-    return ['흥부와 놀부', '선녀와 나무꾼', '이순신', '거북선', '토끼'];
-  }
 }

@@ -14,6 +14,7 @@ func EnsureAllSchema(app core.App) {
 	EnsureDictionaryCollection(app)
 	EnsureReportsCollection(app)
 	EnsureTrackingCollections(app)
+	EnsurePopularSearchesCacheCollection(app)
 	EnsureBookmarksCollection(app)
 	EnsureReviewsCollection(app)
 	EnsureViewsCollection(app)

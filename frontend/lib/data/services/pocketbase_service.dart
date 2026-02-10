@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -128,6 +131,64 @@ class PocketbaseService {
         originalError: e,
       );
     }
+  }
+
+  /// Fetch popular searches from API. Cached 24h in SharedPreferences.
+  Future<List<String>> getPopularSearches() async {
+    const cacheKey = 'popular_searches_cache';
+    const cacheTimeKey = 'popular_searches_cache_time';
+    const maxAge = Duration(hours: 24);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString(cacheKey);
+      final cachedTime = prefs.getInt(cacheTimeKey);
+
+      if (cachedJson != null &&
+          cachedTime != null &&
+          DateTime.now().millisecondsSinceEpoch - cachedTime <
+              maxAge.inMilliseconds) {
+        final list = _parseQueriesFromJson(cachedJson);
+        if (list.isNotEmpty) return list;
+      }
+
+      await initialize();
+      final url = '$baseUrl/api/popular-searches';
+      final response = await Dio().get<String>(url);
+      if (response.statusCode != 200 || response.data == null) return [];
+
+      final queries = _parseQueriesFromJson(response.data!);
+      if (queries.isNotEmpty) {
+        await prefs.setString(cacheKey, response.data!);
+        await prefs.setInt(
+            cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
+      }
+      return queries;
+    } catch (e) {
+      debugPrint('getPopularSearches error: $e');
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final cachedJson = prefs.getString(cacheKey);
+        if (cachedJson != null) {
+          final list = _parseQueriesFromJson(cachedJson);
+          if (list.isNotEmpty) return list;
+        }
+      } catch (_) {}
+      return [];
+    }
+  }
+
+  List<String> _parseQueriesFromJson(String jsonStr) {
+    try {
+      final body = jsonDecode(jsonStr);
+      if (body is Map && body['queries'] is List) {
+        return (body['queries'] as List)
+            .map((e) => e?.toString() ?? '')
+            .where((s) => s.isNotEmpty)
+            .toList();
+      }
+    } catch (_) {}
+    return [];
   }
 
   /// Get a single story by ID

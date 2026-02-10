@@ -19,12 +19,12 @@ class _SearchViewState extends State<SearchView> {
   final _focusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final state = context.read<SearchCubit>().state;
     if (state is SearchLoaded) {
       _searchController.text = state.query;
-    } else {
+    } else if (state is! SearchSuggestionsLoaded) {
       context.read<SearchCubit>().loadSearchHistory();
     }
   }
@@ -175,7 +175,7 @@ class _SearchViewState extends State<SearchView> {
           // Recent searches
           BlocBuilder<SearchCubit, SearchState>(
             builder: (context, state) {
-              if (state is SearchHistoryLoaded && state.history.isNotEmpty) {
+              if (state is SearchSuggestionsLoaded && state.history.isNotEmpty) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -229,12 +229,15 @@ class _SearchViewState extends State<SearchView> {
             style: AppTheme.headingMedium(context),
           ),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: context.read<SearchCubit>().getPopularSearches().map((
-              query,
-            ) {
+          BlocBuilder<SearchCubit, SearchState>(
+            builder: (context, state) {
+              final popular = state is SearchSuggestionsLoaded
+                  ? state.popular
+                  : const ['흥부와 놀부', '선녀와 나무꾼', '이순신', '거북선', '토끼'];
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: popular.map((query) {
               return ActionChip(
                 label: Text(query),
                 onPressed: () {
@@ -243,6 +246,8 @@ class _SearchViewState extends State<SearchView> {
                 },
               );
             }).toList(),
+              );
+            },
           ),
           const SizedBox(height: 24),
 
