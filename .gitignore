@@ -20,7 +20,7 @@ vendor/
 go.work
 
 # PocketBase data
-data/
+backend/data/
 pb_data/
 pb_public/uploads/
 *.db

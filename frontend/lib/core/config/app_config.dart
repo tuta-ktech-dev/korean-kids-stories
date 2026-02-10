@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
+
 class AppConfig {
-  // Use http://10.0.2.2:8090 for Android Emulator
-  // Use http://localhost:8090 for iOS Simulator
-  // Use http://trananhtu.vn:8090 for Production
-  static const String baseUrl = 'http://trananhtu.vn:8090';
+  /// Use http://10.0.2.2:8090 for Android Emulator
+  /// Use http://localhost:8090 for iOS Simulator
+  static const String _devBaseUrl = 'http://trananhtu.vn:8090';
+  static const String _prodBaseUrl = 'http://trananhtu.vn:8090';
+
+  static String get baseUrl => kDebugMode ? _devBaseUrl : _prodBaseUrl;
 }

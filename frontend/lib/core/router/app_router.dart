@@ -65,6 +65,7 @@ class MainScreen extends StatelessWidget {
         final isAuthenticated = state is Authenticated;
 
         return AutoTabsRouter(
+          key: ValueKey(isAuthenticated),
           routes: [
             const HomeRoute(),
             const SearchRoute(),
