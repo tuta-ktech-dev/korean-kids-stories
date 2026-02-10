@@ -23,6 +23,8 @@ func main() {
 	// Ensure schema on startup
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		schema.EnsureAllSchema(app)
+		schema.SeedAppConfig(app)
+		schema.SeedContentPages(app)
 		api.RegisterPopularRoutes(se)
 
 		// Refresh popular searches every 24h

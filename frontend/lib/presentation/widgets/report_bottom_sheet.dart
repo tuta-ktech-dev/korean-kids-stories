@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_theme.dart';
+import '../../data/repositories/report_repository.dart';
+import '../../data/services/pocketbase_service.dart';
+import '../../injection.dart';
 
 enum ReportType { story, chapter, app, question, other }
 
@@ -64,10 +68,26 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
       return;
     }
 
+    final repo = getIt<ReportRepository>();
+    // Require login to report
+    if (!getIt<PocketbaseService>().isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('로그인 후 신고해 주세요', style: AppTheme.bodyMedium(context)),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
-    // TODO: Call API to submit report
-    await Future.delayed(const Duration(seconds: 1));
+    final success = await repo.submitReport(
+      type: _reportTypeString,
+      reason: _reasonController.text.trim(),
+      targetId: widget.targetId,
+      targetTitle: widget.targetTitle,
+    );
 
     setState(() => _isSubmitting = false);
 
@@ -75,10 +95,28 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('신고가 접수되었습니다. 검토 후 조치하겠습니다.', style: AppTheme.bodyMedium(context)),
-          backgroundColor: Colors.green,
+          content: Text(
+            success ? '신고가 접수되었습니다. 검토 후 조치하겠습니다.' : '신고 접수에 실패했습니다.',
+            style: AppTheme.bodyMedium(context),
+          ),
+          backgroundColor: success ? Colors.green : Colors.red,
         ),
       );
+    }
+  }
+
+  String get _reportTypeString {
+    switch (widget.type) {
+      case ReportType.story:
+        return 'story';
+      case ReportType.chapter:
+        return 'chapter';
+      case ReportType.app:
+        return 'app';
+      case ReportType.question:
+        return 'question';
+      case ReportType.other:
+        return 'other';
     }
   }
 

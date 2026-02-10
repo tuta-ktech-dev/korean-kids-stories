@@ -12,8 +12,8 @@ func EnsureReportsCollection(app core.App) {
 	}
 
 	changes := false
-	// Only admin can view reports
-	if SetRules(collection, "@request.auth.id != ''", "@request.auth.id != ''", "@request.auth.id != ''", "", "") {
+	// Users: create only (user auto-set by hook). List/view own only. Update/delete admin only.
+	if SetRules(collection, "user = @request.auth.id", "user = @request.auth.id", "@request.auth.id != ''", "", "") {
 		changes = true
 	}
 
@@ -23,7 +23,7 @@ func EnsureReportsCollection(app core.App) {
 	if AddSelectField(collection, "type", true, []string{"story", "chapter", "app", "question", "other"}, 1) {
 		changes = true
 	}
-	if AddTextField(collection, "target_id", true) {
+	if AddTextField(collection, "target_id", false) {
 		changes = true
 	}
 	if f := collection.Fields.GetByName("reason"); f == nil {

@@ -31,6 +31,14 @@ func EnsureIndex(collection *core.Collection, name string, unique bool, columns 
 	return true
 }
 
+// escapeFilter escapes special characters in filter strings
+func escapeFilter(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, `'`, `\'`)
+	return s
+}
+
 func hasIndex(collection *core.Collection, name string) bool {
 	for _, idx := range collection.Indexes {
 		if strings.Contains(idx, "`"+name+"`") {
@@ -162,6 +170,9 @@ func AddSystemFields(collection *core.Collection) bool {
 	return changes
 }
 
+// LockRule is a sentinel value for SetRules. Pass for create/update/delete to restrict to admin only (nil rule).
+const LockRule = "__lock__"
+
 func SetRules(collection *core.Collection, list, view, create, update, delete string) bool {
 	changed := false
 	if collection.ListRule == nil || *collection.ListRule != list {
@@ -172,15 +183,30 @@ func SetRules(collection *core.Collection, list, view, create, update, delete st
 		collection.ViewRule = types.Pointer(view)
 		changed = true
 	}
-	if collection.CreateRule == nil || (create != "" && *collection.CreateRule != create) {
+	if create == LockRule {
+		if collection.CreateRule != nil {
+			collection.CreateRule = nil
+			changed = true
+		}
+	} else if collection.CreateRule == nil || *collection.CreateRule != create {
 		collection.CreateRule = types.Pointer(create)
 		changed = true
 	}
-	if collection.UpdateRule == nil || (update != "" && *collection.UpdateRule != update) {
+	if update == LockRule {
+		if collection.UpdateRule != nil {
+			collection.UpdateRule = nil
+			changed = true
+		}
+	} else if collection.UpdateRule == nil || *collection.UpdateRule != update {
 		collection.UpdateRule = types.Pointer(update)
 		changed = true
 	}
-	if collection.DeleteRule == nil || (delete != "" && *collection.DeleteRule != delete) {
+	if delete == LockRule {
+		if collection.DeleteRule != nil {
+			collection.DeleteRule = nil
+			changed = true
+		}
+	} else if collection.DeleteRule == nil || *collection.DeleteRule != delete {
 		collection.DeleteRule = types.Pointer(delete)
 		changed = true
 	}
