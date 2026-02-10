@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/chapter.dart';
+import '../../cubits/progress_cubit/progress_cubit.dart';
 import '../../cubits/reader_cubit/reader_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'widgets/reader_bottom_bar.dart';
@@ -17,6 +20,12 @@ class ReaderView extends StatefulWidget {
 
 class _ReaderViewState extends State<ReaderView> {
   bool _showControls = true;
+  double _lastProgress = 0.0;
+  String? _chapterId;
+  Timer? _saveDebounce;
+  ProgressCubit? _progressCubit;
+  final ScrollController _scrollController = ScrollController();
+  bool _hasRestoredScroll = false;
 
   @override
   void initState() {
@@ -25,9 +34,54 @@ class _ReaderViewState extends State<ReaderView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _progressCubit ??= context.read<ProgressCubit>();
+  }
+
+  void _restoreScrollPosition(double progress) {
+    if (progress <= 0.01 || progress >= 0.99 || _hasRestoredScroll) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final position = _scrollController.position;
+      if (position.hasContentDimensions && position.maxScrollExtent > 0) {
+        final offset = progress * position.maxScrollExtent;
+        _scrollController.jumpTo(offset);
+        _hasRestoredScroll = true;
+      }
+    });
+  }
+
+  @override
   void dispose() {
+    _scrollController.dispose();
+    _saveDebounce?.cancel();
+    if (_chapterId != null) {
+      _progressCubit?.saveProgress(
+        chapterId: _chapterId!,
+        percentRead: _lastProgress * 100,
+        isCompleted: _lastProgress >= 0.99,
+      );
+    }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
+  }
+
+  void _onScrollProgress(BuildContext context, double progress) {
+    _lastProgress = progress;
+    context.read<ReaderCubit>().updateProgress(progress);
+
+    _saveDebounce?.cancel();
+    final chapterId = _chapterId;
+    _saveDebounce = Timer(const Duration(milliseconds: 1500), () {
+      if (mounted && chapterId != null) {
+        _progressCubit?.saveProgress(
+          chapterId: chapterId,
+          percentRead: _lastProgress * 100,
+          isCompleted: _lastProgress >= 0.99,
+        );
+      }
+    });
   }
 
   void _toggleControls() {
@@ -45,15 +99,27 @@ class _ReaderViewState extends State<ReaderView> {
     BuildContext context,
     Chapter chapter,
     bool isDarkMode,
-    double fontSize,
-  ) {
+    double fontSize, {
+    void Function(double progress)? onScrollProgress,
+  }) {
     return SafeArea(
       top: false,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (onScrollProgress == null) return false;
+          final m = notification.metrics;
+          final progress = m.maxScrollExtent > 0
+              ? (m.pixels / m.maxScrollExtent).clamp(0.0, 1.0)
+              : 1.0;
+          onScrollProgress(progress);
+          return false;
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             if (!_showControls) const SizedBox(height: 16),
             Text(
               context.l10n.chapterTitleFormatted(
@@ -85,7 +151,8 @@ class _ReaderViewState extends State<ReaderView> {
               ),
             ),
             const SizedBox(height: 24),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -112,6 +179,9 @@ class _ReaderViewState extends State<ReaderView> {
           final chapter = state.chapter;
           final isDarkMode = state.isDarkMode;
           final fontSize = state.fontSize;
+          _chapterId = chapter.id;
+          _lastProgress = state.progress;
+          _restoreScrollPosition(state.progress);
 
           return Scaffold(
             backgroundColor: isDarkMode
@@ -161,6 +231,7 @@ class _ReaderViewState extends State<ReaderView> {
                             chapter,
                             isDarkMode,
                             fontSize,
+                            onScrollProgress: (p) => _onScrollProgress(context, p),
                           ),
                         ),
                         ReaderBottomBar(
@@ -177,6 +248,7 @@ class _ReaderViewState extends State<ReaderView> {
                       chapter,
                       isDarkMode,
                       fontSize,
+                      onScrollProgress: (p) => _onScrollProgress(context, p),
                     ),
             ),
           );

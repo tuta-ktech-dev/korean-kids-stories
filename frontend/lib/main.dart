@@ -8,6 +8,7 @@ import 'data/services/tracking_service.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'presentation/cubits/auth_cubit/auth_cubit.dart';
 import 'presentation/cubits/home_cubit/home_cubit.dart';
+import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
 import 'presentation/cubits/settings_cubit/settings_cubit.dart';
 
@@ -32,6 +33,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => AuthCubit()),
         BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => ProgressCubit()),
         BlocProvider(create: (_) => SearchCubit()),
         BlocProvider(create: (_) => SettingsCubit()..loadSettings()),
       ],

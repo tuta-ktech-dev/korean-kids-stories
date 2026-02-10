@@ -18,7 +18,7 @@ class ReaderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ReaderCubit()..loadChapter(chapterId),
+      create: (_) => ReaderCubit()..loadChapter(chapterId),
       child: const ReaderView(),
     );
   }
