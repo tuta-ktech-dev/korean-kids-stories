@@ -5,6 +5,7 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
+import 'injection.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'presentation/cubits/auth_cubit/auth_cubit.dart';
 import 'presentation/cubits/favorite_cubit/favorite_cubit.dart';
@@ -17,9 +18,11 @@ import 'presentation/cubits/settings_cubit/settings_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  configureDependencies();
+
   // Initialize services
-  await PocketbaseService().initialize();
-  TrackingService().startSession(null);
+  await getIt<PocketbaseService>().initialize();
+  getIt<TrackingService>().startSession(null);
 
   runApp(KoreanKidsStoriesApp());
 }
@@ -33,13 +36,13 @@ class KoreanKidsStoriesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AuthCubit()),
-        BlocProvider(create: (_) => HomeCubit()),
-        BlocProvider(create: (_) => FavoriteCubit()),
-        BlocProvider(create: (_) => ProgressCubit()),
-        BlocProvider(create: (_) => HistoryCubit()),
-        BlocProvider(create: (_) => SearchCubit()),
-        BlocProvider(create: (_) => SettingsCubit()..loadSettings()),
+        BlocProvider(create: (_) => getIt<AuthCubit>()),
+        BlocProvider(create: (_) => getIt<HomeCubit>()),
+        BlocProvider(create: (_) => getIt<FavoriteCubit>()),
+        BlocProvider(create: (_) => getIt<ProgressCubit>()),
+        BlocProvider(create: (_) => getIt<HistoryCubit>()),
+        BlocProvider(create: (_) => getIt<SearchCubit>()),
+        BlocProvider(create: (_) => getIt<SettingsCubit>()..loadSettings()),
       ],
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (p, c) => p.runtimeType != c.runtimeType,

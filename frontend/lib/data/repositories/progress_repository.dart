@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
+
 import '../services/pocketbase_service.dart';
 
 /// Model đại diện cho reading progress
@@ -109,8 +111,10 @@ class Bookmark {
 }
 
 /// Repository cho reading progress operations
+@injectable
 class ProgressRepository {
-  final PocketbaseService _pbService = PocketbaseService();
+  ProgressRepository(this._pbService);
+  final PocketbaseService _pbService;
 
   PocketBase get _pb => _pbService.pb;
 

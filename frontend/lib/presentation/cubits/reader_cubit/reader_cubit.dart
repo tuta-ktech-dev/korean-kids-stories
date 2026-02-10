@@ -1,20 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../data/repositories/progress_repository.dart';
-import '../../../data/repositories/story_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
+import '../../../data/repositories/story_repository.dart';
+import '../../../injection.dart';
 import 'reader_state.dart';
 export 'reader_state.dart';
 
+@injectable
 class ReaderCubit extends Cubit<ReaderState> {
-  final StoryRepository _storyRepository;
-  final ProgressRepository _progressRepository;
-
   ReaderCubit({
     StoryRepository? storyRepository,
     ProgressRepository? progressRepository,
-  })  : _storyRepository = storyRepository ?? StoryRepository(),
-        _progressRepository = progressRepository ?? ProgressRepository(),
+  })  : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
+        _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
         super(const ReaderInitial());
+
+  final StoryRepository _storyRepository;
+  final ProgressRepository _progressRepository;
 
   Future<void> loadChapter(String chapterId) async {
     emit(const ReaderLoading());

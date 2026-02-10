@@ -1,4 +1,6 @@
+import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
+
 import '../services/pocketbase_service.dart';
 
 /// User model representing authenticated user
@@ -36,8 +38,9 @@ class User {
 }
 
 /// Repository for authentication-related operations
-/// 
+///
 /// Provides a clean API for user authentication and management
+@injectable
 class AuthRepository {
   final PocketbaseService _pbService;
 

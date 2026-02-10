@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../data/models/story.dart';
 import '../../../data/repositories/story_repository.dart';
+import '../../../injection.dart';
 import 'home_state.dart';
 export 'home_state.dart';
 
+@lazySingleton
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeInitial()) {
+  HomeCubit({StoryRepository? storyRepository})
+      : _storyRepo = storyRepository ?? getIt<StoryRepository>(),
+        super(const HomeInitial()) {
     initialize();
   }
 
-  final _storyRepo = StoryRepository();
+  final StoryRepository _storyRepo;
 
   Future<void> initialize() async {
     emit(const HomeLoading());

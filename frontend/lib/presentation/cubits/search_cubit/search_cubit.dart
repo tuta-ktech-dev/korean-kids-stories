@@ -1,16 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../data/repositories/story_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
+import '../../../injection.dart';
 import 'search_state.dart';
 export 'search_state.dart';
 
+@lazySingleton
 class SearchCubit extends Cubit<SearchState> {
   SearchCubit({
     StoryRepository? storyRepository,
     PocketbaseService? pocketbaseService,
-  })  : _storyRepository = storyRepository ?? StoryRepository(),
-        _pbService = pocketbaseService ?? PocketbaseService(),
+  })  : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
+        _pbService = pocketbaseService ?? getIt<PocketbaseService>(),
         super(const SearchInitial());
 
   final StoryRepository _storyRepository;

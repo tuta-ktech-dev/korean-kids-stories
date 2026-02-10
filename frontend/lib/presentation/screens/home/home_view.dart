@@ -229,7 +229,7 @@ class HomeView extends StatelessWidget {
 
       return SliverToBoxAdapter(
         child: SizedBox(
-          height: 280,
+          height: 300,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
@@ -283,7 +283,7 @@ class HomeView extends StatelessWidget {
         _buildSectionTitle(title),
         const SizedBox(height: 16),
         SizedBox(
-          height: 280,
+          height: 300,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,

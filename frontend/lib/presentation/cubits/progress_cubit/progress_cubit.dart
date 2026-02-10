@@ -1,13 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../data/repositories/progress_repository.dart';
+import '../../../injection.dart';
 import 'progress_state.dart';
 
 /// Global cubit for reading progress persistence.
 /// Used by Reader (save on scroll/dispose), History, Library, etc.
+@lazySingleton
 class ProgressCubit extends Cubit<ProgressState> {
-  final ProgressRepository _repo = ProgressRepository();
+  ProgressCubit({ProgressRepository? progressRepository})
+      : _repo = progressRepository ?? getIt<ProgressRepository>(),
+        super(const ProgressInitial());
 
-  ProgressCubit() : super(const ProgressInitial());
+  final ProgressRepository _repo;
 
   /// Get progress for a chapter (for initial load, History, etc.)
   Future<ReadingProgress?> getProgress(String chapterId) async {

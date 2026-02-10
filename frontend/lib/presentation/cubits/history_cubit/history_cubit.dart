@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../data/models/chapter.dart';
 import '../../../data/models/story.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/story_repository.dart';
+import '../../../injection.dart';
 import 'history_state.dart';
 export 'history_state.dart';
 
 /// Cubit for managing reading history
+@lazySingleton
 class HistoryCubit extends Cubit<HistoryState> {
-  final ProgressRepository _progressRepo = ProgressRepository();
-  final StoryRepository _storyRepo = StoryRepository();
+  HistoryCubit({
+    ProgressRepository? progressRepository,
+    StoryRepository? storyRepository,
+  })  : _progressRepo = progressRepository ?? getIt<ProgressRepository>(),
+        _storyRepo = storyRepository ?? getIt<StoryRepository>(),
+        super(const HistoryInitial());
 
-  HistoryCubit() : super(const HistoryInitial());
+  final ProgressRepository _progressRepo;
+  final StoryRepository _storyRepo;
 
   /// Load all reading history
   Future<void> loadHistory() async {

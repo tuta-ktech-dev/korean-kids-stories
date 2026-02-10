@@ -1,13 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
+
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
+import '../../../injection.dart';
 import 'auth_state.dart';
 export 'auth_state.dart';
 
+@lazySingleton
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? AuthRepository(),
+      : _authRepository = authRepository ?? getIt<AuthRepository>(),
         super(const AuthInitial()) {
     checkAuthStatus();
   }

@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
+
 import '../models/story.dart';
 import '../services/pocketbase_service.dart';
 
 /// Repository for favorite stories (bookmarks collection, type=favorite)
+@injectable
 class FavoriteRepository {
-  final PocketbaseService _pbService = PocketbaseService();
+  FavoriteRepository(this._pbService);
+  final PocketbaseService _pbService;
   static const String _typeFavorite = 'favorite';
 
   PocketBase get _pb => _pbService.pb;

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/favorite_cubit/favorite_cubit.dart';
 import '../../cubits/story_detail_cubit/story_detail_cubit.dart';
+import '../../../data/repositories/story_repository.dart';
+import '../../../injection.dart';
 import 'story_detail_view.dart';
 
 @RoutePage()
@@ -33,7 +35,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => StoryDetailCubit(storyId: widget.storyId),
+      create: (_) => StoryDetailCubit(
+        storyId: widget.storyId,
+        storyRepository: getIt<StoryRepository>(),
+      ),
       child: StoryDetailView(storyId: widget.storyId),
     );
   }

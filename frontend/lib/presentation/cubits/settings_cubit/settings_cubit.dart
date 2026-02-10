@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'settings_state.dart';
 
+@lazySingleton
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(const SettingsInitial());
 

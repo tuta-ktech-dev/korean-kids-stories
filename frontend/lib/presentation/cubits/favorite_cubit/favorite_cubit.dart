@@ -1,16 +1,25 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../data/repositories/favorite_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
+import '../../../injection.dart';
 import 'favorite_state.dart';
 export 'favorite_state.dart';
 
 /// Global cubit for user favorites (bookmarks collection, type=favorite).
 /// Load when auth changes, expose isFavorite(storyId), toggleFavorite(storyId).
+@lazySingleton
 class FavoriteCubit extends Cubit<FavoriteState> {
-  final FavoriteRepository _repo = FavoriteRepository();
-  final PocketbaseService _pbService = PocketbaseService();
+  FavoriteCubit({
+    FavoriteRepository? favoriteRepository,
+    PocketbaseService? pocketbaseService,
+  })  : _repo = favoriteRepository ?? getIt<FavoriteRepository>(),
+        _pbService = pocketbaseService ?? getIt<PocketbaseService>(),
+        super(const FavoriteInitial());
 
-  FavoriteCubit() : super(const FavoriteInitial());
+  final FavoriteRepository _repo;
+  final PocketbaseService _pbService;
 
   /// Load favorites. Call when user logs in or app starts (if authenticated).
   Future<void> loadFavorites() async {

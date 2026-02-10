@@ -1,15 +1,16 @@
-import '../models/story.dart';
+import 'package:injectable/injectable.dart';
+
 import '../models/chapter.dart';
+import '../models/story.dart';
 import '../services/pocketbase_service.dart';
 
 /// Repository for story-related operations
-/// 
+///
 /// Abstracts data access and provides a clean API for the presentation layer
+@injectable
 class StoryRepository {
+  StoryRepository(this._pbService);
   final PocketbaseService _pbService;
-
-  StoryRepository({PocketbaseService? pbService})
-      : _pbService = pbService ?? PocketbaseService();
 
   /// Initialize the repository
   Future<void> initialize() async {
