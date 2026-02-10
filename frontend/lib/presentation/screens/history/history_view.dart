@@ -1,20 +1,24 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/theme/app_theme.dart';
-import '../components/cards/history_card.dart';
-import '../cubits/auth_cubit/auth_cubit.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../components/cards/history_card.dart';
 
-@RoutePage()
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+import '../../cubits/auth_cubit/auth_cubit.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+
+class HistoryView extends StatelessWidget {
+  const HistoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
-        title: Text('내 활동', style: AppTheme.headingMedium(context)),
+        title: Text(
+          context.l10n.historyTitle,
+          style: AppTheme.headingMedium(context),
+        ),
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
       ),
@@ -33,10 +37,19 @@ class HistoryScreen extends StatelessWidget {
                   labelColor: AppTheme.primaryColor(context),
                   unselectedLabelColor: AppTheme.textMutedColor(context),
                   indicatorColor: AppTheme.primaryColor(context),
-                  tabs: const [
-                    Tab(text: '읽은 이야기', icon: Icon(Icons.menu_book)),
-                    Tab(text: '들은 내용', icon: Icon(Icons.headphones)),
-                    Tab(text: '검색 기록', icon: Icon(Icons.search)),
+                  tabs: [
+                    Tab(
+                      text: context.l10n.readingHistory,
+                      icon: const Icon(Icons.menu_book),
+                    ),
+                    Tab(
+                      text: context.l10n.listeningHistory,
+                      icon: const Icon(Icons.headphones),
+                    ),
+                    Tab(
+                      text: context.l10n.searchHistory,
+                      icon: const Icon(Icons.search),
+                    ),
                   ],
                 ),
                 Expanded(
@@ -78,12 +91,12 @@ class HistoryScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              '로그인이 필요합니다',
+              context.l10n.loginRequired,
               style: AppTheme.headingMedium(context),
             ),
             const SizedBox(height: 12),
             Text(
-              '읽기 기록을 저장하려면\n로그인해주세요',
+              context.l10n.historyLoginPrompt,
               style: AppTheme.bodyLarge(context),
               textAlign: TextAlign.center,
             ),
@@ -100,7 +113,7 @@ class HistoryScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text('로그인하기'),
+                child: Text(context.l10n.loginAction),
               ),
             ),
             const SizedBox(height: 12),
@@ -109,10 +122,10 @@ class HistoryScreen extends StatelessWidget {
                 context.router.pushNamed('/register');
               },
               child: Text(
-                '회원가입',
-                style: AppTheme.bodyLarge(context).copyWith(
-                  color: AppTheme.primaryColor(context),
-                ),
+                context.l10n.signUp,
+                style: AppTheme.bodyLarge(
+                  context,
+                ).copyWith(color: AppTheme.primaryColor(context)),
               ),
             ),
           ],
@@ -219,16 +232,16 @@ class _ListeningStatsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '이번 주 통계',
+            context.l10n.weeklyStats,
             style: AppTheme.headingMedium(context).copyWith(fontSize: 18),
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _StatItem(label: '총 청취', value: '2시간 15분'),
-              _StatItem(label: '완료한 이야기', value: '3개'),
-              _StatItem(label: '연속 학습', value: '5일'),
+              _StatItem(label: context.l10n.totalListening, value: '2시간 15분'),
+              _StatItem(label: context.l10n.completedStories, value: '3개'),
+              _StatItem(label: context.l10n.currentStreak, value: '5일'),
             ],
           ),
         ],
@@ -247,7 +260,10 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: AppTheme.headingMedium(context).copyWith(fontSize: 20)),
+        Text(
+          value,
+          style: AppTheme.headingMedium(context).copyWith(fontSize: 20),
+        ),
         const SizedBox(height: 4),
         Text(label, style: AppTheme.caption(context)),
       ],

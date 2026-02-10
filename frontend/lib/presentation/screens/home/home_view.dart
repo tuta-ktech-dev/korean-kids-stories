@@ -1,18 +1,18 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/router/app_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../cubits/home_cubit/home_cubit.dart';
-import '../widgets/story_card.dart';
-import '../components/buttons/category_button.dart';
-import '../components/headers/gradient_header.dart';
-import '../components/inputs/app_search_bar.dart';
-import '../components/story_card_skeleton.dart';
+import '../../../core/router/app_router.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../cubits/home_cubit/home_cubit.dart';
+import '../../widgets/story_card.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../components/buttons/category_button.dart';
+import '../../components/headers/gradient_header.dart';
+import '../../components/inputs/app_search_bar.dart';
+import '../../components/story_card_skeleton.dart';
 
-@RoutePage()
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeView extends StatelessWidget {
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +24,14 @@ class HomeScreen extends StatelessWidget {
             // Header
             SliverToBoxAdapter(
               child: GradientHeader(
-                title: '안녕하세요! 👋',
-                subtitle: '오늘도 즐거운 이야기를 들어볼까요?',
+                title: context.l10n.homeWelcome,
+                subtitle: context.l10n.homeSubtitle,
                 bottomWidget: AppSearchBar(
-                  hintText: '재미있는 동화 찾기...',
+                  hintText: context.l10n.homeSearchHint,
                   onTap: () {
-                    context.router.pushNamed('/search');
+                    // Navigate to Search Tab (Index 1)
+                    final tabsRouter = AutoTabsRouter.of(context);
+                    tabsRouter.setActiveIndex(1);
                   },
                 ),
               ),
@@ -41,7 +43,9 @@ class HomeScreen extends StatelessWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
             // Section Title
-            SliverToBoxAdapter(child: _buildSectionTitle('✨ 추천 동화')),
+            SliverToBoxAdapter(
+              child: _buildSectionTitle(context.l10n.recommendedStories),
+            ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
@@ -55,7 +59,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context,
                 state,
-                '🔥 인기',
+                context.l10n.popularSectionTitle,
                 (s) => s.sections.featured,
               ),
             ),
@@ -65,7 +69,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context,
                 state,
-                '🎧 오디오',
+                context.l10n.audioStories,
                 (s) => s.sections.withAudio,
               ),
             ),
@@ -75,7 +79,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context,
                 state,
-                '⭐ 리뷰 많은',
+                context.l10n.mostReviewedStories,
                 (s) => s.sections.mostReviewed,
               ),
             ),
@@ -85,7 +89,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context,
                 state,
-                '👁 조회수 많은',
+                context.l10n.mostViewedStories,
                 (s) => s.sections.mostViewed,
               ),
             ),
@@ -95,7 +99,7 @@ class HomeScreen extends StatelessWidget {
               builder: (context, state) => _buildSectionWithTitle(
                 context,
                 state,
-                '🆕 최신',
+                context.l10n.recentStories,
                 (s) => s.sections.recent,
               ),
             ),
@@ -178,11 +182,11 @@ class HomeScreen extends StatelessWidget {
               Text(title, style: AppTheme.headingMedium(context)),
               if (state is HomeLoaded &&
                   !state.isLoadingStories &&
-                  title == '✨ 추천 동화')
+                  title == context.l10n.recommendedStories)
                 TextButton(
                   onPressed: () => context.read<HomeCubit>().refresh(),
                   child: Text(
-                    '새로고침',
+                    context.l10n.refresh,
                     style: AppTheme.bodyMedium(context).copyWith(
                       color: AppTheme.primaryColor(context),
                       fontWeight: FontWeight.w600,
@@ -257,7 +261,7 @@ class HomeScreen extends StatelessWidget {
       reviewCount: story.reviewCount,
       viewCount: story.viewCount,
       onTap: () {
-        context.router.push(StoryDetailRoute(storyId: story.id));
+        context.router.root.push(StoryDetailRoute(storyId: story.id));
       },
     );
   }
@@ -304,13 +308,19 @@ class HomeScreen extends StatelessWidget {
               color: AppTheme.textMutedColor(context),
             ),
             const SizedBox(height: 16),
-            Text('이야기를 불러올 수 없어요', style: AppTheme.bodyLarge(context)),
+            Text(
+              context.l10n.loadStoryError,
+              style: AppTheme.bodyLarge(context),
+            ),
             const SizedBox(height: 8),
-            Text('서버 연결을 확인해주세요', style: AppTheme.caption(context)),
+            Text(
+              context.l10n.checkConnection,
+              style: AppTheme.caption(context),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.read<HomeCubit>().initialize(),
-              child: const Text('다시 시도'),
+              child: Text(context.l10n.retry),
             ),
           ],
         ),
@@ -330,9 +340,12 @@ class HomeScreen extends StatelessWidget {
               color: AppTheme.textMutedColor(context),
             ),
             const SizedBox(height: 16),
-            Text('등록된 이야기가 없어요', style: AppTheme.bodyLarge(context)),
+            Text(context.l10n.noStories, style: AppTheme.bodyLarge(context)),
             const SizedBox(height: 8),
-            Text('관리자 페이지에서 이야기를 추가해주세요', style: AppTheme.caption(context)),
+            Text(
+              context.l10n.addStoriesAdmin,
+              style: AppTheme.caption(context),
+            ),
           ],
         ),
       ),

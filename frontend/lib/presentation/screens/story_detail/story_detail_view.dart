@@ -2,24 +2,25 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/models/chapter.dart';
 import '../../../data/models/story.dart';
 import '../../../data/services/pocketbase_service.dart';
-import '../components/image_placeholder.dart';
-import '../cubits/auth_cubit/auth_cubit.dart';
+import '../../components/image_placeholder.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
-@RoutePage()
-class StoryDetailScreen extends StatefulWidget {
+class StoryDetailView extends StatefulWidget {
   final String storyId;
 
-  const StoryDetailScreen({super.key, @PathParam('id') required this.storyId});
+  const StoryDetailView({super.key, required this.storyId});
 
   @override
-  State<StoryDetailScreen> createState() => _StoryDetailScreenState();
+  State<StoryDetailView> createState() => _StoryDetailViewState();
 }
 
-class _StoryDetailScreenState extends State<StoryDetailScreen> {
+class _StoryDetailViewState extends State<StoryDetailView> {
   Story? _story;
-  List<Map<String, dynamic>> _chapters = [];
+  List<Chapter> _chapters = [];
   bool _isLoading = true;
   String? _error;
 
@@ -42,7 +43,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
       setState(() {
         _story = results[0] as Story?;
-        _chapters = results[1] as List<Map<String, dynamic>>;
+        _chapters = results[1] as List<Chapter>;
         _isLoading = false;
       });
     } catch (e) {
@@ -76,7 +77,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           const SizedBox(height: 16),
           Text(_error!, style: AppTheme.bodyLarge(context)),
           const SizedBox(height: 16),
-          ElevatedButton(onPressed: _loadStory, child: const Text('다시 시도')),
+          ElevatedButton(
+            onPressed: _loadStory,
+            child: Text(context.l10n.retry),
+          ),
         ],
       ),
     );
@@ -93,7 +97,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             color: AppTheme.textMutedColor(context),
           ),
           const SizedBox(height: 16),
-          Text('이야기를 찾을 수 없어요', style: AppTheme.bodyLarge(context)),
+          Text(context.l10n.storyNotFound, style: AppTheme.bodyLarge(context)),
         ],
       ),
     );
@@ -137,7 +141,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 const SizedBox(height: 32),
 
                 // Chapters section
-                Text('목차', style: AppTheme.headingMedium(context)),
+                Text(
+                  context.l10n.tableOfContents,
+                  style: AppTheme.headingMedium(context),
+                ),
                 const SizedBox(height: 16),
               ],
             ),
@@ -249,7 +256,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           child: ElevatedButton.icon(
             onPressed: _chapters.isNotEmpty ? () => _openReader(0) : null,
             icon: const Icon(Icons.play_arrow_rounded),
-            label: const Text('시작하기'),
+            label: Text(context.l10n.startReading),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
@@ -262,7 +269,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           child: OutlinedButton.icon(
             onPressed: _toggleBookmark,
             icon: const Icon(Icons.bookmark_border),
-            label: const Text('저장'),
+            label: Text(context.l10n.bookmark),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
@@ -274,9 +281,11 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
   Widget _buildChapterItem(int index) {
     final chapter = _chapters[index];
-    final isFree = chapter['is_free'] as bool? ?? true;
-    final chapterNumber = chapter['chapter_number'] as int? ?? (index + 1);
-    final title = chapter['title'] as String? ?? '제 $chapterNumber 화';
+    final isFree = chapter.isFree;
+    final chapterNumber = chapter.chapterNumber;
+    final title = chapter.title.isNotEmpty
+        ? chapter.title
+        : context.l10n.chapterTitleFallback(chapterNumber);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -304,10 +313,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
       ),
       subtitle: isFree
           ? Text(
-              '묣음',
+              context.l10n.free,
               style: AppTheme.caption(context).copyWith(color: Colors.green),
             )
-          : Text('잠금', style: AppTheme.caption(context)),
+          : Text(context.l10n.locked, style: AppTheme.caption(context)),
       trailing: isFree
           ? Icon(
               Icons.play_circle_outline,
@@ -335,20 +344,20 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   String _getCategoryLabel() {
     switch (_story?.category) {
       case 'folktale':
-        return '전통동화';
+        return context.l10n.categoryFolktale;
       case 'history':
-        return '역사';
+        return context.l10n.categoryHistory;
       case 'legend':
-        return '전설';
+        return context.l10n.categoryLegend;
       default:
         return _story?.category ?? '';
     }
   }
 
   void _openReader(int chapterIndex) {
-    // TODO: Navigate to reader screen
-    context.router.pushNamed(
-      '/reader/${widget.storyId}/${_chapters[chapterIndex]['id']}',
+    // Navigate to reader screen
+    context.router.root.pushNamed(
+      '/reader/${widget.storyId}/${_chapters[chapterIndex].id}',
     );
   }
 
@@ -358,7 +367,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     if (authState is! Authenticated) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.loginRequired)));
       return;
     }
     // Add bookmark logic

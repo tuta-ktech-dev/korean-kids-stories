@@ -3,37 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
-import '../cubits/reader_cubit/reader_cubit.dart';
-import '../cubits/reader_cubit/reader_state.dart';
+import '../../cubits/reader_cubit/reader_cubit.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
-@RoutePage()
-class ReaderScreen extends StatelessWidget {
-  final String storyId;
-  final String chapterId;
-
-  const ReaderScreen({
-    super.key,
-    @PathParam('storyId') required this.storyId,
-    @PathParam('chapterId') required this.chapterId,
-  });
+class ReaderView extends StatefulWidget {
+  const ReaderView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ReaderCubit()..loadChapter(chapterId),
-      child: const _ReaderView(),
-    );
-  }
+  State<ReaderView> createState() => _ReaderViewState();
 }
 
-class _ReaderView extends StatefulWidget {
-  const _ReaderView();
-
-  @override
-  State<_ReaderView> createState() => _ReaderViewState();
-}
-
-class _ReaderViewState extends State<_ReaderView> {
+class _ReaderViewState extends State<ReaderView> {
   bool _showControls = true;
 
   @override
@@ -94,7 +74,9 @@ class _ReaderViewState extends State<_ReaderView> {
                           const SizedBox(height: 60),
                           // Chapter title
                           Text(
-                            '제 ${chapter.chapterNumber} 화',
+                            context.l10n.chapterTitleFormatted(
+                              chapter.chapterNumber,
+                            ),
                             style: TextStyle(
                               fontSize: 14,
                               color: isDarkMode
@@ -174,9 +156,12 @@ class _ReaderViewState extends State<_ReaderView> {
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                 ),
@@ -239,16 +224,31 @@ class _ReaderViewState extends State<_ReaderView> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.skip_previous),
+                                      icon: Icon(
+                                        Icons.skip_previous,
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                       onPressed: () {},
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.play_arrow),
+                                      icon: Icon(
+                                        Icons.play_arrow,
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                       iconSize: 40,
                                       onPressed: () {},
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.skip_next),
+                                      icon: Icon(
+                                        Icons.skip_next,
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                       onPressed: () {},
                                     ),
                                   ],
@@ -284,11 +284,14 @@ class _ReaderViewState extends State<_ReaderView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('설정', style: AppTheme.headingMedium(context)),
+            Text(
+              context.l10n.settingsTitle,
+              style: AppTheme.headingMedium(context),
+            ),
             const SizedBox(height: 20),
             Row(
               children: [
-                const Text('글자 크기'),
+                Text(context.l10n.fontSize),
                 Expanded(
                   child: Slider(
                     value: state.fontSize,
@@ -307,7 +310,7 @@ class _ReaderViewState extends State<_ReaderView> {
               ],
             ),
             SwitchListTile(
-              title: const Text('어두운 모드'),
+              title: Text(context.l10n.darkMode),
               value: state.isDarkMode,
               onChanged: (value) {
                 context.read<ReaderCubit>().updateSettings(isDarkMode: value);

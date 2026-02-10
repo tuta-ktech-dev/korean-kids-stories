@@ -1,25 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/repositories/story_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
 import 'reader_state.dart';
+export 'reader_state.dart';
 
 class ReaderCubit extends Cubit<ReaderState> {
-  final PocketbaseService _pbService = PocketbaseService();
+  final StoryRepository _storyRepository;
 
-  ReaderCubit() : super(const ReaderInitial());
+  ReaderCubit({StoryRepository? storyRepository})
+      : _storyRepository = storyRepository ?? StoryRepository(),
+        super(const ReaderInitial());
 
   Future<void> loadChapter(String chapterId) async {
     emit(const ReaderLoading());
 
     try {
-      final chapter = await _pbService.getChapter(chapterId);
+      await _storyRepository.initialize();
+      final chapter = await _storyRepository.getChapter(chapterId);
 
       if (chapter != null) {
         emit(ReaderLoaded(chapter: chapter));
       } else {
-        emit(const ReaderError('Chapter not found'));
+        emit(const ReaderError('챕터를 찾을 수 없습니다'));
       }
+    } on PocketbaseException catch (e) {
+      emit(ReaderError('챕터 로드 실패: ${e.message}'));
     } catch (e) {
-      emit(ReaderError('Failed to load chapter: ${e.toString()}'));
+      emit(ReaderError('챕터 로드 실패: ${e.toString()}'));
     }
   }
 

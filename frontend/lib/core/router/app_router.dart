@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../presentation/components/navigation/app_bottom_nav.dart';
-import '../../presentation/screens/landing_screen.dart';
-import '../../presentation/screens/home_screen.dart';
-import '../../presentation/screens/story_detail_screen.dart';
-import '../../presentation/screens/reader_screen.dart';
-import '../../presentation/screens/history_screen.dart';
-import '../../presentation/screens/settings_screen.dart';
-import '../../presentation/screens/library_screen.dart';
-import '../../presentation/screens/login_screen.dart';
-import '../../presentation/screens/register_screen.dart';
-import '../../presentation/screens/otp_verification_screen.dart';
+import '../../presentation/screens/landing/landing_screen.dart';
+import '../../presentation/screens/home/home_screen.dart';
+import '../../presentation/screens/story_detail/story_detail_screen.dart';
+import '../../presentation/screens/reader/reader_screen.dart';
+import '../../presentation/screens/history/history_screen.dart';
+import '../../presentation/screens/settings/settings_screen.dart';
+import '../../presentation/screens/library/library_screen.dart';
+import '../../presentation/screens/login/login_screen.dart';
+import '../../presentation/screens/register/register_screen.dart';
+import '../../presentation/screens/otp_verification/otp_verification_screen.dart';
+import '../../presentation/screens/search/search_screen.dart';
 import '../../presentation/cubits/auth_cubit/auth_cubit.dart';
 
 part 'app_router.gr.dart';
@@ -31,6 +32,12 @@ class AppRouter extends RootStackRouter {
 
     // Search (standalone)
     AutoRoute(path: '/search', page: SearchRoute.page),
+
+    // Story Detail
+    AutoRoute(path: '/story/:id', page: StoryDetailRoute.page),
+
+    // Reader
+    AutoRoute(path: '/reader/:storyId/:chapterId', page: ReaderRoute.page),
 
     // Main app - accessible to guests too
     AutoRoute(
@@ -80,15 +87,5 @@ class MainScreen extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-@RoutePage()
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('검색 화면')));
   }
 }

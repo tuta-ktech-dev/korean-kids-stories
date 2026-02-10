@@ -1,14 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../data/models/story.dart';
+import '../../../data/repositories/story_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
 import 'search_state.dart';
 export 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit() : super(const SearchInitial());
+  SearchCubit({StoryRepository? storyRepository})
+    : _storyRepository = storyRepository ?? StoryRepository(),
+      super(const SearchInitial());
 
-  final _pbService = PocketbaseService();
+  final StoryRepository _storyRepository;
   static const String _historyKey = 'search_history';
   static const int _maxHistoryItems = 10;
 
@@ -85,44 +87,14 @@ class SearchCubit extends Cubit<SearchState> {
     emit(const SearchLoading());
 
     try {
-      await _pbService.initialize();
+      await _storyRepository.initialize();
 
-      // Build filter
-      final filters = <String>[];
-      filters.add('is_published=true');
-
-      // Text search on title
-      if (query.trim().isNotEmpty) {
-        filters.add('title~"${query.trim()}"');
-      }
-
-      // Category filter
-      if (category != null && category.isNotEmpty) {
-        filters.add('category="$category"');
-      }
-
-      // Age range filter
-      if (minAge != null) {
-        filters.add('age_min>=$minAge');
-      }
-      if (maxAge != null) {
-        filters.add('age_max<=$maxAge');
-      }
-
-      final filterString = filters.join(' && ');
-
-      final result = await _pbService.pb
-          .collection('stories')
-          .getList(
-            page: 1,
-            perPage: 50,
-            filter: filterString,
-            sort: '-created',
-          );
-
-      final stories = result.items
-          .map((r) => Story.fromRecord(r, baseUrl: _pbService.pb.baseURL))
-          .toList();
+      final stories = await _storyRepository.getStories(
+        search: query.trim().isNotEmpty ? query.trim() : null,
+        category: category,
+        minAge: minAge,
+        maxAge: maxAge,
+      );
 
       // Save to history
       await _saveToHistory(query);
@@ -136,6 +108,8 @@ class SearchCubit extends Cubit<SearchState> {
           maxAge: maxAge,
         ),
       );
+    } on PocketbaseException catch (e) {
+      emit(SearchError('검색 실패: ${e.message}'));
     } catch (e) {
       emit(SearchError('검색 실패: $e'));
     }

@@ -1,26 +1,32 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/theme/app_theme.dart';
-import '../cubits/search_cubit/search_cubit.dart';
-import '../widgets/story_card.dart';
+import '../../../core/router/app_router.dart';
+import '../../../core/theme/app_theme.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../cubits/search_cubit/search_cubit.dart';
+import '../../widgets/story_card.dart';
 
-@RoutePage()
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<SearchView> createState() => _SearchViewState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchViewState extends State<SearchView> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    context.read<SearchCubit>().loadSearchHistory();
+    final state = context.read<SearchCubit>().state;
+    if (state is SearchLoaded) {
+      _searchController.text = state.query;
+    } else {
+      context.read<SearchCubit>().loadSearchHistory();
+    }
   }
 
   @override
@@ -43,16 +49,14 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: null,
+        automaticallyImplyLeading: false,
         title: TextField(
           controller: _searchController,
           focusNode: _focusNode,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: '동화 검색...',
+            hintText: context.l10n.searchHint,
             hintStyle: TextStyle(color: AppTheme.textMutedColor(context)),
             border: InputBorder.none,
             suffixIcon: IconButton(
@@ -117,12 +121,13 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              '"${state.query}" 검색 결과가 없어요',
+              context.l10n.noSearchResults(state.query),
               style: AppTheme.bodyLarge(context),
             ),
             const SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              '다른 키워드로 검색핼 보세요',
+              context.l10n.searchAgainHint,
               style: AppTheme.caption(context),
             ),
           ],
@@ -153,7 +158,7 @@ class _SearchScreenState extends State<SearchScreen> {
             reviewCount: story.reviewCount,
             viewCount: story.viewCount,
             onTap: () {
-              // TODO: Navigate to story detail
+              context.router.root.push(StoryDetailRoute(storyId: story.id));
             },
           ),
         );
@@ -178,14 +183,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '최근 검색',
+                          context.l10n.recentSearches,
                           style: AppTheme.headingMedium(context),
                         ),
                         TextButton(
                           onPressed: () {
                             context.read<SearchCubit>().clearHistory();
                           },
-                          child: const Text('전체 삭제'),
+                          child: Text(context.l10n.clearAll),
                         ),
                       ],
                     ),
@@ -202,7 +207,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             label: Text(query),
                             deleteIcon: const Icon(Icons.close, size: 18),
                             onDeleted: () {
-                              context.read<SearchCubit>().removeFromHistory(query);
+                              context.read<SearchCubit>().removeFromHistory(
+                                query,
+                              );
                             },
                           ),
                         );
@@ -218,14 +225,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
           // Popular searches
           Text(
-            '인기 검색어',
+            context.l10n.popularSearches,
             style: AppTheme.headingMedium(context),
           ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: context.read<SearchCubit>().getPopularSearches().map((query) {
+            children: context.read<SearchCubit>().getPopularSearches().map((
+              query,
+            ) {
               return ActionChip(
                 label: Text(query),
                 onPressed: () {
@@ -238,35 +247,41 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 24),
 
           // Categories
-          Text(
-            '카테고리',
-            style: AppTheme.headingMedium(context),
-          ),
+          Text(context.l10n.categories, style: AppTheme.headingMedium(context)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              _buildCategoryChip('전통동화', 'folktale', Icons.auto_stories),
-              _buildCategoryChip('역사', 'history', Icons.history_edu),
-              _buildCategoryChip('전설', 'legend', Icons.stars),
+              _buildCategoryChip(
+                context.l10n.categoryFolktale,
+                'folktale',
+                Icons.auto_stories,
+              ),
+              _buildCategoryChip(
+                context.l10n.categoryHistory,
+                'history',
+                Icons.history_edu,
+              ),
+              _buildCategoryChip(
+                context.l10n.categoryLegend,
+                'legend',
+                Icons.stars,
+              ),
             ],
           ),
           const SizedBox(height: 24),
 
           // Age filters
-          Text(
-            '연령대',
-            style: AppTheme.headingMedium(context),
-          ),
+          Text(context.l10n.ageGroups, style: AppTheme.headingMedium(context)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              _buildAgeChip('4-6세', 4, 6),
-              _buildAgeChip('7-9세', 7, 9),
-              _buildAgeChip('10-12세', 10, 12),
+              _buildAgeChip(context.l10n.ageGroup4to6, 4, 6),
+              _buildAgeChip(context.l10n.ageGroup7to9, 7, 9),
+              _buildAgeChip(context.l10n.ageGroup10to12, 10, 12),
             ],
           ),
         ],

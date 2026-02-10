@@ -1,13 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/theme/app_theme.dart';
-import '../cubits/auth_cubit/auth_cubit.dart';
-import '../components/buttons/bookmark_buttons.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../components/buttons/bookmark_buttons.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
-@RoutePage()
-class LibraryScreen extends StatelessWidget {
-  const LibraryScreen({super.key});
+class LibraryView extends StatelessWidget {
+  const LibraryView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,26 +22,34 @@ class LibraryScreen extends StatelessWidget {
           child: Scaffold(
             backgroundColor: AppTheme.backgroundColor(context),
             appBar: AppBar(
-              title: Text('서재', style: AppTheme.headingMedium(context)),
+              title: Text(
+                context.l10n.libraryTitle,
+                style: AppTheme.headingMedium(context),
+              ),
               backgroundColor: AppTheme.backgroundColor(context),
               elevation: 0,
               bottom: TabBar(
                 labelColor: AppTheme.primaryColor(context),
                 unselectedLabelColor: AppTheme.textMutedColor(context),
                 indicatorColor: AppTheme.primaryColor(context),
-                tabs: const [
-                  Tab(text: '즐겨찾기', icon: Icon(Icons.favorite)),
-                  Tab(text: '북마크', icon: Icon(Icons.bookmark)),
-                  Tab(text: '메모', icon: Icon(Icons.note)),
+                tabs: [
+                  Tab(
+                    text: context.l10n.tabFavorites,
+                    icon: const Icon(Icons.favorite),
+                  ),
+                  Tab(
+                    text: context.l10n.tabBookmarks,
+                    icon: const Icon(Icons.bookmark),
+                  ),
+                  Tab(
+                    text: context.l10n.tabNotes,
+                    icon: const Icon(Icons.note),
+                  ),
                 ],
               ),
             ),
             body: const TabBarView(
-              children: [
-                _FavoritesTab(),
-                _BookmarksTab(),
-                _NotesTab(),
-              ],
+              children: [_FavoritesTab(), _BookmarksTab(), _NotesTab()],
             ),
           ),
         );
@@ -53,7 +61,10 @@ class LibraryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
-        title: Text('서재', style: AppTheme.headingMedium(context)),
+        title: Text(
+          context.l10n.libraryTitle,
+          style: AppTheme.headingMedium(context),
+        ),
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
       ),
@@ -67,7 +78,9 @@ class LibraryScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppTheme.textMutedColor(context).withValues(alpha: 0.1),
+                  color: AppTheme.textMutedColor(
+                    context,
+                  ).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -78,12 +91,12 @@ class LibraryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                '로그인이 필요합니다',
+                context.l10n.loginRequired,
                 style: AppTheme.headingMedium(context),
               ),
               const SizedBox(height: 12),
               Text(
-                '즐겨찾기와 북마크를 저장하려면\n로그인해주세요',
+                context.l10n.libraryLoginPrompt,
                 style: AppTheme.bodyLarge(context),
                 textAlign: TextAlign.center,
               ),
@@ -100,7 +113,7 @@ class LibraryScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text('로그인하기'),
+                  child: Text(context.l10n.loginAction),
                 ),
               ),
             ],
@@ -149,7 +162,7 @@ class _BookmarksTab extends StatelessWidget {
     // TODO: Load bookmarks from API
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
+      children: const [
         _BookmarkItem(
           storyTitle: '세종대왕 이야기',
           chapterTitle: '제2화 - 한글 창제',
@@ -175,7 +188,7 @@ class _NotesTab extends StatelessWidget {
     // TODO: Load notes from API
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
+      children: const [
         _NoteCard(
           storyTitle: '흥부와 놀부',
           note: '아이가 선녀 캐릭터를 좋아함. 다음에 비슷한 전설 찾아주기.',
@@ -235,27 +248,20 @@ class _StoryCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTheme.bodyLarge(context).copyWith(fontWeight: FontWeight.w600),
+                  style: AppTheme.bodyLarge(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: AppTheme.bodyMedium(context),
-                ),
+                Text(subtitle, style: AppTheme.bodyMedium(context)),
               ],
             ),
           ),
           Row(
             children: [
-              FavoriteButton(
-                isFavorite: isFavorite,
-                onTap: onFavorite,
-              ),
+              FavoriteButton(isFavorite: isFavorite, onTap: onFavorite),
               const SizedBox(width: 8),
-              BookmarkButton(
-                isBookmarked: false,
-                onTap: onBookmark,
-              ),
+              BookmarkButton(isBookmarked: false, onTap: onBookmark),
             ],
           ),
         ],
@@ -300,7 +306,9 @@ class _BookmarkItem extends StatelessWidget {
               Expanded(
                 child: Text(
                   storyTitle,
-                  style: AppTheme.bodyLarge(context).copyWith(fontWeight: FontWeight.w600),
+                  style: AppTheme.bodyLarge(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
@@ -320,10 +328,7 @@ class _BookmarkItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            chapterTitle,
-            style: AppTheme.bodyMedium(context),
-          ),
+          Text(chapterTitle, style: AppTheme.bodyMedium(context)),
           if (note.isNotEmpty) ...[
             const SizedBox(height: 8),
             Container(
@@ -341,10 +346,7 @@ class _BookmarkItem extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      note,
-                      style: AppTheme.bodyMedium(context),
-                    ),
+                    child: Text(note, style: AppTheme.bodyMedium(context)),
                   ),
                 ],
               ),
@@ -381,29 +383,21 @@ class _NoteCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.note,
-                color: Colors.amber,
-                size: 20,
-              ),
+              Icon(Icons.note, color: Colors.amber, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   storyTitle,
-                  style: AppTheme.bodyLarge(context).copyWith(fontWeight: FontWeight.w600),
+                  style: AppTheme.bodyLarge(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
-              Text(
-                date,
-                style: AppTheme.caption(context),
-              ),
+              Text(date, style: AppTheme.caption(context)),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            note,
-            style: AppTheme.bodyMedium(context),
-          ),
+          Text(note, style: AppTheme.bodyMedium(context)),
         ],
       ),
     );

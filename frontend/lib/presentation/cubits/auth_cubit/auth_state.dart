@@ -55,6 +55,33 @@ class AuthError extends AuthState {
   List<Object?> get props => [message];
 }
 
+/// Email verification required after registration
+class EmailVerificationRequired extends AuthState {
+  final String email;
+
+  const EmailVerificationRequired(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
+
+/// Password reset email sent
+class PasswordResetEmailSent extends AuthState {
+  final String email;
+
+  const PasswordResetEmailSent(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
+
+/// Password reset successful
+class PasswordResetSuccess extends AuthState {
+  const PasswordResetSuccess();
+}
+
+/// Legacy state - kept for backward compatibility if needed
+/// @deprecated Use EmailVerificationRequired instead
 class OtpSent extends AuthState {
   final String email;
 

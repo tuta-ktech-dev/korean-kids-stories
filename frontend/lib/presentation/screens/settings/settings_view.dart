@@ -1,22 +1,26 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/theme/app_theme.dart';
-import '../components/buttons/settings_item.dart';
-import '../components/cards/settings_section.dart';
-import '../cubits/auth_cubit/auth_cubit.dart';
-import '../widgets/report_bottom_sheet.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../components/buttons/settings_item.dart';
+import '../../components/cards/settings_section.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/settings_cubit/settings_cubit.dart';
+import '../../widgets/report_bottom_sheet.dart';
 
-@RoutePage()
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
-        title: Text('설정', style: AppTheme.headingMedium(context)),
+        title: Text(
+          context.l10n.settingsTitle,
+          style: AppTheme.headingMedium(context),
+        ),
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
       ),
@@ -24,32 +28,32 @@ class SettingsScreen extends StatelessWidget {
         builder: (context, state) {
           final isAuthenticated = state is Authenticated;
           final isGuest = state is Unauthenticated;
-          
+
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
               // User Profile Card
               _buildUserCard(context, state),
               const SizedBox(height: 24),
-              
+
               // Account Section
               if (isAuthenticated) ...[
                 SettingsSection(
-                  title: '계정',
+                  title: context.l10n.accountSection,
                   children: [
                     SettingsItem(
                       icon: Icons.person_outline,
-                      title: '프로필 수정',
+                      title: context.l10n.editProfile,
                       onTap: () {},
                     ),
                     SettingsItem(
                       icon: Icons.notifications_outlined,
-                      title: '알림 설정',
+                      title: context.l10n.notificationSettings,
                       onTap: () {},
                     ),
                     SettingsItem(
                       icon: Icons.lock_outline,
-                      title: '비밀번호 변경',
+                      title: context.l10n.changePassword,
                       onTap: () {},
                     ),
                   ],
@@ -60,18 +64,18 @@ class SettingsScreen extends StatelessWidget {
               // Guest section - show login button
               if (isGuest) ...[
                 SettingsSection(
-                  title: '로그인',
+                  title: context.l10n.login,
                   children: [
                     SettingsItem(
                       icon: Icons.login,
-                      title: '로그인하기',
+                      title: context.l10n.loginAction,
                       iconColor: AppTheme.primaryColor(context),
                       textColor: AppTheme.primaryColor(context),
                       onTap: () => context.router.pushNamed('/login'),
                     ),
                     SettingsItem(
                       icon: Icons.person_add_outlined,
-                      title: '회원가입',
+                      title: context.l10n.signUp,
                       onTap: () => context.router.pushNamed('/register'),
                     ),
                   ],
@@ -81,11 +85,11 @@ class SettingsScreen extends StatelessWidget {
 
               // Report Section
               SettingsSection(
-                title: '신고 및 문의',
+                title: context.l10n.reportAndSupport,
                 children: [
                   SettingsItem(
                     icon: Icons.report_problem_outlined,
-                    title: '앱 문제 신고',
+                    title: context.l10n.reportAppIssue,
                     iconColor: Colors.orange,
                     onTap: () => showReportSheet(
                       context,
@@ -96,17 +100,17 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   SettingsItem(
                     icon: Icons.help_outline,
-                    title: '문의하기',
+                    title: context.l10n.contactUs,
                     onTap: () {},
                   ),
                   SettingsItem(
                     icon: Icons.privacy_tip_outlined,
-                    title: '개인정보 처리방침',
+                    title: context.l10n.privacyPolicy,
                     onTap: () {},
                   ),
                   SettingsItem(
                     icon: Icons.description_outlined,
-                    title: '이용약관',
+                    title: context.l10n.termsOfService,
                     onTap: () {},
                   ),
                 ],
@@ -116,21 +120,42 @@ class SettingsScreen extends StatelessWidget {
 
               // App Section
               SettingsSection(
-                title: '앱 정보',
+                title: context.l10n.appInfo,
                 children: [
                   SettingsItem(
+                    icon: Icons.language,
+                    title: context.l10n.language,
+                    trailing: Text(
+                      _getLanguageName(context),
+                      style: AppTheme.bodyMedium(context),
+                    ),
+                    onTap: () => _showLanguageDialog(context),
+                  ),
+                  SettingsItem(
                     icon: Icons.info_outline,
-                    title: '버전',
-                    trailing: Text('1.0.0', style: AppTheme.bodyMedium(context)),
+                    title: context.l10n.languageSettings,
+                    trailing: Text(
+                      _getLanguageName(context),
+                      style: AppTheme.bodyMedium(context),
+                    ),
+                    onTap: () => _showLanguageDialog(context),
+                  ),
+                  SettingsItem(
+                    icon: Icons.info_outline,
+                    title: context.l10n.version,
+                    trailing: Text(
+                      '1.0.0',
+                      style: AppTheme.bodyMedium(context),
+                    ),
                   ),
                   SettingsItem(
                     icon: Icons.star_outline,
-                    title: '앱 평가하기',
+                    title: context.l10n.rateApp,
                     onTap: () {},
                   ),
                   SettingsItem(
                     icon: Icons.share_outlined,
-                    title: '친구에게 공유',
+                    title: context.l10n.shareApp,
                     onTap: () {},
                   ),
                 ],
@@ -141,18 +166,18 @@ class SettingsScreen extends StatelessWidget {
               // Danger Zone - only for authenticated users
               if (isAuthenticated) ...[
                 SettingsSection(
-                  title: '위험 구역',
+                  title: context.l10n.dangerZone,
                   children: [
                     SettingsItem(
                       icon: Icons.logout,
-                      title: '로그아웃',
+                      title: context.l10n.logout,
                       iconColor: Colors.red,
                       textColor: Colors.red,
                       onTap: () => _showLogoutDialog(context),
                     ),
                     SettingsItem(
                       icon: Icons.delete_forever,
-                      title: '계정 삭제',
+                      title: context.l10n.deleteAccount,
                       iconColor: Colors.red,
                       textColor: Colors.red,
                       onTap: () => _showDeleteAccountDialog(context),
@@ -200,18 +225,17 @@ class SettingsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    state.userName ?? '사용자',
-                    style: AppTheme.headingMedium(context).copyWith(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                    state.userName ?? context.l10n.defaultUser,
+                    style: AppTheme.headingMedium(
+                      context,
+                    ).copyWith(color: Colors.white, fontSize: 20),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     state.email ?? '',
-                    style: AppTheme.bodyMedium(context).copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
+                    style: AppTheme.bodyMedium(
+                      context,
+                    ).copyWith(color: Colors.white.withValues(alpha: 0.9)),
                   ),
                 ],
               ),
@@ -224,10 +248,9 @@ class SettingsScreen extends StatelessWidget {
               ),
               child: Text(
                 'Pro',
-                style: AppTheme.caption(context).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTheme.caption(
+                  context,
+                ).copyWith(color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -265,15 +288,17 @@ class SettingsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '게스트',
-                    style: AppTheme.headingMedium(context).copyWith(fontSize: 20),
+                    context.l10n.guest,
+                    style: AppTheme.headingMedium(
+                      context,
+                    ).copyWith(fontSize: 20),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '로그인하여 모든 기능을 이용하세요',
-                    style: AppTheme.bodyMedium(context).copyWith(
-                      color: AppTheme.textMutedColor(context),
-                    ),
+                    context.l10n.guestSubtitle,
+                    style: AppTheme.bodyMedium(
+                      context,
+                    ).copyWith(color: AppTheme.textMutedColor(context)),
                   ),
                 ],
               ),
@@ -287,9 +312,9 @@ class SettingsScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) {
     _showConfirmationDialog(
       context: context,
-      title: '로그아웃',
-      content: '정말 로그아웃하시겠습니까?',
-      confirmText: '로그아웃',
+      title: context.l10n.logout,
+      content: context.l10n.logoutConfirmation,
+      confirmText: context.l10n.logout,
       onConfirm: () {
         context.read<AuthCubit>().logout();
         context.router.replaceNamed('/');
@@ -306,7 +331,10 @@ class SettingsScreen extends StatelessWidget {
           children: [
             const Icon(Icons.warning, color: Colors.red),
             const SizedBox(width: 8),
-            Text('계정 삭제', style: AppTheme.headingMedium(context)),
+            Text(
+              context.l10n.deleteAccount,
+              style: AppTheme.headingMedium(context),
+            ),
           ],
         ),
         content: Column(
@@ -314,12 +342,14 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '정말 계정을 삭제하시겠습니까?',
-              style: AppTheme.bodyLarge(context).copyWith(fontWeight: FontWeight.w600),
+              context.l10n.deleteAccountConfirmation,
+              style: AppTheme.bodyLarge(
+                context,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             Text(
-              '• 모든 읽기 기록이 삭제됩니다\n• 저장된 북마크가 삭제됩니다\n• 이 작업은 되돌릴 수 없습니다',
+              context.l10n.deleteAccountWarning,
               style: AppTheme.bodyMedium(context).copyWith(color: Colors.red),
             ),
           ],
@@ -327,7 +357,10 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('취소', style: AppTheme.bodyLarge(context)),
+            child: Text(
+              context.l10n.cancel,
+              style: AppTheme.bodyLarge(context),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -338,7 +371,7 @@ class SettingsScreen extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('계속'),
+            child: Text(context.l10n.continueAction),
           ),
         ],
       ),
@@ -352,20 +385,25 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('최종 확인', style: AppTheme.headingMedium(context)),
+        title: Text(
+          context.l10n.finalConfirmation,
+          style: AppTheme.headingMedium(context),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '계정 삭제를 확인하려면 "삭제"를 입력하세요',
+              context.l10n.deleteAccountPrompt,
               style: AppTheme.bodyMedium(context),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
               decoration: InputDecoration(
-                hintText: '삭제',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                hintText: context.l10n.deleteKeyword,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -373,24 +411,33 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('취소', style: AppTheme.bodyLarge(context)),
+            child: Text(
+              context.l10n.cancel,
+              style: AppTheme.bodyLarge(context),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              if (controller.text == '삭제') {
+              if (controller.text == context.l10n.deleteKeyword) {
                 Navigator.pop(context);
                 context.read<AuthCubit>().logout();
                 context.router.replaceNamed('/');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('계정이 삭제되었습니다', style: AppTheme.bodyMedium(context)),
+                    content: Text(
+                      context.l10n.accountDeleted,
+                      style: AppTheme.bodyMedium(context),
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('"삭제"를 정확히 입력해주세요', style: AppTheme.bodyMedium(context)),
+                    content: Text(
+                      context.l10n.deleteKeywordMismatch,
+                      style: AppTheme.bodyMedium(context),
+                    ),
                     backgroundColor: Colors.orange,
                   ),
                 );
@@ -400,7 +447,7 @@ class SettingsScreen extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('계정 삭제'),
+            child: Text(context.l10n.deleteAccount),
           ),
         ],
       ),
@@ -423,7 +470,10 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('취소', style: AppTheme.bodyLarge(context)),
+            child: Text(
+              context.l10n.cancel,
+              style: AppTheme.bodyLarge(context),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -439,5 +489,54 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildLanguageOption(context, '한국어', const Locale('ko')),
+            _buildLanguageOption(context, 'English', const Locale('en')),
+            _buildLanguageOption(context, 'Tiếng Việt', const Locale('vi')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(
+    BuildContext context,
+    String label,
+    Locale locale,
+  ) {
+    return ListTile(
+      title: Text(label),
+      onTap: () {
+        context.read<SettingsCubit>().setLocale(locale);
+        Navigator.pop(context);
+      },
+      trailing:
+          Localizations.localeOf(context).languageCode == locale.languageCode
+          ? const Icon(Icons.check, color: Colors.blue)
+          : null,
+    );
+  }
+
+  String _getLanguageName(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    switch (locale.languageCode) {
+      case 'ko':
+        return '한국어';
+      case 'en':
+        return 'English';
+      case 'vi':
+        return 'Tiếng Việt';
+      default:
+        return '한국어';
+    }
   }
 }

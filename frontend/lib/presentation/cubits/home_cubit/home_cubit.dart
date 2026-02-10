@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/story.dart';
-import '../../../data/services/pocketbase_service.dart';
+import '../../../data/repositories/story_repository.dart';
 import 'home_state.dart';
 export 'home_state.dart';
 
@@ -10,14 +10,12 @@ class HomeCubit extends Cubit<HomeState> {
     initialize();
   }
 
-  final _pbService = PocketbaseService();
+  final _storyRepo = StoryRepository();
 
   Future<void> initialize() async {
     emit(const HomeLoading());
 
     try {
-      await _pbService.initialize();
-
       // Fetch categories, stories and sections in parallel
       final results = await Future.wait([
         _fetchCategories(),
@@ -47,13 +45,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<List<Category>> _fetchCategories() async {
     // Fetch distinct categories from stories
-    final stories = await _pbService.pb
-        .collection('stories')
-        .getFullList(filter: 'is_published=true', fields: 'category');
+    final stories = await _storyRepo.getStories();
 
     // Extract unique categories
     final uniqueCategories = stories
-        .map((r) => r.getStringValue('category'))
+        .map((s) => s.category)
         .where((c) => c.isNotEmpty)
         .toSet()
         .toList();
@@ -84,20 +80,16 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<List<HomeStory>> _fetchStories({String? category}) async {
-    final stories = await _pbService.getStories(category: category);
+    final stories = await _storyRepo.getStories(category: category);
     return stories.map((s) => _mapToHomeStory(s)).toList();
   }
 
   Future<StorySections> _fetchSections() async {
     try {
       // Fetch all stories for processing
-      final allStories = await _pbService.pb
-          .collection('stories')
-          .getFullList(filter: 'is_published=true', sort: '-created');
+      final allStories = await _storyRepo.getStories();
 
-      final homeStories = allStories
-          .map((r) => _mapToHomeStoryFromRecord(r))
-          .toList();
+      final homeStories = allStories.map((s) => _mapToHomeStory(s)).toList();
 
       // 🔥 Featured stories
       final featured = homeStories.where((s) => s.isFeatured).take(5).toList();
@@ -108,15 +100,16 @@ class HomeCubit extends Cubit<HomeState> {
       // ⭐ Most reviewed (sorted by review count)
       final mostReviewed = List<HomeStory>.from(homeStories)
         ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-      mostReviewed.removeRange(
-        5,
-        mostReviewed.length.clamp(5, mostReviewed.length),
-      );
+      if (mostReviewed.length > 5) {
+        mostReviewed.removeRange(5, mostReviewed.length);
+      }
 
       // 👁 Most viewed (sorted by view count)
       final mostViewed = List<HomeStory>.from(homeStories)
         ..sort((a, b) => b.viewCount.compareTo(a.viewCount));
-      mostViewed.removeRange(5, mostViewed.length.clamp(5, mostViewed.length));
+      if (mostViewed.length > 5) {
+        mostViewed.removeRange(5, mostViewed.length);
+      }
 
       // 🆕 Recent stories
       final recent = homeStories.take(5).toList();
@@ -124,8 +117,8 @@ class HomeCubit extends Cubit<HomeState> {
       return StorySections(
         featured: featured,
         withAudio: withAudio,
-        mostReviewed: mostReviewed.take(5).toList(),
-        mostViewed: mostViewed.take(5).toList(),
+        mostReviewed: mostReviewed,
+        mostViewed: mostViewed,
         recent: recent,
       );
     } catch (e) {
@@ -150,32 +143,6 @@ class HomeCubit extends Cubit<HomeState> {
       averageRating: story.averageRating,
       reviewCount: story.reviewCount,
       viewCount: story.viewCount,
-    );
-  }
-
-  HomeStory _mapToHomeStoryFromRecord(dynamic record) {
-    final files = record.getListValue<String>('thumbnail');
-    final baseUrl = _pbService.pb.baseURL;
-
-    return HomeStory(
-      id: record.id,
-      title: record.getStringValue('title'),
-      thumbnailUrl: files.isNotEmpty
-          ? '$baseUrl/api/files/stories/${record.id}/${files.first}'
-          : null,
-      category: record.getStringValue('category'),
-      ageMin: record.getIntValue('age_min'),
-      ageMax: record.getIntValue('age_max'),
-      totalChapters: record.getIntValue('total_chapters'),
-      isFeatured: record.getBoolValue('is_featured'),
-      hasAudio: record.getBoolValue('has_audio'),
-      hasQuiz: record.getBoolValue('has_quiz'),
-      hasIllustrations: record.getBoolValue('has_illustrations'),
-      averageRating: record.data['average_rating'] != null
-          ? (record.data['average_rating'] as num).toDouble()
-          : null,
-      reviewCount: record.getIntValue('review_count'),
-      viewCount: record.getIntValue('view_count'),
     );
   }
 

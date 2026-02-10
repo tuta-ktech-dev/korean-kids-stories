@@ -1,15 +1,17 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/theme/app_theme.dart';
-import '../cubits/auth_cubit/auth_cubit.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
 
-@RoutePage()
-class LandingScreen extends StatelessWidget {
-  const LandingScreen({super.key});
+class LandingView extends StatelessWidget {
+  const LandingView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // context.l10n is available via extension
+
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
@@ -43,7 +45,9 @@ class LandingScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryPink.withValues(alpha: 0.3),
+                              color: AppTheme.primaryPink.withValues(
+                                alpha: 0.3,
+                              ),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -56,30 +60,37 @@ class LandingScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      
+
                       // Title
                       Text(
-                        '한국 동화',
-                        style: AppTheme.headingLarge(context).copyWith(fontSize: 36),
+                        context.l10n.landingTitle,
+                        style: AppTheme.headingLarge(
+                          context,
+                        ).copyWith(fontSize: 36),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Korean Kids Stories',
-                        style: AppTheme.bodyLarge(context).copyWith(
-                          color: AppTheme.textMutedColor(context),
-                        ),
+                        style: AppTheme.bodyLarge(
+                          context,
+                        ).copyWith(color: AppTheme.textMutedColor(context)),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Tagline
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryColor(context).withValues(alpha: 0.1),
+                          color: AppTheme.primaryColor(
+                            context,
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '전통부터 역사까지, 아이들을 위한 한국 이야기',
+                          context.l10n.landingSubtitle,
                           style: AppTheme.bodyMedium(context).copyWith(
                             color: AppTheme.primaryColor(context),
                             fontWeight: FontWeight.w500,
@@ -90,7 +101,7 @@ class LandingScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Bottom buttons
               Padding(
                 padding: const EdgeInsets.all(24),
@@ -110,11 +121,11 @@ class LandingScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text('둘러보기'),
+                        child: Text(context.l10n.browseWithoutLogin),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Login button
                     SizedBox(
                       width: double.infinity,
@@ -127,10 +138,12 @@ class LandingScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          side: BorderSide(color: AppTheme.primaryColor(context)),
+                          side: BorderSide(
+                            color: AppTheme.primaryColor(context),
+                          ),
                         ),
                         child: Text(
-                          '로그인',
+                          context.l10n.login,
                           style: AppTheme.bodyLarge(context).copyWith(
                             color: AppTheme.primaryColor(context),
                             fontWeight: FontWeight.w600,
@@ -139,13 +152,13 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Register link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '계정이 없으신가요? ',
+                          '${context.l10n.dontHaveAccount} ',
                           style: AppTheme.bodyMedium(context),
                         ),
                         TextButton(
@@ -153,7 +166,7 @@ class LandingScreen extends StatelessWidget {
                             context.router.pushNamed('/register');
                           },
                           child: Text(
-                            '회원가입',
+                            context.l10n.signUp,
                             style: AppTheme.bodyMedium(context).copyWith(
                               color: AppTheme.primaryColor(context),
                               fontWeight: FontWeight.w600,
