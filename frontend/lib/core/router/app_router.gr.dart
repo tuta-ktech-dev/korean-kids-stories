@@ -11,6 +11,43 @@
 part of 'app_router.dart';
 
 /// generated route for
+/// [ContentPageScreen]
+class ContentRouteRoute extends PageRouteInfo<ContentRouteRouteArgs> {
+  ContentRouteRoute({
+    Key? key,
+    required String slug,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ContentRouteRoute.name,
+         args: ContentRouteRouteArgs(key: key, slug: slug),
+         initialChildren: children,
+       );
+
+  static const String name = 'ContentRouteRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<ContentRouteRouteArgs>();
+      return ContentPageScreen(key: args.key, slug: args.slug);
+    },
+  );
+}
+
+class ContentRouteRouteArgs {
+  const ContentRouteRouteArgs({this.key, required this.slug});
+
+  final Key? key;
+
+  final String slug;
+
+  @override
+  String toString() {
+    return 'ContentRouteRouteArgs{key: $key, slug: $slug}';
+  }
+}
+
+/// generated route for
 /// [HistoryScreen]
 class HistoryRoute extends PageRouteInfo<void> {
   const HistoryRoute({List<PageRouteInfo>? children})
@@ -140,6 +177,22 @@ class OtpVerificationRouteArgs {
   String toString() {
     return 'OtpVerificationRouteArgs{key: $key, email: $email}';
   }
+}
+
+/// generated route for
+/// [ProfileScreen]
+class ProfileRoute extends PageRouteInfo<void> {
+  const ProfileRoute({List<PageRouteInfo>? children})
+    : super(ProfileRoute.name, initialChildren: children);
+
+  static const String name = 'ProfileRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ProfileScreen();
+    },
+  );
 }
 
 /// generated route for

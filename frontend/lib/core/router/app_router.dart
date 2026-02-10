@@ -9,6 +9,8 @@ import '../../presentation/screens/story_detail/story_detail_screen.dart';
 import '../../presentation/screens/reader/reader_screen.dart';
 import '../../presentation/screens/history/history_screen.dart';
 import '../../presentation/screens/settings/settings_screen.dart';
+import '../../presentation/screens/profile/profile_screen.dart';
+import '../../presentation/screens/content_page/content_page_screen.dart';
 import '../../presentation/screens/library/library_screen.dart';
 import '../../presentation/screens/login/login_screen.dart';
 import '../../presentation/screens/register/register_screen.dart';
@@ -27,6 +29,8 @@ class AppRouter extends RootStackRouter {
 
     // Auth routes
     AutoRoute(path: '/login', page: LoginRoute.page),
+    AutoRoute(path: '/profile', page: ProfileRoute.page),
+    AutoRoute(path: '/content/:slug', page: ContentRouteRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
     AutoRoute(path: '/verify-otp', page: OtpVerificationRoute.page),
 

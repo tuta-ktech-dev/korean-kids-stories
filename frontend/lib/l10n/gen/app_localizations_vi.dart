@@ -252,6 +252,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get changePassword => 'Đổi mật khẩu';
 
   @override
+  String get profileTitle => 'Hồ sơ cá nhân';
+
+  @override
+  String get profileSaved => 'Đã lưu';
+
+  @override
+  String get oldPassword => 'Mật khẩu hiện tại';
+
+  @override
+  String get newPassword => 'Mật khẩu mới';
+
+  @override
+  String get passwordChanged => 'Đã đổi mật khẩu thành công';
+
+  @override
   String get loginAction => 'Đăng nhập';
 
   @override

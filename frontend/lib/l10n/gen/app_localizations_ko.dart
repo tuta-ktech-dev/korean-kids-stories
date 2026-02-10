@@ -251,6 +251,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get changePassword => '비밀번호 변경';
 
   @override
+  String get profileTitle => '프로필';
+
+  @override
+  String get profileSaved => '저장되었습니다';
+
+  @override
+  String get oldPassword => '현재 비밀번호';
+
+  @override
+  String get newPassword => '새 비밀번호';
+
+  @override
+  String get passwordChanged => '비밀번호가 변경되었습니다';
+
+  @override
   String get loginAction => '로그인하기';
 
   @override

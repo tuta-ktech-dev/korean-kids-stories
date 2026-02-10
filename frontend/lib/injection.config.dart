@@ -12,8 +12,10 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import 'data/repositories/app_config_repository.dart' as _i83;
 import 'data/repositories/auth_repository.dart' as _i593;
 import 'data/repositories/bookmark_repository.dart' as _i318;
+import 'data/repositories/content_page_repository.dart' as _i96;
 import 'data/repositories/favorite_repository.dart' as _i266;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
@@ -21,6 +23,7 @@ import 'data/repositories/reading_history_repository.dart' as _i821;
 import 'data/repositories/report_repository.dart' as _i726;
 import 'data/repositories/review_repository.dart' as _i1049;
 import 'data/repositories/story_repository.dart' as _i691;
+import 'data/repositories/user_preferences_repository.dart' as _i195;
 import 'data/services/pocketbase_service.dart' as _i700;
 import 'data/services/tracking_service.dart' as _i194;
 import 'injection_module.dart' as _i212;
@@ -59,29 +62,38 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i593.AuthRepository>(
       () => _i593.AuthRepository(pbService: gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i369.ProgressRepository>(
-      () => _i369.ProgressRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i691.StoryRepository>(
-      () => _i691.StoryRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i266.FavoriteRepository>(
-      () => _i266.FavoriteRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i318.BookmarkRepository>(
-      () => _i318.BookmarkRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i627.NoteRepository>(
-      () => _i627.NoteRepository(gh<_i700.PocketbaseService>()),
+    gh.factory<_i96.ContentPageRepository>(
+      () => _i96.ContentPageRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i821.ReadingHistoryRepository>(
-      () => _i821.ReadingHistoryRepository(gh<_i700.PocketbaseService>()),
+    gh.factory<_i369.ProgressRepository>(
+      () => _i369.ProgressRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i318.BookmarkRepository>(
+      () => _i318.BookmarkRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i726.ReportRepository>(
       () => _i726.ReportRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i821.ReadingHistoryRepository>(
+      () => _i821.ReadingHistoryRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i627.NoteRepository>(
+      () => _i627.NoteRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i691.StoryRepository>(
+      () => _i691.StoryRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i195.UserPreferencesRepository>(
+      () => _i195.UserPreferencesRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i83.AppConfigRepository>(
+      () => _i83.AppConfigRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i266.FavoriteRepository>(
+      () => _i266.FavoriteRepository(gh<_i700.PocketbaseService>()),
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),

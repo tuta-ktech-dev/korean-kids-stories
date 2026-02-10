@@ -5,6 +5,7 @@
 *.so
 *.dylib
 pocketbase
+pocketbase_linux
 tmp/main
 
 # Test binary, built with `go test -c`

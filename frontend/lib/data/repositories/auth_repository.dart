@@ -1,3 +1,4 @@
+import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -193,12 +194,12 @@ class AuthRepository {
   }
 
   /// Update user profile
-  /// 
+  ///
   /// [name] - New display name
-  /// [avatar] - Avatar file (optional)
+  /// [avatarFile] - Avatar file (optional). Pass [MultipartFile] for file upload.
   Future<User> updateProfile({
     String? name,
-    List<int>? avatar,
+    http.MultipartFile? avatarFile,
   }) async {
     try {
       final currentUser = _pbService.currentUser;
@@ -209,9 +210,17 @@ class AuthRepository {
       final body = <String, dynamic>{};
       if (name != null) body['name'] = name;
 
-      final record = await _pbService.pb
-          .collection('users')
-          .update(currentUser.id, body: body);
+      final files = avatarFile != null ? [avatarFile] : <http.MultipartFile>[];
+      final record = await _pbService.pb.collection('users').update(
+            currentUser.id,
+            body: body,
+            files: files,
+          );
+
+      // Refresh auth to ensure avatar is in authStore (merge may not include file URLs)
+      if (avatarFile != null) {
+        await _pbService.pb.collection('users').authRefresh();
+      }
 
       return User.fromRecord(record);
     } on ClientException {

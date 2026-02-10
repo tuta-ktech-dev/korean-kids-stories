@@ -1,8 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../../core/config/app_config.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/services/pocketbase_service.dart';
+import '../../../injection.dart';
+import '../../../data/repositories/app_config_repository.dart';
 import '../../components/buttons/settings_item.dart';
 import '../../components/cards/settings_section.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
@@ -44,17 +51,12 @@ class SettingsView extends StatelessWidget {
                     SettingsItem(
                       icon: Icons.person_outline,
                       title: context.l10n.editProfile,
-                      onTap: () {},
-                    ),
-                    SettingsItem(
-                      icon: Icons.notifications_outlined,
-                      title: context.l10n.notificationSettings,
-                      onTap: () {},
+                      onTap: () => context.router.pushNamed('/profile'),
                     ),
                     SettingsItem(
                       icon: Icons.lock_outline,
                       title: context.l10n.changePassword,
-                      onTap: () {},
+                      onTap: () => context.router.pushNamed('/profile'),
                     ),
                   ],
                 ),
@@ -101,17 +103,17 @@ class SettingsView extends StatelessWidget {
                   SettingsItem(
                     icon: Icons.help_outline,
                     title: context.l10n.contactUs,
-                    onTap: () {},
+                    onTap: () => _showContactSheet(context),
                   ),
                   SettingsItem(
                     icon: Icons.privacy_tip_outlined,
                     title: context.l10n.privacyPolicy,
-                    onTap: () {},
+                    onTap: () => context.router.push(ContentRouteRoute(slug: 'privacy')),
                   ),
                   SettingsItem(
                     icon: Icons.description_outlined,
                     title: context.l10n.termsOfService,
-                    onTap: () {},
+                    onTap: () => context.router.push(ContentRouteRoute(slug: 'terms')),
                   ),
                 ],
               ),
@@ -133,15 +135,6 @@ class SettingsView extends StatelessWidget {
                   ),
                   SettingsItem(
                     icon: Icons.info_outline,
-                    title: context.l10n.languageSettings,
-                    trailing: Text(
-                      _getLanguageName(context),
-                      style: AppTheme.bodyMedium(context),
-                    ),
-                    onTap: () => _showLanguageDialog(context),
-                  ),
-                  SettingsItem(
-                    icon: Icons.info_outline,
                     title: context.l10n.version,
                     trailing: Text(
                       '1.0.0',
@@ -151,12 +144,12 @@ class SettingsView extends StatelessWidget {
                   SettingsItem(
                     icon: Icons.star_outline,
                     title: context.l10n.rateApp,
-                    onTap: () {},
+                    onTap: () => _openStore(context),
                   ),
                   SettingsItem(
                     icon: Icons.share_outlined,
                     title: context.l10n.shareApp,
-                    onTap: () {},
+                    onTap: () => _shareApp(context),
                   ),
                 ],
               ),
@@ -193,9 +186,39 @@ class SettingsView extends StatelessWidget {
     );
   }
 
+  Widget _buildAvatar(BuildContext context, double size) {
+    final record = getIt<PocketbaseService>().currentUser;
+    String? avatarUrl;
+    if (record != null) {
+      final raw = record.data['avatar'];
+      if (raw != null) {
+        final avatar = raw is List && raw.isNotEmpty
+            ? raw.first.toString()
+            : raw.toString();
+        if (avatar.isNotEmpty) {
+          avatarUrl = '${AppConfig.baseUrl}/api/files/users/${record.id}/$avatar';
+        }
+      }
+    }
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CircleAvatar(
+        backgroundColor: Colors.white.withValues(alpha: 0.3),
+        backgroundImage:
+            avatarUrl != null ? NetworkImage(avatarUrl) : null,
+        child: avatarUrl == null
+            ? const Icon(Icons.person, color: Colors.white, size: 32)
+            : null,
+      ),
+    );
+  }
+
   Widget _buildUserCard(BuildContext context, AuthState state) {
     if (state is Authenticated) {
-      return Container(
+      return GestureDetector(
+        onTap: () => context.router.pushNamed('/profile'),
+        child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -210,15 +233,7 @@ class SettingsView extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.person, color: Colors.white, size: 32),
-            ),
+            _buildAvatar(context, 60),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -240,20 +255,8 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                'Pro',
-                style: AppTheme.caption(
-                  context,
-                ).copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-              ),
-            ),
           ],
+        ),
         ),
       );
     } else {
@@ -526,6 +529,116 @@ class SettingsView extends StatelessWidget {
     );
   }
 
+  Future<void> _showContactSheet(BuildContext context) async {
+    final config = await getIt<AppConfigRepository>().getAll();
+    final address = config['contact_address'] ?? '';
+    final phone = config['contact_phone'] ?? '';
+    final email = config['contact_email'] ?? '';
+    final facebook = config['facebook_url'] ?? '';
+    final naver = config['naver_url'] ?? '';
+
+    if (context.mounted) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor(ctx),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textMutedColor(ctx).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                context.l10n.contactUs,
+                style: AppTheme.headingMedium(ctx),
+              ),
+              const SizedBox(height: 16),
+              if (address.isNotEmpty)
+                _ContactRow(
+                  icon: Icons.location_on_outlined,
+                  text: address,
+                  onTap: null,
+                ),
+              if (phone.isNotEmpty)
+                _ContactRow(
+                  icon: Icons.phone_outlined,
+                  text: phone,
+                  onTap: () => launchUrl(Uri(scheme: 'tel', path: phone)),
+                ),
+              if (email.isNotEmpty)
+                _ContactRow(
+                  icon: Icons.email_outlined,
+                  text: email,
+                  onTap: () => launchUrl(Uri(scheme: 'mailto', path: email)),
+                ),
+              if (facebook.isNotEmpty)
+                _ContactRow(
+                  icon: Icons.facebook,
+                  text: 'Facebook',
+                  onTap: () => launchUrl(Uri.parse(facebook)),
+                ),
+              if (naver.isNotEmpty)
+                _ContactRow(
+                  icon: Icons.link,
+                  text: 'Naver',
+                  onTap: () => launchUrl(Uri.parse(naver)),
+                ),
+              if (address.isEmpty &&
+                  phone.isEmpty &&
+                  email.isEmpty &&
+                  facebook.isEmpty &&
+                  naver.isEmpty)
+                Text(
+                  'No contact info configured',
+                  style: AppTheme.bodyMedium(ctx).copyWith(
+                    color: AppTheme.textMutedColor(ctx),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _openStore(BuildContext context) async {
+    final config = await getIt<AppConfigRepository>().getAll();
+    final playStore = config['play_store_url'];
+    final appStore = config['app_store_url'];
+
+    final urlStr = (playStore != null && playStore.isNotEmpty)
+        ? playStore
+        : (appStore != null && appStore.isNotEmpty)
+            ? appStore
+            : 'https://play.google.com/store/apps';
+
+    final url = Uri.tryParse(urlStr);
+    if (url != null && await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _shareApp(BuildContext context) async {
+    await Share.share(
+      'Check out Korean Kids Stories - 꼬마 한동화!\nhttps://play.google.com/store/apps',
+      subject: 'Korean Kids Stories',
+    );
+  }
+
   String _getLanguageName(BuildContext context) {
     final locale = Localizations.localeOf(context);
     switch (locale.languageCode) {
@@ -538,5 +651,40 @@ class SettingsView extends StatelessWidget {
       default:
         return '한국어';
     }
+  }
+}
+
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({
+    required this.icon,
+    required this.text,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: AppTheme.primaryColor(context)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTheme.bodyMedium(context),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (onTap != null) {
+      return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: child);
+    }
+    return child;
   }
 }

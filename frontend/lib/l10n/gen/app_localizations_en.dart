@@ -252,6 +252,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changePassword => 'Change Password';
 
   @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileSaved => 'Profile saved';
+
+  @override
+  String get oldPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get passwordChanged => 'Password changed successfully';
+
+  @override
   String get loginAction => 'Login';
 
   @override
