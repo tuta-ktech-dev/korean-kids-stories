@@ -101,18 +101,14 @@ class ImagePlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: iconSize,
-            color: fgColor,
-          ),
+          Icon(icon, size: iconSize, color: fgColor),
           if (label != null) ...[
             const SizedBox(height: 8),
             Text(
               label!,
-              style: AppTheme.caption(context).copyWith(
-                color: fgColor.withOpacity(0.7),
-              ),
+              style: AppTheme.caption(
+                context,
+              ).copyWith(color: fgColor.withValues(alpha: 0.7)),
             ),
           ],
         ],
@@ -122,15 +118,13 @@ class ImagePlaceholder extends StatelessWidget {
 
   Color _getDefaultBackgroundColor(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark 
-        ? AppTheme.darkPrimaryPink.withOpacity(0.1)
-        : AppTheme.primaryPink.withOpacity(0.1);
+    return isDark
+        ? AppTheme.darkPrimaryPink.withValues(alpha: 0.1)
+        : AppTheme.primaryPink.withValues(alpha: 0.1);
   }
 
   Color _getDefaultIconColor(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark 
-        ? AppTheme.darkPrimaryPink
-        : AppTheme.primaryPink;
+    return isDark ? AppTheme.darkPrimaryPink : AppTheme.primaryPink;
   }
 }

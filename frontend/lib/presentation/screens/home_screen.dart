@@ -230,7 +230,8 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: stories.length,
-            itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+            itemBuilder: (context, index) =>
+                _buildStoryCard(stories[index], context),
           ),
         ),
       );
@@ -239,7 +240,7 @@ class HomeScreen extends StatelessWidget {
     return const SliverToBoxAdapter();
   }
 
-  Widget _buildStoryCard(HomeStory story) {
+  Widget _buildStoryCard(HomeStory story, BuildContext context) {
     return StoryCard(
       id: story.id,
       title: story.title,
@@ -283,7 +284,8 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: stories.length,
-            itemBuilder: (context, index) => _buildStoryCard(stories[index]),
+            itemBuilder: (context, index) =>
+                _buildStoryCard(stories[index], context),
           ),
         ),
       ]),

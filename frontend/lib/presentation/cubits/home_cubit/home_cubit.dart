@@ -91,29 +91,27 @@ class HomeCubit extends Cubit<HomeState> {
   Future<StorySections> _fetchSections() async {
     try {
       // Fetch all stories for processing
-      final allStories = await _pbService.pb.collection('stories').getFullList(
-        filter: 'is_published=true',
-        sort: '-created',
-      );
+      final allStories = await _pbService.pb
+          .collection('stories')
+          .getFullList(filter: 'is_published=true', sort: '-created');
 
-      final homeStories = allStories.map((r) => _mapToHomeStoryFromRecord(r)).toList();
+      final homeStories = allStories
+          .map((r) => _mapToHomeStoryFromRecord(r))
+          .toList();
 
       // 🔥 Featured stories
-      final featured = homeStories
-          .where((s) => s.isFeatured)
-          .take(5)
-          .toList();
+      final featured = homeStories.where((s) => s.isFeatured).take(5).toList();
 
       // 🎧 Stories with audio
-      final withAudio = homeStories
-          .where((s) => s.hasAudio)
-          .take(5)
-          .toList();
+      final withAudio = homeStories.where((s) => s.hasAudio).take(5).toList();
 
       // ⭐ Most reviewed (sorted by review count)
       final mostReviewed = List<HomeStory>.from(homeStories)
         ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-      mostReviewed.removeRange(5, mostReviewed.length.clamp(5, mostReviewed.length));
+      mostReviewed.removeRange(
+        5,
+        mostReviewed.length.clamp(5, mostReviewed.length),
+      );
 
       // 👁 Most viewed (sorted by view count)
       final mostViewed = List<HomeStory>.from(homeStories)
@@ -157,7 +155,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeStory _mapToHomeStoryFromRecord(dynamic record) {
     final files = record.getListValue<String>('thumbnail');
-    final baseUrl = _pbService.pb.baseUrl;
+    final baseUrl = _pbService.pb.baseURL;
 
     return HomeStory(
       id: record.id,

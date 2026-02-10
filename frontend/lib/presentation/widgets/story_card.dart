@@ -59,14 +59,10 @@ class StoryCard extends StatelessWidget {
     return Wrap(
       spacing: 4,
       children: [
-        if (isFeatured)
-          _buildBadge(Icons.star_rounded, Colors.amber),
-        if (hasAudio)
-          _buildBadge(Icons.headphones_rounded, Colors.orange),
-        if (hasQuiz)
-          _buildBadge(Icons.quiz_rounded, Colors.green),
-        if (hasIllustrations)
-          _buildBadge(Icons.palette_rounded, Colors.purple),
+        if (isFeatured) _buildBadge(Icons.star_rounded, Colors.amber),
+        if (hasAudio) _buildBadge(Icons.headphones_rounded, Colors.orange),
+        if (hasQuiz) _buildBadge(Icons.quiz_rounded, Colors.green),
+        if (hasIllustrations) _buildBadge(Icons.palette_rounded, Colors.purple),
       ],
     );
   }
@@ -85,11 +81,7 @@ class StoryCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        icon,
-        size: 14,
-        color: color,
-      ),
+      child: Icon(icon, size: 14, color: color),
     );
   }
 
@@ -101,17 +93,9 @@ class StoryCard extends StatelessWidget {
       children: [
         ...List.generate(5, (index) {
           if (index < fullStars) {
-            return Icon(
-              Icons.star_rounded,
-              size: 14,
-              color: Colors.amber,
-            );
+            return Icon(Icons.star_rounded, size: 14, color: Colors.amber);
           } else if (index == fullStars && hasHalfStar) {
-            return Icon(
-              Icons.star_half_rounded,
-              size: 14,
-              color: Colors.amber,
-            );
+            return Icon(Icons.star_half_rounded, size: 14, color: Colors.amber);
           } else {
             return Icon(
               Icons.star_outline_rounded,
@@ -123,9 +107,7 @@ class StoryCard extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           '($reviewCount)',
-          style: AppTheme.caption(context).copyWith(
-            fontSize: 11,
-          ),
+          style: AppTheme.caption(context).copyWith(fontSize: 11),
         ),
       ],
     );
@@ -200,27 +182,26 @@ class StoryCard extends StatelessWidget {
                             height: double.infinity,
                             errorBuilder: (context, error, stackTrace) =>
                                 ImagePlaceholder.story(
-                              width: double.infinity,
-                              height: double.infinity,
-                              backgroundColor:
-                                  categoryColor.withValues(alpha: 0.2),
-                              iconColor: categoryColor,
-                              borderRadius: 0,
-                            ),
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  backgroundColor: categoryColor.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  iconColor: categoryColor,
+                                  borderRadius: 0,
+                                ),
                           )
                         : ImagePlaceholder.story(
                             width: double.infinity,
                             height: double.infinity,
-                            backgroundColor: categoryColor.withValues(alpha: 0.2),
+                            backgroundColor: categoryColor.withValues(
+                              alpha: 0.2,
+                            ),
                             iconColor: categoryColor,
                             borderRadius: 0,
                           ),
                     // Feature badges
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: _buildFeatureBadges(),
-                    ),
+                    Positioned(top: 8, right: 8, child: _buildFeatureBadges()),
                   ],
                 ),
               ),
@@ -259,10 +240,7 @@ class StoryCard extends StatelessWidget {
                   color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '$ageMin-$ageMax세',
-                  style: AppTheme.caption(context),
-                ),
+                Text('$ageMin-$ageMax세', style: AppTheme.caption(context)),
                 const SizedBox(width: 12),
                 Icon(
                   Icons.menu_book_rounded,
@@ -270,10 +248,7 @@ class StoryCard extends StatelessWidget {
                   color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '$totalChapters화',
-                  style: AppTheme.caption(context),
-                ),
+                Text('$totalChapters화', style: AppTheme.caption(context)),
               ],
             ),
             if (averageRating != null) ...[
@@ -291,7 +266,7 @@ class StoryCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '${_formatViewCount(viewCount)}',
+                    _formatViewCount(viewCount),
                     style: AppTheme.caption(context).copyWith(fontSize: 11),
                   ),
                 ],

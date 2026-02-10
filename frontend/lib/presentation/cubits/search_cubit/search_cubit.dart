@@ -111,25 +111,31 @@ class SearchCubit extends Cubit<SearchState> {
 
       final filterString = filters.join(' && ');
 
-      final result = await _pbService.pb.collection('stories').getList(
-        page: 1,
-        perPage: 50,
-        filter: filterString,
-        sort: '-created',
-      );
+      final result = await _pbService.pb
+          .collection('stories')
+          .getList(
+            page: 1,
+            perPage: 50,
+            filter: filterString,
+            sort: '-created',
+          );
 
-      final stories = result.items.map((r) => Story.fromRecord(r, baseUrl: _pbService.pb.baseUrl)).toList();
+      final stories = result.items
+          .map((r) => Story.fromRecord(r, baseUrl: _pbService.pb.baseURL))
+          .toList();
 
       // Save to history
       await _saveToHistory(query);
 
-      emit(SearchLoaded(
-        results: stories,
-        query: query,
-        category: category,
-        minAge: minAge,
-        maxAge: maxAge,
-      ));
+      emit(
+        SearchLoaded(
+          results: stories,
+          query: query,
+          category: category,
+          minAge: minAge,
+          maxAge: maxAge,
+        ),
+      );
     } catch (e) {
       emit(SearchError('검색 실패: $e'));
     }
@@ -147,12 +153,6 @@ class SearchCubit extends Cubit<SearchState> {
 
   // Get popular searches (mock - in real app, this would come from backend)
   List<String> getPopularSearches() {
-    return [
-      '흥부와 놀부',
-      '선녀와 나무꾼',
-      '이순신',
-      '거북선',
-      '토끼',
-    ];
+    return ['흥부와 놀부', '선녀와 나무꾼', '이순신', '거북선', '토끼'];
   }
 }
