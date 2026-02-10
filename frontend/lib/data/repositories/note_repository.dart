@@ -30,15 +30,41 @@ class StoryNote {
   factory StoryNote.fromRecord(RecordModel r) {
     String? storyTitle;
     String? chapterTitle;
-    // Use get<T>() for expanded relations (expand deprecated)
+    // expand = Map<String, List<RecordModel>>, mỗi relation là List
     try {
-      final storyExp = r.get<RecordModel?>('expand.story');
-      storyTitle = storyExp?.getStringValue('title');
+      final storyList = r.get<List<RecordModel>?>('expand.story');
+      if (storyList != null && storyList.isNotEmpty) {
+        storyTitle = storyList.first.getStringValue('title');
+      }
     } catch (_) {}
     try {
-      final chapterExp = r.get<RecordModel?>('expand.chapter');
-      chapterTitle = chapterExp?.getStringValue('title');
+      final chapterList = r.get<List<RecordModel>?>('expand.chapter');
+      if (chapterList != null && chapterList.isNotEmpty) {
+        chapterTitle = chapterList.first.getStringValue('title');
+      }
     } catch (_) {}
+    // Fallback: raw data (API có thể trả object thay vì list)
+    if (storyTitle == null || chapterTitle == null) {
+      final exp = r.data['expand'];
+      if (exp is Map) {
+        if (storyTitle == null) {
+          final s = exp['story'];
+          if (s is Map) {
+            storyTitle = s['title']?.toString();
+          } else if (s is RecordModel) {
+            storyTitle = s.getStringValue('title');
+          }
+        }
+        if (chapterTitle == null) {
+          final c = exp['chapter'];
+          if (c is Map) {
+            chapterTitle = c['title']?.toString();
+          } else if (c is RecordModel) {
+            chapterTitle = c.getStringValue('title');
+          }
+        }
+      }
+    }
     return StoryNote(
       id: r.id,
       storyId: r.getStringValue('story'),
