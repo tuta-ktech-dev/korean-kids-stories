@@ -24,13 +24,13 @@ func EnsureReadingHistoryCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, true) {
+	if AddRelationField(app, collection, "user", "users", true, 1, true) {
 		changes = true
 	}
-	if AddRelationField(collection, "story", "stories", true, 1, false) {
+	if AddRelationField(app, collection, "story", "stories", true, 1, false) {
 		changes = true
 	}
-	if AddRelationField(collection, "chapter", "chapters", false, 1, true) {
+	if AddRelationField(app, collection, "chapter", "chapters", false, 1, true) {
 		changes = true
 	}
 	if AddSelectField(collection, "action", true, []string{"view", "read", "listen", "complete"}, 1) {
@@ -70,10 +70,10 @@ func EnsureListeningSessionsCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, true) {
+	if AddRelationField(app, collection, "user", "users", true, 1, true) {
 		changes = true
 	}
-	if AddRelationField(collection, "chapter", "chapters", true, 1, true) {
+	if AddRelationField(app, collection, "chapter", "chapters", true, 1, true) {
 		changes = true
 	}
 	if AddNumberField(collection, "start_position", false, nil, nil) {
@@ -109,7 +109,7 @@ func EnsureSearchHistoryCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, true) {
+	if AddRelationField(app, collection, "user", "users", true, 1, true) {
 		changes = true
 	}
 	if AddTextField(collection, "query", true) {
@@ -147,7 +147,7 @@ func EnsureAppEventsCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", false, 1, true) {
+	if AddRelationField(app, collection, "user", "users", false, 1, true) {
 		changes = true
 	}
 	if AddSelectField(collection, "event_type", true, []string{

@@ -17,13 +17,13 @@ func EnsureBookmarksCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, true) {
+	if AddRelationField(app, collection, "user", "users", true, 1, true) {
 		changes = true
 	}
-	if AddRelationField(collection, "story", "stories", true, 1, false) {
+	if AddRelationField(app, collection, "story", "stories", true, 1, false) {
 		changes = true
 	}
-	if AddRelationField(collection, "chapter", "chapters", false, 1, true) {
+	if AddRelationField(app, collection, "chapter", "chapters", false, 1, true) {
 		changes = true
 	}
 	if AddSelectField(collection, "type", true, []string{"favorite", "bookmark", "read_later"}, 1) {

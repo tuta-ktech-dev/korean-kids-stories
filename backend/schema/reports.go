@@ -17,7 +17,7 @@ func EnsureReportsCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(collection, "user", "users", true, 1, false) {
+	if AddRelationField(app, collection, "user", "users", true, 1, false) {
 		changes = true
 	}
 	if AddSelectField(collection, "type", true, []string{"story", "chapter", "app", "question", "other"}, 1) {

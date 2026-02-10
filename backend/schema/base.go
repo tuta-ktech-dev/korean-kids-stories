@@ -105,14 +105,20 @@ func AddFileField(collection *core.Collection, name string, maxSelect int, maxSi
 	return true
 }
 
-// AddRelationField adds a relation field if missing
-func AddRelationField(collection *core.Collection, name string, collectionId string, required bool, maxSelect int, cascadeDelete bool) bool {
+// AddRelationField adds a relation field if missing.
+// targetCollectionName can be collection name (e.g. "users") or id.
+// Resolves to actual CollectionId - required because PocketBase validates relation exists.
+func AddRelationField(app core.App, collection *core.Collection, name string, targetCollectionName string, required bool, maxSelect int, cascadeDelete bool) bool {
 	if collection.Fields.GetByName(name) != nil {
+		return false
+	}
+	targetCol, err := app.FindCollectionByNameOrId(targetCollectionName)
+	if err != nil {
 		return false
 	}
 	collection.Fields.Add(&core.RelationField{
 		Name:          name,
-		CollectionId:  collectionId,
+		CollectionId:  targetCol.Id,
 		Required:      required,
 		MaxSelect:     maxSelect,
 		CascadeDelete: cascadeDelete,

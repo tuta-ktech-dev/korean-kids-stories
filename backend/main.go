@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"korean-kids-stories/api"
+	"korean-kids-stories/hooks"
 	"korean-kids-stories/schema"
 
 	"github.com/pocketbase/pocketbase"
@@ -17,7 +18,7 @@ func main() {
 	app := pocketbase.New()
 
 	// Setup hooks for auto-updating counts
-	SetupHooks(app)
+	hooks.SetupHooks(app)
 
 	// Ensure schema on startup
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
