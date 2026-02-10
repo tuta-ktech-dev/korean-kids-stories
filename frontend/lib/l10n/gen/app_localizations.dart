@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// The title of the application
   ///
   /// In en, this message translates to:
-  /// **'Korean Kids Stories'**
+  /// **'Korean Kids Tales'**
   String get appTitle;
 
   /// No description provided for @homeTab.
@@ -145,7 +145,7 @@ abstract class AppLocalizations {
   /// No description provided for @landingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Korean Kids Stories'**
+  /// **'Korean Kids Tales'**
   String get landingTitle;
 
   /// No description provided for @landingSubtitle.

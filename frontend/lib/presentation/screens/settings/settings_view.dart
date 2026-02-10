@@ -97,7 +97,7 @@ class SettingsView extends StatelessWidget {
                       context,
                       type: ReportType.app,
                       targetId: 'app',
-                      targetTitle: 'Korean Kids Stories App',
+                      targetTitle: 'Korean Kids Tales App',
                     ),
                   ),
                   SettingsItem(
@@ -634,8 +634,8 @@ class SettingsView extends StatelessWidget {
 
   Future<void> _shareApp(BuildContext context) async {
     await Share.share(
-      'Check out Korean Kids Stories - 꼬마 한동화!\nhttps://play.google.com/store/apps',
-      subject: 'Korean Kids Stories',
+      'Check out Korean Kids Tales - 꼬마 한동화!\nhttps://play.google.com/store/apps',
+      subject: 'Korean Kids Tales',
     );
   }
 

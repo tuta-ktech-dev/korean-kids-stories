@@ -79,7 +79,7 @@ class LandingView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Korean Kids Stories',
+                        'Korean Kids Tales',
                         style: AppTheme.bodyLarge(
                           context,
                         ).copyWith(color: AppTheme.textMutedColor(context)),

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Korean Kids Stories';
+  String get appTitle => 'Korean Kids Tales';
 
   @override
   String get homeTab => 'Home';
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageTitle => 'Language Settings';
 
   @override
-  String get landingTitle => 'Korean Kids Stories';
+  String get landingTitle => 'Korean Kids Tales';
 
   @override
   String get landingSubtitle =>

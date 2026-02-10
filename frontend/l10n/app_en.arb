@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Korean Kids Stories",
+  "appTitle": "Korean Kids Tales",
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -11,7 +11,7 @@
   "settingsLanguage": "Language",
   "settingsLanguageTitle": "Language Settings",
   
-  "landingTitle": "Korean Kids Stories",
+  "landingTitle": "Korean Kids Tales",
   "landingSubtitle": "From tradition to history, Korean stories for kids",
   "browse": "Browse",
   "browseWithoutLogin": "Browse without login",
