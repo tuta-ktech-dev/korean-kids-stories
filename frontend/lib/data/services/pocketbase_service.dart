@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/chapter_audio.dart';
 import '../models/story.dart';
 import '../../core/config/app_config.dart';
 import '../models/chapter.dart';
@@ -279,6 +280,37 @@ class PocketbaseService {
     } catch (e) {
       throw PocketbaseException(
         message: 'Failed to fetch chapter',
+        originalError: e,
+      );
+    }
+  }
+
+  /// Get all audio versions for a chapter (multiple narrators/voices)
+  ///
+  /// Throws [PocketbaseException] on error
+  Future<List<ChapterAudio>> getChapterAudios(String chapterId) async {
+    try {
+      final result = await pb
+          .collection('chapter_audios')
+          .getList(
+            page: 1,
+            perPage: 20,
+            filter: 'chapter="${chapterId.replaceAll('"', '\\"')}"',
+          );
+
+      return result.items
+          .map((r) => ChapterAudio.fromRecord(r, baseUrl: baseUrl))
+          .toList();
+    } on ClientException catch (e) {
+      throw PocketbaseException(
+        message:
+            e.response['message']?.toString() ?? 'Failed to fetch chapter audios',
+        statusCode: e.statusCode,
+        originalError: e,
+      );
+    } catch (e) {
+      throw PocketbaseException(
+        message: 'Failed to fetch chapter audios',
         originalError: e,
       );
     }

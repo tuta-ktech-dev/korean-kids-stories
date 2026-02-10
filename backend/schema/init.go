@@ -10,6 +10,7 @@ func EnsureAllSchema(app core.App) {
 	EnsureUsersExtendCollection(app)
 	EnsureStoriesCollection(app)
 	EnsureChaptersCollection(app)
+	EnsureChapterAudiosCollection(app)
 	EnsureReadingProgressCollection(app)
 	EnsureDictionaryCollection(app)
 	EnsureReportsCollection(app)

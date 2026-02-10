@@ -106,10 +106,6 @@ class _ReaderViewState extends State<ReaderView> {
     });
   }
 
-  bool _hasAudio(Chapter chapter) {
-    final url = chapter.audioUrl;
-    return url != null && url.isNotEmpty;
-  }
 
   Widget _buildContent(
     BuildContext context,
@@ -251,7 +247,7 @@ class _ReaderViewState extends State<ReaderView> {
                 : null,
             body: GestureDetector(
               onTap: _toggleControls,
-              child: _hasAudio(chapter)
+              child: state.hasAudio
                   ? Column(
                       children: [
                         Expanded(

@@ -49,15 +49,7 @@ func EnsureChaptersCollection(app core.App) {
 		})
 		changes = true
 	}
-	if AddFileField(collection, "audio_file", 1, 52428800, []string{"audio/mpeg", "audio/mp4", "audio/wav", "audio/webm"}) {
-		changes = true
-	}
-	if AddNumberField(collection, "audio_duration", false, nil, nil) {
-		changes = true
-	}
-	if AddJSONField(collection, "word_timings", false) {
-		changes = true
-	}
+	// Audio moved to chapter_audios collection (multiple voices per chapter)
 	if AddFileField(collection, "illustrations", 10, 5242880, []string{"image/jpeg", "image/png", "image/webp"}) {
 		changes = true
 	}

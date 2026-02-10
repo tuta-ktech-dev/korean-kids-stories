@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../data/models/chapter_audio.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/reading_history_repository.dart';
 import '../../../data/repositories/story_repository.dart';
@@ -31,26 +32,40 @@ class ReaderCubit extends Cubit<ReaderState> {
     try {
       await _storyRepository.initialize();
       final chapter = await _storyRepository.getChapter(chapterId);
-
-      if (chapter != null) {
-        final progress = await _progressRepository.getProgress(chapterId);
-        final percent = progress?.percentRead ?? 0.0;
-        emit(ReaderLoaded(
-          chapter: chapter,
-          progress: percent / 100,
-        ));
-        _historyRepository.logAction(
-          storyId: chapter.storyId,
-          chapterId: chapterId,
-          action: 'view',
-        );
-      } else {
+      if (chapter == null) {
         emit(const ReaderError('챕터를 찾을 수 없습니다'));
+        return;
       }
+
+      final audios = await _storyRepository.getChapterAudios(chapterId);
+      final selectedAudio = audios.isNotEmpty ? audios.first : null;
+
+      final progress = await _progressRepository.getProgress(chapterId);
+      final percent = progress?.percentRead ?? 0.0;
+
+      emit(ReaderLoaded(
+        chapter: chapter,
+        audios: audios,
+        selectedAudio: selectedAudio,
+        progress: percent / 100,
+      ));
+      _historyRepository.logAction(
+        storyId: chapter.storyId,
+        chapterId: chapterId,
+        action: 'view',
+      );
     } on PocketbaseException catch (e) {
       emit(ReaderError('챕터 로드 실패: ${e.message}'));
     } catch (e) {
       emit(ReaderError('챕터 로드 실패: ${e.toString()}'));
+    }
+  }
+
+  /// Switch to a different narrator/voice
+  void selectAudio(ChapterAudio audio) {
+    if (state is ReaderLoaded) {
+      final s = state as ReaderLoaded;
+      emit(s.copyWith(selectedAudio: audio));
     }
   }
 

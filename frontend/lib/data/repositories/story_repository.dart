@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 
 import '../models/chapter.dart';
+import '../models/chapter_audio.dart';
 import '../models/story.dart';
 import '../services/pocketbase_service.dart';
 
@@ -60,6 +61,11 @@ class StoryRepository {
   /// Returns null if chapter not found
   Future<Chapter?> getChapter(String chapterId) async {
     return _pbService.getChapter(chapterId);
+  }
+
+  /// Get all audio versions for a chapter (multiple narrators/voices)
+  Future<List<ChapterAudio>> getChapterAudios(String chapterId) async {
+    return _pbService.getChapterAudios(chapterId);
   }
 
   /// Fetch stories with pagination support
