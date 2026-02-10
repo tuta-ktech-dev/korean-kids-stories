@@ -10,7 +10,8 @@ import (
 func SetupHooks(app *pocketbase.PocketBase) {
 	RegisterViewsHooks(app)
 	RegisterReviewsHooks(app)
-	RegisterBookmarksHooks(app)
+	RegisterFavoritesHooks(app)
+	RegisterReadLaterHooks(app)
 
 	log.Println("✅ Hooks configured successfully")
 }

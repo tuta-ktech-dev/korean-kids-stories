@@ -21,8 +21,6 @@ class AuthCubit extends Cubit<AuthState> {
   /// Check current authentication status
   Future<void> checkAuthStatus() async {
     emit(const AuthLoading());
-    print('checkAuthStatus');
-
     try {
       await _authRepository.initialize();
 
@@ -36,18 +34,14 @@ class AuthCubit extends Cubit<AuthState> {
               email: user.email,
             ),
           );
-          print('Authenticated');
         } else {
           emit(const Unauthenticated());
-          print('Unauthenticated');
         }
       } else {
         emit(const Unauthenticated());
-        print('Unauthenticated');
       }
     } on PocketbaseException catch (e) {
       emit(AuthError(e.message));
-      print('AuthError: ${e.message}');
     } catch (e) {
       emit(const AuthError('인증 상태 확인에 실패했습니다'));
     }

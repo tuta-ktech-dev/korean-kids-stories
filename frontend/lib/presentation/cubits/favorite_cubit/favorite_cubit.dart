@@ -7,7 +7,7 @@ import '../../../injection.dart';
 import 'favorite_state.dart';
 export 'favorite_state.dart';
 
-/// Global cubit for user favorites (bookmarks collection, type=favorite).
+/// Global cubit for user favorites (favorites collection).
 /// Load when auth changes, expose isFavorite(storyId), toggleFavorite(storyId).
 @lazySingleton
 class FavoriteCubit extends Cubit<FavoriteState> {

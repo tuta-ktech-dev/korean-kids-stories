@@ -176,10 +176,15 @@ class ProgressRepository {
       // Kiểm tra xem đã có record chưa
       final existing = await getProgress(chapterId);
 
+      // Ensure percent_read is never NaN/null (PocketBase validation requires it)
+      final safePercent = percentRead.isNaN || percentRead.isInfinite
+          ? 0.0
+          : percentRead.clamp(0.0, 100.0);
+
       final data = {
         'user': userId,
         'chapter': chapterId,
-        'percent_read': percentRead.clamp(0.0, 100.0),
+        'percent_read': safePercent,
         'last_read_at': DateTime.now().toIso8601String(),
       };
 
@@ -232,11 +237,24 @@ class ProgressRepository {
         return ReadingProgress.fromRecord(record);
       } else {
         // Tạo mới với bookmark
-        return saveProgress(
-          chapterId: chapterId,
-          percentRead: 0,
-          lastPosition: position,
-        );
+        if (!_pbService.isAuthenticated) return null;
+        final userId = _pbService.currentUser?.id;
+        if (userId == null) return null;
+
+        // percent_read required; position could be NaN if progress*100 when progress invalid
+        final safePosition = position.isNaN || position.isInfinite ? 0.0 : position.clamp(0.0, 100.0);
+        final record = await _pb.collection('reading_progress').create(
+              body: {
+                'user': userId,
+                'chapter': chapterId,
+                'percent_read': 0.0,
+                'is_completed': false,
+                'last_position': safePosition,
+                'last_read_at': DateTime.now().toIso8601String(),
+                'bookmarks': [Bookmark(position: safePosition, note: note).toJson()],
+              },
+            );
+        return ReadingProgress.fromRecord(record);
       }
     } catch (e) {
       debugPrint('ProgressRepository.addBookmark error: $e');

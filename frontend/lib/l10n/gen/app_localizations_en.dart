@@ -471,4 +471,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completeStoryHint => 'Complete a story to see it here!';
+
+  @override
+  String get addNote => 'Add Note';
+
+  @override
+  String get noteHint => 'Write a note for this story...';
+
+  @override
+  String get saveNote => 'Save';
+
+  @override
+  String get bookmarkAdded => 'Added to bookmarks';
+
+  @override
+  String get bookmarkRemoved => 'Removed from bookmarks';
+
+  @override
+  String get addToBookmarks => 'Save for later';
 }

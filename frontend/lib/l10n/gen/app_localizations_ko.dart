@@ -466,4 +466,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get completeStoryHint => '이야기를 끝까지 읽으면 여기에 표시돼요!';
+
+  @override
+  String get addNote => '메모 추가';
+
+  @override
+  String get noteHint => '이 이야기에 대한 메모를 작성하세요...';
+
+  @override
+  String get saveNote => '저장';
+
+  @override
+  String get bookmarkAdded => '북마크에 추가됨';
+
+  @override
+  String get bookmarkRemoved => '북마크에서 제거됨';
+
+  @override
+  String get addToBookmarks => '나중에 읽기';
 }

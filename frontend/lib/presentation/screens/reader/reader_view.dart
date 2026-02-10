@@ -9,10 +9,15 @@ import '../../../data/models/chapter.dart';
 import '../../cubits/progress_cubit/progress_cubit.dart';
 import '../../cubits/reader_cubit/reader_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../components/buttons/bookmark_buttons.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/note_cubit/note_cubit.dart';
 import 'widgets/reader_bottom_bar.dart';
 
 class ReaderView extends StatefulWidget {
-  const ReaderView({super.key});
+  final String storyId;
+
+  const ReaderView({super.key, required this.storyId});
 
   @override
   State<ReaderView> createState() => _ReaderViewState();
@@ -56,18 +61,24 @@ class _ReaderViewState extends State<ReaderView> {
   void dispose() {
     _scrollController.dispose();
     _saveDebounce?.cancel();
-    if (_chapterId != null) {
-      _progressCubit?.saveProgress(
-        chapterId: _chapterId!,
-        percentRead: _lastProgress * 100,
-        isCompleted: _lastProgress >= 0.99,
-      );
+    // Only save on dispose if user actually read (progress > 0) - avoid creating empty records
+    if (_chapterId != null && _lastProgress > 0) {
+      final pct = _lastProgress * 100;
+      if (!pct.isNaN && !pct.isInfinite) {
+        _progressCubit?.saveProgress(
+          chapterId: _chapterId!,
+          percentRead: pct.clamp(0.0, 100.0),
+          isCompleted: _lastProgress >= 0.99,
+        );
+      }
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
   void _onScrollProgress(BuildContext context, double progress) {
+    // Ignore invalid progress (e.g. 0/0 when maxScrollExtent is 0)
+    if (progress.isNaN || progress.isInfinite) return;
     _lastProgress = progress;
     context.read<ReaderCubit>().updateProgress(progress);
 
@@ -75,11 +86,14 @@ class _ReaderViewState extends State<ReaderView> {
     final chapterId = _chapterId;
     _saveDebounce = Timer(const Duration(milliseconds: 1500), () {
       if (mounted && chapterId != null) {
-        _progressCubit?.saveProgress(
-          chapterId: chapterId,
-          percentRead: _lastProgress * 100,
-          isCompleted: _lastProgress >= 0.99,
-        );
+        final pct = _lastProgress * 100;
+        if (!pct.isNaN && !pct.isInfinite) {
+          _progressCubit?.saveProgress(
+            chapterId: chapterId,
+            percentRead: pct.clamp(0.0, 100.0),
+            isCompleted: _lastProgress >= 0.99,
+          );
+        }
       }
     });
   }
@@ -210,6 +224,19 @@ class _ReaderViewState extends State<ReaderView> {
                     ),
                     centerTitle: true,
                     actions: [
+                      BlocBuilder<AuthCubit, AuthState>(
+                        buildWhen: (p, c) => c is Authenticated,
+                        builder: (context, authState) {
+                          if (authState is! Authenticated) return const SizedBox.shrink();
+                          return IconButton(
+                            icon: Icon(
+                              Icons.note_add_outlined,
+                              color: isDarkMode ? Colors.white : Colors.black87,
+                            ),
+                            onPressed: () => _addNote(context, state),
+                          );
+                        },
+                      ),
                       IconButton(
                         icon: Icon(
                           Icons.settings_rounded,
@@ -255,6 +282,31 @@ class _ReaderViewState extends State<ReaderView> {
         }
 
         return const SizedBox.shrink();
+      },
+    );
+  }
+
+  void _addNote(BuildContext context, ReaderLoaded state) async {
+    final noteCubit = context.read<NoteCubit>();
+    final existing = await noteCubit.getChapterNote(state.chapter.id);
+    if (!context.mounted) return;
+    showNoteSheet(
+      context,
+      initialNote: existing?.note,
+      onSave: (note) async {
+        if (note.trim().isEmpty) return;
+        final cubit = context.read<NoteCubit>();
+        final added = await cubit.addChapterNote(
+          storyId: widget.storyId,
+          chapterId: state.chapter.id,
+          note: note.trim(),
+          position: state.progress * 100,
+        );
+        if (context.mounted && added != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.bookmarkAdded)),
+          );
+        }
       },
     );
   }

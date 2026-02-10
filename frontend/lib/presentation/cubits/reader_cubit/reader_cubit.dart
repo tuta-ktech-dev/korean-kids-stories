@@ -64,4 +64,17 @@ class ReaderCubit extends Cubit<ReaderState> {
       emit(currentState.copyWith(isPlaying: !currentState.isPlaying));
     }
   }
+
+  /// Add bookmark at current progress with optional note
+  Future<bool> addBookmark({String? note}) async {
+    if (state is! ReaderLoaded) return false;
+    final s = state as ReaderLoaded;
+    final position = s.progress * 100; // 0-100 scale
+    final p = await _progressRepository.addBookmark(
+      chapterId: s.chapter.id,
+      position: position,
+      note: note,
+    );
+    return p != null;
+  }
 }

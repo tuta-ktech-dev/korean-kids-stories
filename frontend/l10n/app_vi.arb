@@ -150,5 +150,11 @@
   "noReadingHistoryYet": "Chưa có lịch sử đọc",
   "startReadingStories": "Hãy bắt đầu đọc truyện nào!",
   "noCompletedStoriesYet": "Chưa có truyện hoàn thành",
-  "completeStoryHint": "Đọc xong một truyện để xem ở đây!"
+  "completeStoryHint": "Đọc xong một truyện để xem ở đây!",
+  "addNote": "Thêm ghi chú",
+  "noteHint": "Viết ghi chú cho truyện này...",
+  "saveNote": "Lưu",
+  "bookmarkAdded": "Đã thêm vào đánh dấu",
+  "bookmarkRemoved": "Đã xóa khỏi đánh dấu",
+  "addToBookmarks": "Lưu để đọc sau"
 }

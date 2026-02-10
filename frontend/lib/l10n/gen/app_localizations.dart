@@ -999,6 +999,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete a story to see it here!'**
   String get completeStoryHint;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Note'**
+  String get addNote;
+
+  /// No description provided for @noteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a note for this story...'**
+  String get noteHint;
+
+  /// No description provided for @saveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveNote;
+
+  /// No description provided for @bookmarkAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to bookmarks'**
+  String get bookmarkAdded;
+
+  /// No description provided for @bookmarkRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from bookmarks'**
+  String get bookmarkRemoved;
+
+  /// No description provided for @addToBookmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Save for later'**
+  String get addToBookmarks;
 }
 
 class _AppLocalizationsDelegate

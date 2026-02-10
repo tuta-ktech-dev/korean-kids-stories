@@ -8,8 +8,10 @@ import 'data/services/tracking_service.dart';
 import 'injection.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'presentation/cubits/auth_cubit/auth_cubit.dart';
+import 'presentation/cubits/bookmark_cubit/bookmark_cubit.dart';
 import 'presentation/cubits/favorite_cubit/favorite_cubit.dart';
 import 'presentation/cubits/history_cubit/history_cubit.dart';
+import 'presentation/cubits/note_cubit/note_cubit.dart';
 import 'presentation/cubits/home_cubit/home_cubit.dart';
 import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
@@ -39,6 +41,8 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
         BlocProvider(create: (_) => getIt<HomeCubit>()),
         BlocProvider(create: (_) => getIt<FavoriteCubit>()),
+        BlocProvider(create: (_) => getIt<BookmarkCubit>()),
+        BlocProvider(create: (_) => getIt<NoteCubit>()),
         BlocProvider(create: (_) => getIt<ProgressCubit>()),
         BlocProvider(create: (_) => getIt<HistoryCubit>()),
         BlocProvider(create: (_) => getIt<SearchCubit>()),
@@ -49,8 +53,12 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         listener: (context, state) {
           if (state is Authenticated) {
             context.read<FavoriteCubit>().loadFavorites();
+            context.read<BookmarkCubit>().loadBookmarks();
+            context.read<NoteCubit>().loadNotes();
           } else if (state is Unauthenticated) {
             context.read<FavoriteCubit>().clearFavorites();
+            context.read<BookmarkCubit>().clearBookmarks();
+            context.read<NoteCubit>().clearNotes();
           }
           // Don't clear on AuthLoading/AuthInitial - only on explicit logout
         },

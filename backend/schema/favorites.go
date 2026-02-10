@@ -4,11 +4,11 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-// EnsureReadLaterCollection ensures the read_later collection exists (save-for-later, separate from favorites)
-func EnsureReadLaterCollection(app core.App) {
-	collection, err := app.FindCollectionByNameOrId("read_later")
+// EnsureFavoritesCollection ensures the favorites collection exists
+func EnsureFavoritesCollection(app core.App) {
+	collection, err := app.FindCollectionByNameOrId("favorites")
 	if err != nil {
-		collection = core.NewBaseCollection("read_later")
+		collection = core.NewBaseCollection("favorites")
 	}
 
 	changes := false
@@ -27,10 +27,10 @@ func EnsureReadLaterCollection(app core.App) {
 		changes = true
 	}
 
-	if EnsureIndex(collection, "idx_read_later_user", false, "user", "") {
+	if EnsureIndex(collection, "idx_favorites_user", false, "user", "") {
 		changes = true
 	}
-	if EnsureIndex(collection, "idx_read_later_user_story", true, "user,story", "") {
+	if EnsureIndex(collection, "idx_favorites_user_story", true, "user,story", "") {
 		changes = true
 	}
 

@@ -469,4 +469,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get completeStoryHint => 'Đọc xong một truyện để xem ở đây!';
+
+  @override
+  String get addNote => 'Thêm ghi chú';
+
+  @override
+  String get noteHint => 'Viết ghi chú cho truyện này...';
+
+  @override
+  String get saveNote => 'Lưu';
+
+  @override
+  String get bookmarkAdded => 'Đã thêm vào đánh dấu';
+
+  @override
+  String get bookmarkRemoved => 'Đã xóa khỏi đánh dấu';
+
+  @override
+  String get addToBookmarks => 'Lưu để đọc sau';
 }

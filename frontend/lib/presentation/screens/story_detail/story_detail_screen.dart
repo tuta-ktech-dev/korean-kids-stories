@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../cubits/favorite_cubit/favorite_cubit.dart';
 import '../../cubits/story_detail_cubit/story_detail_cubit.dart';
 import '../../../data/repositories/story_repository.dart';
@@ -29,6 +30,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         context.read<AuthCubit>().state is Authenticated) {
       _loadedFavorites = true;
       context.read<FavoriteCubit>().loadFavorites();
+      context.read<BookmarkCubit>().loadBookmarks();
     }
   }
 

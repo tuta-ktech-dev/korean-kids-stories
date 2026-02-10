@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../../core/theme/app_theme.dart';
 
 class BookmarkButton extends StatefulWidget {
@@ -210,7 +211,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
               Icon(Icons.edit_note, color: AppTheme.primaryColor(context)),
               const SizedBox(width: 12),
               Text(
-                '메모',
+                context.l10n.addNote,
                 style: AppTheme.headingMedium(context),
               ),
             ],
@@ -222,7 +223,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
             controller: _controller,
             maxLines: 5,
             decoration: InputDecoration(
-              hintText: '이야기에 대한 메모를 작성하세요...',
+              hintText: context.l10n.noteHint,
               hintStyle: AppTheme.bodyMedium(context).copyWith(
                 color: AppTheme.textMutedColor(context),
               ),
@@ -244,7 +245,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    '취소',
+                    context.l10n.cancel,
                     style: AppTheme.bodyLarge(context),
                   ),
                 ),
@@ -262,7 +263,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text('저장'),
+                  child: Text(context.l10n.saveNote),
                 ),
               ),
             ],

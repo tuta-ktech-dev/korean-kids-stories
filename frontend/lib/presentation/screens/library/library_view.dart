@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../cubits/favorite_cubit/favorite_cubit.dart';
+import '../../cubits/note_cubit/note_cubit.dart';
 import '../../widgets/story_card.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
@@ -224,66 +226,225 @@ class _FavoritesTabState extends State<_FavoritesTab> {
   }
 }
 
-class _BookmarksTab extends StatelessWidget {
+class _BookmarksTab extends StatefulWidget {
   const _BookmarksTab();
 
   @override
+  State<_BookmarksTab> createState() => _BookmarksTabState();
+}
+
+class _BookmarksTabState extends State<_BookmarksTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookmarkCubit>().loadBookmarkedStories();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: Load bookmarks from API
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.bookmark_border,
-              size: 64,
-              color: AppTheme.textMutedColor(context),
+    return BlocBuilder<BookmarkCubit, BookmarkState>(
+      buildWhen: (prev, curr) => curr is BookmarkLoaded,
+      builder: (context, state) {
+        if (state is! BookmarkLoaded || state.stories == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final stories = state.stories!;
+        if (stories.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.bookmark_border,
+                  size: 64,
+                  color: AppTheme.textMutedColor(context),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.tabBookmarks,
+                  style: AppTheme.bodyLarge(context),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.noBookmarksYet,
+                  style: AppTheme.caption(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              context.l10n.tabBookmarks,
-              style: AppTheme.bodyLarge(context),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.noBookmarksYet,
-              style: AppTheme.caption(context),
-            ),
-          ],
-        ),
-      ),
+          );
+        }
+        return RefreshIndicator(
+          onRefresh: () => context.read<BookmarkCubit>().loadBookmarkedStories(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = 2;
+              final padding = 16.0;
+              final spacing = 12.0;
+              final cellWidth =
+                  (constraints.maxWidth - padding * 2 - spacing) / crossAxisCount;
+              return GridView.builder(
+                padding: EdgeInsets.all(padding),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.55,
+                ),
+                itemCount: stories.length,
+                itemBuilder: (context, index) {
+                  final story = stories[index];
+                  return StoryCard(
+                    id: story.id,
+                    title: story.title,
+                    thumbnailUrl: story.thumbnailUrl,
+                    category: story.category,
+                    ageMin: story.ageMin,
+                    ageMax: story.ageMax,
+                    totalChapters: story.totalChapters,
+                    isFeatured: story.isFeatured,
+                    hasAudio: story.hasAudio,
+                    hasQuiz: story.hasQuiz,
+                    hasIllustrations: story.hasIllustrations,
+                    averageRating: story.averageRating,
+                    reviewCount: story.reviewCount,
+                    viewCount: story.viewCount,
+                    width: cellWidth,
+                    onTap: () => context.router.root
+                        .push(StoryDetailRoute(storyId: story.id)),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
-class _NotesTab extends StatelessWidget {
+class _NotesTab extends StatefulWidget {
   const _NotesTab();
 
   @override
+  State<_NotesTab> createState() => _NotesTabState();
+}
+
+class _NotesTabState extends State<_NotesTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NoteCubit>().loadNotes();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: Load notes from API
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.note_outlined,
-              size: 64,
-              color: AppTheme.textMutedColor(context),
+    return BlocBuilder<NoteCubit, NoteState>(
+      buildWhen: (prev, curr) => curr is NoteLoaded,
+      builder: (context, state) {
+        if (state is! NoteLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final notes = state.notes;
+        if (notes.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.note_outlined,
+                  size: 64,
+                  color: AppTheme.textMutedColor(context),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.tabNotes,
+                  style: AppTheme.bodyLarge(context),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.noNotesYet,
+                  style: AppTheme.caption(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              context.l10n.tabNotes,
-              style: AppTheme.bodyLarge(context),
+          );
+        }
+        return RefreshIndicator(
+          onRefresh: () => context.read<NoteCubit>().loadNotes(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: notes.length,
+            itemBuilder: (context, index) {
+              final n = notes[index];
+              final subtitle = n.chapterTitle != null
+                  ? '${n.storyTitle ?? n.storyId} · ${n.chapterTitle}'
+                  : (n.storyTitle ?? n.storyId);
+              return _NoteCard(
+                storyTitle: subtitle,
+                note: n.note,
+                onTap: () {
+                  context.router.root.push(StoryDetailRoute(storyId: n.storyId));
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _NoteCard extends StatelessWidget {
+  final String storyTitle;
+  final String note;
+  final VoidCallback? onTap;
+
+  const _NoteCard({
+    required this.storyTitle,
+    required this.note,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceColor(context),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.auto_stories, size: 20, color: AppTheme.primaryColor(context)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    storyTitle,
+                    style: AppTheme.bodyLarge(context).copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(
-              context.l10n.noNotesYet,
-              style: AppTheme.caption(context),
+              note,
+              style: AppTheme.bodyMedium(context).copyWith(
+                color: AppTheme.textMutedColor(context),
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

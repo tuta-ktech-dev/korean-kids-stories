@@ -157,5 +157,11 @@
   "noReadingHistoryYet": "No reading history yet",
   "startReadingStories": "Start reading some stories!",
   "noCompletedStoriesYet": "No completed stories yet",
-  "completeStoryHint": "Complete a story to see it here!"
+  "completeStoryHint": "Complete a story to see it here!",
+  "addNote": "Add Note",
+  "noteHint": "Write a note for this story...",
+  "saveNote": "Save",
+  "bookmarkAdded": "Added to bookmarks",
+  "bookmarkRemoved": "Removed from bookmarks",
+  "addToBookmarks": "Save for later"
 }
