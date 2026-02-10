@@ -128,11 +128,12 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 
 		// Streak
 		today := time.Now().Format("2006-01-02")
-		if lastActivity == "" {
+		switch lastActivity {
+		case "":
 			streakDays = 1
-		} else if lastActivity == today {
+		case today:
 			// already active today, keep streak
-		} else {
+		default:
 			yesterday := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
 			if lastActivity == yesterday {
 				streakDays++

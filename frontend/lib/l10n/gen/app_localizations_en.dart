@@ -550,4 +550,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteReviewConfirmation =>
       'Are you sure you want to delete your review?';
+
+  @override
+  String get level => 'Level';
+
+  @override
+  String get xp => 'XP';
+
+  @override
+  String get stickerAlbum => 'Sticker Album';
+
+  @override
+  String get myStickers => 'My Stickers';
+
+  @override
+  String get unlockedStickers => 'Unlocked';
 }

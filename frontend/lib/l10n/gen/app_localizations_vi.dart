@@ -547,4 +547,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deleteReviewConfirmation => 'Bạn có chắc muốn xóa đánh giá này?';
+
+  @override
+  String get level => 'Cấp độ';
+
+  @override
+  String get xp => 'XP';
+
+  @override
+  String get stickerAlbum => 'Album sticker';
+
+  @override
+  String get myStickers => 'Sticker của tôi';
+
+  @override
+  String get unlockedStickers => 'Đã mở khóa';
 }

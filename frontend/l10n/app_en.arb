@@ -183,5 +183,10 @@
   "noReviewsYet": "No reviews yet",
   "beFirstToReview": "Be the first to review!",
   "loginToReview": "Login to write a review",
-  "deleteReviewConfirmation": "Are you sure you want to delete your review?"
+  "deleteReviewConfirmation": "Are you sure you want to delete your review?",
+  "level": "Level",
+  "xp": "XP",
+  "stickerAlbum": "Sticker Album",
+  "myStickers": "My Stickers",
+  "unlockedStickers": "Unlocked"
 }

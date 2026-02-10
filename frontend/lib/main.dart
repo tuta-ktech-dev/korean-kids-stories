@@ -16,6 +16,7 @@ import 'presentation/cubits/home_cubit/home_cubit.dart';
 import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
 import 'presentation/cubits/settings_cubit/settings_cubit.dart';
+import 'presentation/cubits/stats_cubit/stats_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<HistoryCubit>()),
         BlocProvider(create: (_) => getIt<SearchCubit>()),
         BlocProvider(create: (_) => getIt<SettingsCubit>()..loadSettings()),
+        BlocProvider(create: (_) => getIt<StatsCubit>()),
       ],
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (p, c) => p.runtimeType != c.runtimeType,
@@ -55,6 +57,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
             context.read<FavoriteCubit>().loadFavorites();
             context.read<BookmarkCubit>().loadBookmarks();
             context.read<NoteCubit>().loadNotes();
+            context.read<StatsCubit>().loadStats();
           } else if (state is Unauthenticated) {
             context.read<FavoriteCubit>().clearFavorites();
             context.read<BookmarkCubit>().clearBookmarks();

@@ -11,6 +11,9 @@ import '../../../data/repositories/user_preferences_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/stats_cubit/stats_cubit.dart';
+import '../../../core/router/app_router.dart';
+import 'package:auto_route/auto_route.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -413,7 +416,84 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+
+                // Level & XP card
+                BlocProvider(
+                  create: (_) => getIt<StatsCubit>()..loadStats(),
+                  child: BlocBuilder<StatsCubit, StatsState>(
+                    buildWhen: (p, c) =>
+                        p.stats != c.stats || p.isLoading != c.isLoading,
+                    builder: (context, statsState) {
+                      final stats = statsState.stats;
+                      if (statsState.isLoading && stats == null) {
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (stats == null) return const SizedBox.shrink();
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 24),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryPink.withValues(alpha: 0.3),
+                              AppTheme.primaryMint.withValues(alpha: 0.3),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusMedium),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _StatItem(
+                              label: context.l10n.level,
+                              value: '${stats.level}',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: Colors.white54,
+                            ),
+                            _StatItem(
+                              label: context.l10n.xp,
+                              value: '${stats.totalXp.toInt()}',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: Colors.white54,
+                            ),
+                            _StatItem(
+                              label: context.l10n.currentStreak,
+                              value: '${stats.streakDays}',
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Sticker Album button
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      AutoRouter.of(context).push(const StickersRoute()),
+                  icon: const Icon(Icons.emoji_events_outlined),
+                  label: Text(context.l10n.stickerAlbum),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 24),
 
                 // Name
                 Text(
@@ -527,6 +607,36 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         );
       },
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: AppTheme.headingMedium(context).copyWith(
+            color: AppTheme.textDark,
+            fontSize: 20,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: AppTheme.caption(context).copyWith(
+            color: AppTheme.textMedium,
+          ),
+        ),
+      ],
     );
   }
 }

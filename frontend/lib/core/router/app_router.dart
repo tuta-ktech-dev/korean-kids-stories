@@ -16,6 +16,7 @@ import '../../presentation/screens/login/login_screen.dart';
 import '../../presentation/screens/register/register_screen.dart';
 import '../../presentation/screens/otp_verification/otp_verification_screen.dart';
 import '../../presentation/screens/search/search_screen.dart';
+import '../../presentation/screens/stickers/stickers_screen.dart';
 import '../../presentation/cubits/auth_cubit/auth_cubit.dart';
 
 part 'app_router.gr.dart';
@@ -30,6 +31,7 @@ class AppRouter extends RootStackRouter {
     // Auth routes
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/profile', page: ProfileRoute.page),
+    AutoRoute(path: '/stickers', page: StickersRoute.page),
     AutoRoute(path: '/content/:slug', page: ContentRouteRoute.page),
     AutoRoute(path: '/register', page: RegisterRoute.page),
     AutoRoute(path: '/verify-otp', page: OtpVerificationRoute.page),

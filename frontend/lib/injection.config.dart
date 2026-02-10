@@ -22,8 +22,10 @@ import 'data/repositories/progress_repository.dart' as _i369;
 import 'data/repositories/reading_history_repository.dart' as _i821;
 import 'data/repositories/report_repository.dart' as _i726;
 import 'data/repositories/review_repository.dart' as _i1049;
+import 'data/repositories/sticker_repository.dart' as _i577;
 import 'data/repositories/story_repository.dart' as _i691;
 import 'data/repositories/user_preferences_repository.dart' as _i195;
+import 'data/repositories/user_stats_repository.dart' as _i1058;
 import 'data/services/pocketbase_service.dart' as _i700;
 import 'data/services/tracking_service.dart' as _i194;
 import 'injection_module.dart' as _i212;
@@ -37,6 +39,7 @@ import 'presentation/cubits/progress_cubit/progress_cubit.dart' as _i1000;
 import 'presentation/cubits/reader_cubit/reader_cubit.dart' as _i433;
 import 'presentation/cubits/search_cubit/search_cubit.dart' as _i349;
 import 'presentation/cubits/settings_cubit/settings_cubit.dart' as _i1055;
+import 'presentation/cubits/stats_cubit/stats_cubit.dart' as _i859;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -65,6 +68,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i96.ContentPageRepository>(
       () => _i96.ContentPageRepository(gh<_i700.PocketbaseService>()),
     );
+    gh.factory<_i1058.UserStatsRepository>(
+      () => _i1058.UserStatsRepository(gh<_i700.PocketbaseService>()),
+    );
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
@@ -79,6 +85,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i821.ReadingHistoryRepository>(
       () => _i821.ReadingHistoryRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i577.StickerRepository>(
+      () => _i577.StickerRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i627.NoteRepository>(
       () => _i627.NoteRepository(gh<_i700.PocketbaseService>()),
@@ -97,6 +106,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),
+    );
+    gh.factory<_i859.StatsCubit>(
+      () => _i859.StatsCubit(
+        userStatsRepo: gh<_i1058.UserStatsRepository>(),
+        stickerRepo: gh<_i577.StickerRepository>(),
+      ),
     );
     gh.lazySingleton<_i1000.ProgressCubit>(
       () => _i1000.ProgressCubit(

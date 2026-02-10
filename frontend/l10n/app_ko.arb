@@ -180,5 +180,10 @@
   "noReviewsYet": "아직 리뷰가 없습니다",
   "beFirstToReview": "첫 번째 리뷰를 작성해 보세요!",
   "loginToReview": "리뷰를 작성하려면 로그인하세요",
-  "deleteReviewConfirmation": "리뷰를 삭제하시겠습니까?"
+  "deleteReviewConfirmation": "리뷰를 삭제하시겠습니까?",
+  "level": "레벨",
+  "xp": "경험치",
+  "stickerAlbum": "스티커 앨범",
+  "myStickers": "내 스티커",
+  "unlockedStickers": "획득함"
 }

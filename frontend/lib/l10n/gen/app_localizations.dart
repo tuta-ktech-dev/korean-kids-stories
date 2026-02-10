@@ -1155,6 +1155,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete your review?'**
   String get deleteReviewConfirmation;
+
+  /// No description provided for @level.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get level;
+
+  /// No description provided for @xp.
+  ///
+  /// In en, this message translates to:
+  /// **'XP'**
+  String get xp;
+
+  /// No description provided for @stickerAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker Album'**
+  String get stickerAlbum;
+
+  /// No description provided for @myStickers.
+  ///
+  /// In en, this message translates to:
+  /// **'My Stickers'**
+  String get myStickers;
+
+  /// No description provided for @unlockedStickers.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get unlockedStickers;
 }
 
 class _AppLocalizationsDelegate

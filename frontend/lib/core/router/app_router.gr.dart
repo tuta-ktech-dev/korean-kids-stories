@@ -303,6 +303,22 @@ class SettingsRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [StickersScreen]
+class StickersRoute extends PageRouteInfo<void> {
+  const StickersRoute({List<PageRouteInfo>? children})
+    : super(StickersRoute.name, initialChildren: children);
+
+  static const String name = 'StickersRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const StickersScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [StoryDetailScreen]
 class StoryDetailRoute extends PageRouteInfo<StoryDetailRouteArgs> {
   StoryDetailRoute({

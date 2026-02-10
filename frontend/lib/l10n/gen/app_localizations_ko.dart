@@ -544,4 +544,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get deleteReviewConfirmation => '리뷰를 삭제하시겠습니까?';
+
+  @override
+  String get level => '레벨';
+
+  @override
+  String get xp => '경험치';
+
+  @override
+  String get stickerAlbum => '스티커 앨범';
+
+  @override
+  String get myStickers => '내 스티커';
+
+  @override
+  String get unlockedStickers => '획득함';
 }
