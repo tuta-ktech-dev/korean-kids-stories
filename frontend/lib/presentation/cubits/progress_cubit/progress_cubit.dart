@@ -28,12 +28,14 @@ class ProgressCubit extends Cubit<ProgressState> {
 
   /// Persist progress. No emit - Reader gets progress from scroll.
   /// [storyId] - optional, when provided also logs to reading_history.
+  /// [durationSeconds] - optional, reading time to log to reading_history.
   Future<void> saveProgress({
     required String chapterId,
     required double percentRead,
     double? lastPosition,
     bool? isCompleted,
     String? storyId,
+    int? durationSeconds,
   }) async {
     await _repo.saveProgress(
       chapterId: chapterId,
@@ -48,6 +50,7 @@ class ProgressCubit extends Cubit<ProgressState> {
         chapterId: chapterId,
         action: isCompleted == true ? 'complete' : 'read',
         progressPercent: percentRead,
+        durationSeconds: durationSeconds,
       );
     }
   }

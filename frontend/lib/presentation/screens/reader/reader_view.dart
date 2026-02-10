@@ -31,6 +31,7 @@ class _ReaderViewState extends State<ReaderView> {
   ProgressCubit? _progressCubit;
   final ScrollController _scrollController = ScrollController();
   bool _hasRestoredScroll = false;
+  DateTime? _sessionStartTime;
 
   @override
   void initState() {
@@ -65,16 +66,25 @@ class _ReaderViewState extends State<ReaderView> {
     if (_chapterId != null && _lastProgress > 0) {
       final pct = _lastProgress * 100;
       if (!pct.isNaN && !pct.isInfinite) {
+        final duration = _sessionStartTime != null
+            ? DateTime.now().difference(_sessionStartTime!).inSeconds
+            : null;
         _progressCubit?.saveProgress(
           chapterId: _chapterId!,
           percentRead: pct.clamp(0.0, 100.0),
           isCompleted: _lastProgress >= 0.99,
           storyId: widget.storyId,
+          durationSeconds: duration,
         );
       }
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
+  }
+
+  int? _getDurationSeconds() {
+    if (_sessionStartTime == null) return null;
+    return DateTime.now().difference(_sessionStartTime!).inSeconds;
   }
 
   void _onScrollProgress(BuildContext context, double progress) {
@@ -94,6 +104,7 @@ class _ReaderViewState extends State<ReaderView> {
             percentRead: pct.clamp(0.0, 100.0),
             isCompleted: _lastProgress >= 0.99,
             storyId: widget.storyId,
+            durationSeconds: _getDurationSeconds(),
           );
         }
       }
@@ -191,6 +202,9 @@ class _ReaderViewState extends State<ReaderView> {
           final chapter = state.chapter;
           final isDarkMode = state.isDarkMode;
           final fontSize = state.fontSize;
+          if (_chapterId != chapter.id) {
+            _sessionStartTime = DateTime.now();
+          }
           _chapterId = chapter.id;
           _lastProgress = state.progress;
           _restoreScrollPosition(state.progress);
