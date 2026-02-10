@@ -36,7 +36,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => getIt<AuthCubit>()),
+        BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
         BlocProvider(create: (_) => getIt<HomeCubit>()),
         BlocProvider(create: (_) => getIt<FavoriteCubit>()),
         BlocProvider(create: (_) => getIt<ProgressCubit>()),
@@ -57,26 +57,26 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             return MaterialApp.router(
-            title: '꼬마 한동화',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.system,
-            routerConfig: _appRouter.config(),
-            locale: state is SettingsLoaded ? state.locale : null,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale('en'), // English
-              Locale('vi'), // Vietnamese
-              Locale('ko'), // Korean
-            ],
-          );
-        },
+              title: '꼬마 한동화',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.system,
+              routerConfig: _appRouter.config(),
+              locale: state is SettingsLoaded ? state.locale : null,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+                Locale('vi'), // Vietnamese
+                Locale('ko'), // Korean
+              ],
+            );
+          },
         ),
       ),
     );

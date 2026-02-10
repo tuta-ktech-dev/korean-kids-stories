@@ -10,16 +10,25 @@ class LandingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.l10n is available via extension
-
-    return BlocListener<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
-          // Auto navigate to main if already logged in
           context.router.replaceNamed('/main');
         }
       },
-      child: Scaffold(
+      builder: (context, state) {
+        // Handle initial state: auth already loaded in main() before runApp
+        if (state is Authenticated) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.router.replaceNamed('/main');
+            }
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return Scaffold(
         backgroundColor: AppTheme.backgroundColor(context),
         body: SafeArea(
           child: Column(
@@ -181,7 +190,8 @@ class LandingView extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      );
+    },
     );
   }
 }

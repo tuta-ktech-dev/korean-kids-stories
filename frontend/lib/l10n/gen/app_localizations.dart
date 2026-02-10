@@ -969,6 +969,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current Streak'**
   String get currentStreak;
+
+  /// No description provided for @historyLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading history'**
+  String get historyLoadError;
+
+  /// No description provided for @noReadingHistoryYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reading history yet'**
+  String get noReadingHistoryYet;
+
+  /// No description provided for @startReadingStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Start reading some stories!'**
+  String get startReadingStories;
+
+  /// No description provided for @noCompletedStoriesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed stories yet'**
+  String get noCompletedStoriesYet;
+
+  /// No description provided for @completeStoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a story to see it here!'**
+  String get completeStoryHint;
 }
 
 class _AppLocalizationsDelegate

@@ -145,5 +145,10 @@
   "weeklyStats": "Thống kê tuần này",
   "totalListening": "Tổng thời gian nghe",
   "completedStories": "Truyện đã đọc",
-  "currentStreak": "Chuỗi ngày học"
+  "currentStreak": "Chuỗi ngày học",
+  "historyLoadError": "Không thể tải lịch sử",
+  "noReadingHistoryYet": "Chưa có lịch sử đọc",
+  "startReadingStories": "Hãy bắt đầu đọc truyện nào!",
+  "noCompletedStoriesYet": "Chưa có truyện hoàn thành",
+  "completeStoryHint": "Đọc xong một truyện để xem ở đây!"
 }

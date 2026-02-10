@@ -451,4 +451,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get currentStreak => '연속 학습';
+
+  @override
+  String get historyLoadError => '기록을 불러올 수 없어요';
+
+  @override
+  String get noReadingHistoryYet => '읽은 기록이 없어요';
+
+  @override
+  String get startReadingStories => '재미있는 이야기를 읽어보세요!';
+
+  @override
+  String get noCompletedStoriesYet => '완료한 이야기가 없어요';
+
+  @override
+  String get completeStoryHint => '이야기를 끝까지 읽으면 여기에 표시돼요!';
 }

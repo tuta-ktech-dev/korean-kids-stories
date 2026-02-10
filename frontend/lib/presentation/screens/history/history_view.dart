@@ -79,14 +79,14 @@ class _HistoryViewState extends State<HistoryView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Error loading history',
+                                context.l10n.historyLoadError,
                                 style: AppTheme.bodyLarge(context),
                               ),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () =>
                                     context.read<HistoryCubit>().refresh(),
-                                child: const Text('Retry'),
+                                child: Text(context.l10n.retry),
                               ),
                             ],
                           ),
@@ -191,8 +191,8 @@ class _ReadingHistoryTab extends StatelessWidget {
       return _buildEmptyState(
         context,
         icon: Icons.menu_book_outlined,
-        title: 'No reading history yet',
-        subtitle: 'Start reading some stories!',
+        title: context.l10n.noReadingHistoryYet,
+        subtitle: context.l10n.startReadingStories,
       );
     }
 
@@ -230,8 +230,8 @@ class _CompletedStoriesTab extends StatelessWidget {
       return _buildEmptyState(
         context,
         icon: Icons.check_circle_outline,
-        title: 'No completed stories yet',
-        subtitle: 'Complete a story to see it here!',
+        title: context.l10n.noCompletedStoriesYet,
+        subtitle: context.l10n.completeStoryHint,
       );
     }
 

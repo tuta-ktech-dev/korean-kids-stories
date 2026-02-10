@@ -22,6 +22,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
   final PocketbaseService _pbService;
 
   /// Load favorites. Call when user logs in or app starts (if authenticated).
+  /// Preserves existing stories so Library tab doesn't show loading when back.
   Future<void> loadFavorites() async {
     if (!_pbService.isAuthenticated) {
       emit(const FavoriteLoaded(favoriteIds: {}));
@@ -31,7 +32,8 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     try {
       await _pbService.initialize();
       final ids = await _repo.getFavoriteIds();
-      emit(FavoriteLoaded(favoriteIds: ids));
+      final current = state is FavoriteLoaded ? (state as FavoriteLoaded) : null;
+      emit(FavoriteLoaded(favoriteIds: ids, stories: current?.stories));
     } catch (e) {
       emit(const FavoriteLoaded(favoriteIds: {}));
     }

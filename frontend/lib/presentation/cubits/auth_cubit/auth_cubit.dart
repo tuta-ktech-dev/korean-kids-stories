@@ -11,10 +11,8 @@ export 'auth_state.dart';
 @lazySingleton
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? getIt<AuthRepository>(),
-        super(const AuthInitial()) {
-    checkAuthStatus();
-  }
+    : _authRepository = authRepository ?? getIt<AuthRepository>(),
+      super(const AuthInitial());
 
   final AuthRepository _authRepository;
   String? _pendingEmail;
@@ -23,6 +21,7 @@ class AuthCubit extends Cubit<AuthState> {
   /// Check current authentication status
   Future<void> checkAuthStatus() async {
     emit(const AuthLoading());
+    print('checkAuthStatus');
 
     try {
       await _authRepository.initialize();
@@ -30,19 +29,25 @@ class AuthCubit extends Cubit<AuthState> {
       if (_authRepository.isAuthenticated) {
         final user = _authRepository.currentUser;
         if (user != null) {
-          emit(Authenticated(
-            userId: user.id,
-            userName: user.name,
-            email: user.email,
-          ));
+          emit(
+            Authenticated(
+              userId: user.id,
+              userName: user.name,
+              email: user.email,
+            ),
+          );
+          print('Authenticated');
         } else {
           emit(const Unauthenticated());
+          print('Unauthenticated');
         }
       } else {
         emit(const Unauthenticated());
+        print('Unauthenticated');
       }
     } on PocketbaseException catch (e) {
       emit(AuthError(e.message));
+      print('AuthError: ${e.message}');
     } catch (e) {
       emit(const AuthError('인증 상태 확인에 실패했습니다'));
     }
@@ -55,11 +60,9 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _authRepository.login(email, password);
 
-      emit(Authenticated(
-        userId: user.id,
-        userName: user.name,
-        email: user.email,
-      ));
+      emit(
+        Authenticated(userId: user.id, userName: user.name, email: user.email),
+      );
     } on ClientException catch (e) {
       final errorMsg = e.response['message'] ?? '로그인에 실패했습니다';
       emit(AuthError(errorMsg.toString()));
@@ -71,7 +74,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// Register a new user
-  /// 
+  ///
   /// After registration, sends verification email and transitions
   /// to email verification flow
   Future<void> register(String name, String email, String password) async {
@@ -102,7 +105,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// Verify email with token
-  /// 
+  ///
   /// After successful verification, auto-login if credentials are pending
   Future<void> verifyEmail(String token) async {
     emit(const AuthLoading());
@@ -208,11 +211,9 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       final user = await _authRepository.loginWithOAuth(provider);
-      emit(Authenticated(
-        userId: user.id,
-        userName: user.name,
-        email: user.email,
-      ));
+      emit(
+        Authenticated(userId: user.id, userName: user.name, email: user.email),
+      );
     } on ClientException catch (e) {
       final errorMsg = e.response['message'] ?? '소셜 로그인에 실패했습니다';
       emit(AuthError(errorMsg.toString()));

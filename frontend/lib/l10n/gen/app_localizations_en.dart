@@ -456,4 +456,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentStreak => 'Current Streak';
+
+  @override
+  String get historyLoadError => 'Error loading history';
+
+  @override
+  String get noReadingHistoryYet => 'No reading history yet';
+
+  @override
+  String get startReadingStories => 'Start reading some stories!';
+
+  @override
+  String get noCompletedStoriesYet => 'No completed stories yet';
+
+  @override
+  String get completeStoryHint => 'Complete a story to see it here!';
 }

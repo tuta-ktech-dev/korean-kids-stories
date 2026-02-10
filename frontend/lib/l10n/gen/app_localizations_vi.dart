@@ -454,4 +454,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get currentStreak => 'Chuỗi ngày học';
+
+  @override
+  String get historyLoadError => 'Không thể tải lịch sử';
+
+  @override
+  String get noReadingHistoryYet => 'Chưa có lịch sử đọc';
+
+  @override
+  String get startReadingStories => 'Hãy bắt đầu đọc truyện nào!';
+
+  @override
+  String get noCompletedStoriesYet => 'Chưa có truyện hoàn thành';
+
+  @override
+  String get completeStoryHint => 'Đọc xong một truyện để xem ở đây!';
 }

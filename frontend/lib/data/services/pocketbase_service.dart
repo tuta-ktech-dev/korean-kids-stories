@@ -51,6 +51,17 @@ class PocketbaseService {
       );
 
       _pb = PocketBase(baseUrl, authStore: store);
+
+      // When app restarts: token may be expired but we have stored auth.
+      // Try authRefresh to get new token; clear if refresh fails.
+      if (_pb.authStore.record != null && !_pb.authStore.isValid) {
+        try {
+          await _pb.collection('users').authRefresh();
+        } catch (_) {
+          _pb.authStore.clear();
+        }
+      }
+
       _initialized = true;
     } catch (e) {
       throw PocketbaseException(

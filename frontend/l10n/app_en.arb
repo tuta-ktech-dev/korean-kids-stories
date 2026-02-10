@@ -152,5 +152,10 @@
   "weeklyStats": "Weekly Stats",
   "totalListening": "Total Listening",
   "completedStories": "Completed Stories",
-  "currentStreak": "Current Streak"
+  "currentStreak": "Current Streak",
+  "historyLoadError": "Error loading history",
+  "noReadingHistoryYet": "No reading history yet",
+  "startReadingStories": "Start reading some stories!",
+  "noCompletedStoriesYet": "No completed stories yet",
+  "completeStoryHint": "Complete a story to see it here!"
 }
