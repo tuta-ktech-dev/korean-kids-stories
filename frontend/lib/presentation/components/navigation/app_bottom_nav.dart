@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class AppBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -15,19 +16,19 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Build nav items based on auth state
+    final l10n = context.l10n;
     final items = isAuthenticated
         ? [
-            _NavItemData(icon: Icons.home_rounded, label: '홈'),
-            _NavItemData(icon: Icons.search_rounded, label: '탐색'),
-            _NavItemData(icon: Icons.history_rounded, label: '기록'),
-            _NavItemData(icon: Icons.library_books_rounded, label: '서재'),
-            _NavItemData(icon: Icons.person_rounded, label: '내정보'),
+            _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
+            _NavItemData(icon: Icons.search_rounded, label: l10n.searchTab),
+            _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
+            _NavItemData(icon: Icons.library_books_rounded, label: l10n.libraryTab),
+            _NavItemData(icon: Icons.person_rounded, label: l10n.profileTab),
           ]
         : [
-            _NavItemData(icon: Icons.home_rounded, label: '홈'),
-            _NavItemData(icon: Icons.search_rounded, label: '탐색'),
-            _NavItemData(icon: Icons.history_rounded, label: '기록'),
+            _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
+            _NavItemData(icon: Icons.search_rounded, label: l10n.searchTab),
+            _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
           ];
 
     return Container(

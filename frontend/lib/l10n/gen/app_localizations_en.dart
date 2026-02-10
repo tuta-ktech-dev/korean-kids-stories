@@ -565,4 +565,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlockedStickers => 'Unlocked';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get chapterNotFound => 'Chapter not found';
+
+  @override
+  String get chapterLoadError => 'Failed to load chapter';
+
+  @override
+  String get historyTab => 'History';
+
+  @override
+  String get profileTab => 'Profile';
+
+  @override
+  String get categoryAll => 'All';
+
+  @override
+  String get categoryFavorite => 'Favorites';
+
+  @override
+  String ageYearsFormat(Object min, Object max) {
+    return '$min-$max years';
+  }
+
+  @override
+  String episodesFormat(Object count) {
+    return '$count eps';
+  }
+
+  @override
+  String get illustration => 'Illustration';
+
+  @override
+  String get reportStory => 'Report story';
+
+  @override
+  String get reportChapter => 'Report chapter';
+
+  @override
+  String get reportApp => 'Report app issue';
+
+  @override
+  String get reportQuestion => 'Report question';
+
+  @override
+  String get reportOther => 'Other report';
+
+  @override
+  String get reportStoryHint => 'What problem does the story have?';
+
+  @override
+  String get reportChapterHint => 'What problem does the chapter have?';
+
+  @override
+  String get reportAppHint => 'What problem occurred in the app?';
+
+  @override
+  String get reportQuestionHint => 'What problem does the question have?';
+
+  @override
+  String get reportGeneralHint => 'What problem do you have?';
+
+  @override
+  String get reportContentRequired => 'Please enter the report content';
+
+  @override
+  String get reportLoginRequired => 'Please login to report';
+
+  @override
+  String get reportSuccess =>
+      'Report submitted. We will review and take action.';
+
+  @override
+  String get reportFailed => 'Failed to submit report';
+
+  @override
+  String get reportContent => 'Report content';
+
+  @override
+  String get reportSubmit => 'Submit report';
+
+  @override
+  String reportTarget(Object title) {
+    return 'Target: $title';
+  }
 }

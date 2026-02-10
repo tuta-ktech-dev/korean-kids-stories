@@ -33,7 +33,7 @@ class ReaderCubit extends Cubit<ReaderState> {
       await _storyRepository.initialize();
       final chapter = await _storyRepository.getChapter(chapterId);
       if (chapter == null) {
-        emit(const ReaderError('챕터를 찾을 수 없습니다'));
+        emit(const ReaderError('chapterNotFound'));
         return;
       }
 
@@ -55,9 +55,9 @@ class ReaderCubit extends Cubit<ReaderState> {
         action: 'view',
       );
     } on PocketbaseException catch (e) {
-      emit(ReaderError('챕터 로드 실패: ${e.message}'));
+      emit(ReaderError('chapterLoadError'));
     } catch (e) {
-      emit(ReaderError('챕터 로드 실패: ${e.toString()}'));
+      emit(const ReaderError('chapterLoadError'));
     }
   }
 

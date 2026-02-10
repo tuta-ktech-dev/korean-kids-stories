@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../components/image_placeholder.dart';
 
 class StoryCard extends StatelessWidget {
@@ -133,14 +134,14 @@ class StoryCard extends StatelessWidget {
     }
   }
 
-  String get _categoryLabel {
+  String _categoryLabel(BuildContext context) {
     switch (category) {
       case 'folktale':
-        return '전통동화';
+        return context.l10n.categoryFolktale;
       case 'history':
-        return '역사';
+        return context.l10n.categoryHistory;
       case 'legend':
-        return '전설';
+        return context.l10n.categoryLegend;
       default:
         return category;
     }
@@ -221,7 +222,7 @@ class StoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                _categoryLabel,
+                _categoryLabel(context),
                 style: AppTheme.caption(context).copyWith(
                   color: categoryColor.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
@@ -246,7 +247,7 @@ class StoryCard extends StatelessWidget {
                   color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
-                Text('$ageMin-$ageMax세', style: AppTheme.caption(context)),
+                Text(context.l10n.ageYearsFormat(ageMin, ageMax), style: AppTheme.caption(context)),
                 const SizedBox(width: 12),
                 Icon(
                   Icons.menu_book_rounded,
@@ -254,7 +255,7 @@ class StoryCard extends StatelessWidget {
                   color: AppTheme.textMutedColor(context),
                 ),
                 const SizedBox(width: 4),
-                Text('$totalChapters화', style: AppTheme.caption(context)),
+                Text(context.l10n.episodesFormat(totalChapters), style: AppTheme.caption(context)),
               ],
             ),
             if (averageRating != null) ...[

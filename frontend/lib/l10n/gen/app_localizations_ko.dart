@@ -559,4 +559,91 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get unlockedStickers => '획득함';
+
+  @override
+  String get error => '오류';
+
+  @override
+  String get chapterNotFound => '챕터를 찾을 수 없습니다';
+
+  @override
+  String get chapterLoadError => '챕터를 불러올 수 없습니다';
+
+  @override
+  String get historyTab => '기록';
+
+  @override
+  String get profileTab => '내정보';
+
+  @override
+  String get categoryAll => '전체';
+
+  @override
+  String get categoryFavorite => '즐겨찾기';
+
+  @override
+  String ageYearsFormat(Object min, Object max) {
+    return '$min-$max세';
+  }
+
+  @override
+  String episodesFormat(Object count) {
+    return '$count화';
+  }
+
+  @override
+  String get illustration => '일러스트';
+
+  @override
+  String get reportStory => '이야기 신고';
+
+  @override
+  String get reportChapter => '챕터 신고';
+
+  @override
+  String get reportApp => '앱 문제 신고';
+
+  @override
+  String get reportQuestion => '질문 신고';
+
+  @override
+  String get reportOther => '기타 신고';
+
+  @override
+  String get reportStoryHint => '이야기의 어떤 문제가 있나요?';
+
+  @override
+  String get reportChapterHint => '챕터의 어떤 문제가 있나요?';
+
+  @override
+  String get reportAppHint => '앱에서 어떤 문제가 발생했나요?';
+
+  @override
+  String get reportQuestionHint => '질문의 어떤 문제가 있나요?';
+
+  @override
+  String get reportGeneralHint => '어떤 문제가 있나요?';
+
+  @override
+  String get reportContentRequired => '신고 내용을 입력해주세요';
+
+  @override
+  String get reportLoginRequired => '로그인 후 신고해 주세요';
+
+  @override
+  String get reportSuccess => '신고가 접수되었습니다. 검토 후 조치하겠습니다.';
+
+  @override
+  String get reportFailed => '신고 접수에 실패했습니다';
+
+  @override
+  String get reportContent => '신고 내용';
+
+  @override
+  String get reportSubmit => '신고하기';
+
+  @override
+  String reportTarget(Object title) {
+    return '대상: $title';
+  }
 }

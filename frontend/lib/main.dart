@@ -70,7 +70,8 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             return MaterialApp.router(
-              title: '꼬마 한동화',
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context).appTitle,
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

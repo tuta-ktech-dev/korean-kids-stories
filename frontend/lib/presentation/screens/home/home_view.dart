@@ -146,7 +146,7 @@ class HomeView extends StatelessWidget {
 
                   return CategoryButton(
                     icon: HomeCubit.getIconData(category.icon),
-                    label: category.label,
+                    label: _getCategoryLabel(context, category),
                     color: _getCategoryColor(context, index),
                     isSelected: isSelected,
                     onTap: () {
@@ -162,6 +162,23 @@ class HomeView extends StatelessWidget {
         return const SizedBox.shrink();
       },
     );
+  }
+
+  String _getCategoryLabel(BuildContext context, Category category) {
+    switch (category.id) {
+      case 'all':
+        return context.l10n.categoryAll;
+      case 'favorite':
+        return context.l10n.categoryFavorite;
+      case 'folktale':
+        return context.l10n.categoryFolktale;
+      case 'history':
+        return context.l10n.categoryHistory;
+      case 'legend':
+        return context.l10n.categoryLegend;
+      default:
+        return category.label;
+    }
   }
 
   Color _getCategoryColor(BuildContext context, int index) {

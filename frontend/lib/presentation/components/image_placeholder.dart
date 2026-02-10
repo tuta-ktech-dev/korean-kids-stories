@@ -45,7 +45,8 @@ class ImagePlaceholder extends StatelessWidget {
     );
   }
 
-  /// Create a chapter/illustration placeholder
+  /// Create a chapter/illustration placeholder.
+  /// Pass [label] for accessibility (e.g. context.l10n.illustration).
   factory ImagePlaceholder.illustration({
     Key? key,
     double? width,
@@ -53,6 +54,7 @@ class ImagePlaceholder extends StatelessWidget {
     Color? backgroundColor,
     Color? iconColor,
     double borderRadius = 12,
+    String? label,
   }) {
     return ImagePlaceholder(
       key: key,
@@ -63,7 +65,7 @@ class ImagePlaceholder extends StatelessWidget {
       backgroundColor: backgroundColor,
       iconColor: iconColor,
       borderRadius: borderRadius,
-      label: '일러스트',
+      label: label,
     );
   }
 

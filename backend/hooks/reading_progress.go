@@ -100,6 +100,7 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 		}
 
 		stats, _ := txApp.FindFirstRecordByFilter(statsCol.Id, `user="`+escapeFilter(userID)+`"`)
+		newUser := stats == nil
 		if stats == nil {
 			stats = core.NewRecord(statsCol)
 			stats.Set("user", userID)
@@ -197,6 +198,11 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 		if newLevel > oldLevel {
 			if err := unlockLevelSticker(txApp, userID, newLevel); err != nil {
 				log.Printf("unlockLevelSticker failed: %v", err)
+			}
+		} else if newUser {
+			// New user: unlock level 1 sticker (no level-up event since we start at 1)
+			if err := unlockLevelSticker(txApp, userID, 1); err != nil {
+				log.Printf("unlockLevelSticker(level 1) failed: %v", err)
 			}
 		}
 

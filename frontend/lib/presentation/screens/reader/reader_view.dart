@@ -192,9 +192,14 @@ class _ReaderViewState extends State<ReaderView> {
         }
 
         if (state is ReaderError) {
+          final msg = state.message == 'chapterNotFound'
+              ? context.l10n.chapterNotFound
+              : state.message == 'chapterLoadError'
+                  ? context.l10n.chapterLoadError
+                  : state.message;
           return Scaffold(
-            appBar: AppBar(title: const Text('Error')),
-            body: Center(child: Text(state.message)),
+            appBar: AppBar(title: Text(context.l10n.error)),
+            body: Center(child: Text(msg)),
           );
         }
 

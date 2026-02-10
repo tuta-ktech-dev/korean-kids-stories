@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../data/repositories/report_repository.dart';
 import '../../data/services/pocketbase_service.dart';
 import '../../injection.dart';
@@ -27,33 +28,33 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
   final _reasonController = TextEditingController();
   bool _isSubmitting = false;
 
-  String get _typeLabel {
+  String _typeLabel(BuildContext context) {
     switch (widget.type) {
       case ReportType.story:
-        return '이야기 신고';
+        return context.l10n.reportStory;
       case ReportType.chapter:
-        return '챕터 신고';
+        return context.l10n.reportChapter;
       case ReportType.app:
-        return '앱 문제 신고';
+        return context.l10n.reportApp;
       case ReportType.question:
-        return '질문 신고';
+        return context.l10n.reportQuestion;
       case ReportType.other:
-        return '기타 신고';
+        return context.l10n.reportOther;
     }
   }
 
-  String get _typeHint {
+  String _typeHint(BuildContext context) {
     switch (widget.type) {
       case ReportType.story:
-        return '이야기의 어떤 문제가 있나요?';
+        return context.l10n.reportStoryHint;
       case ReportType.chapter:
-        return '챕터의 어떤 문제가 있나요?';
+        return context.l10n.reportChapterHint;
       case ReportType.app:
-        return '앱에서 어떤 문제가 발생했나요?';
+        return context.l10n.reportAppHint;
       case ReportType.question:
-        return '질문의 어떤 문제가 있나요?';
+        return context.l10n.reportQuestionHint;
       case ReportType.other:
-        return '어떤 문제가 있나요?';
+        return context.l10n.reportGeneralHint;
     }
   }
 
@@ -61,7 +62,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
     if (_reasonController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('신고 내용을 입력해주세요', style: AppTheme.bodyMedium(context)),
+          content: Text(context.l10n.reportContentRequired, style: AppTheme.bodyMedium(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -73,7 +74,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
     if (!getIt<PocketbaseService>().isAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('로그인 후 신고해 주세요', style: AppTheme.bodyMedium(context)),
+          content: Text(context.l10n.reportLoginRequired, style: AppTheme.bodyMedium(context)),
           backgroundColor: Colors.orange,
         ),
       );
@@ -96,7 +97,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? '신고가 접수되었습니다. 검토 후 조치하겠습니다.' : '신고 접수에 실패했습니다.',
+            success ? context.l10n.reportSuccess : context.l10n.reportFailed,
             style: AppTheme.bodyMedium(context),
           ),
           backgroundColor: success ? Colors.green : Colors.red,
@@ -160,7 +161,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
               ),
               const SizedBox(width: 12),
               Text(
-                _typeLabel,
+                _typeLabel(context),
                 style: AppTheme.headingMedium(context),
               ),
             ],
@@ -169,7 +170,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
 
           if (widget.targetTitle != null) ...[
             Text(
-              '대상: ${widget.targetTitle}',
+              context.l10n.reportTarget(widget.targetTitle!),
               style: AppTheme.bodyMedium(context).copyWith(
                 color: AppTheme.textMutedColor(context),
               ),
@@ -179,7 +180,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
 
           // Reason input
           Text(
-            '신고 내용',
+            context.l10n.reportContent,
             style: AppTheme.bodyLarge(context).copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -189,7 +190,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
             controller: _reasonController,
             maxLines: 5,
             decoration: InputDecoration(
-              hintText: _typeHint,
+              hintText: _typeHint(context),
               hintStyle: AppTheme.bodyMedium(context).copyWith(
                 color: AppTheme.textMutedColor(context),
               ),
@@ -226,7 +227,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('신고하기'),
+                  : Text(context.l10n.reportSubmit),
             ),
           ),
           const SizedBox(height: 8),
@@ -237,7 +238,7 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
             child: TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                '취소',
+                context.l10n.cancel,
                 style: AppTheme.bodyLarge(context).copyWith(
                   color: AppTheme.textMutedColor(context),
                 ),

@@ -1185,6 +1185,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlocked'**
   String get unlockedStickers;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @chapterNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter not found'**
+  String get chapterNotFound;
+
+  /// No description provided for @chapterLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load chapter'**
+  String get chapterLoadError;
+
+  /// No description provided for @historyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTab;
+
+  /// No description provided for @profileTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTab;
+
+  /// No description provided for @categoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAll;
+
+  /// No description provided for @categoryFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get categoryFavorite;
+
+  /// No description provided for @ageYearsFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{min}-{max} years'**
+  String ageYearsFormat(Object min, Object max);
+
+  /// No description provided for @episodesFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} eps'**
+  String episodesFormat(Object count);
+
+  /// No description provided for @illustration.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration'**
+  String get illustration;
+
+  /// No description provided for @reportStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Report story'**
+  String get reportStory;
+
+  /// No description provided for @reportChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Report chapter'**
+  String get reportChapter;
+
+  /// No description provided for @reportApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Report app issue'**
+  String get reportApp;
+
+  /// No description provided for @reportQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Report question'**
+  String get reportQuestion;
+
+  /// No description provided for @reportOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other report'**
+  String get reportOther;
+
+  /// No description provided for @reportStoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What problem does the story have?'**
+  String get reportStoryHint;
+
+  /// No description provided for @reportChapterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What problem does the chapter have?'**
+  String get reportChapterHint;
+
+  /// No description provided for @reportAppHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What problem occurred in the app?'**
+  String get reportAppHint;
+
+  /// No description provided for @reportQuestionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What problem does the question have?'**
+  String get reportQuestionHint;
+
+  /// No description provided for @reportGeneralHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What problem do you have?'**
+  String get reportGeneralHint;
+
+  /// No description provided for @reportContentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the report content'**
+  String get reportContentRequired;
+
+  /// No description provided for @reportLoginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login to report'**
+  String get reportLoginRequired;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted. We will review and take action.'**
+  String get reportSuccess;
+
+  /// No description provided for @reportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit report'**
+  String get reportFailed;
+
+  /// No description provided for @reportContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Report content'**
+  String get reportContent;
+
+  /// No description provided for @reportSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get reportSubmit;
+
+  /// No description provided for @reportTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: {title}'**
+  String reportTarget(Object title);
 }
 
 class _AppLocalizationsDelegate

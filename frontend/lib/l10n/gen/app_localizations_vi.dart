@@ -562,4 +562,91 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unlockedStickers => 'Đã mở khóa';
+
+  @override
+  String get error => 'Lỗi';
+
+  @override
+  String get chapterNotFound => 'Không tìm thấy chương';
+
+  @override
+  String get chapterLoadError => 'Không tải được chương';
+
+  @override
+  String get historyTab => 'Lịch sử';
+
+  @override
+  String get profileTab => 'Cá nhân';
+
+  @override
+  String get categoryAll => 'Tất cả';
+
+  @override
+  String get categoryFavorite => 'Yêu thích';
+
+  @override
+  String ageYearsFormat(Object min, Object max) {
+    return '$min-$max tuổi';
+  }
+
+  @override
+  String episodesFormat(Object count) {
+    return '$count chương';
+  }
+
+  @override
+  String get illustration => 'Minh họa';
+
+  @override
+  String get reportStory => 'Báo cáo truyện';
+
+  @override
+  String get reportChapter => 'Báo cáo chương';
+
+  @override
+  String get reportApp => 'Báo cáo lỗi app';
+
+  @override
+  String get reportQuestion => 'Báo cáo câu hỏi';
+
+  @override
+  String get reportOther => 'Khác';
+
+  @override
+  String get reportStoryHint => 'Truyện có vấn đề gì?';
+
+  @override
+  String get reportChapterHint => 'Chương có vấn đề gì?';
+
+  @override
+  String get reportAppHint => 'App gặp vấn đề gì?';
+
+  @override
+  String get reportQuestionHint => 'Câu hỏi có vấn đề gì?';
+
+  @override
+  String get reportGeneralHint => 'Bạn gặp vấn đề gì?';
+
+  @override
+  String get reportContentRequired => 'Vui lòng nhập nội dung báo cáo';
+
+  @override
+  String get reportLoginRequired => 'Vui lòng đăng nhập để báo cáo';
+
+  @override
+  String get reportSuccess => 'Đã gửi báo cáo. Chúng tôi sẽ xem xét và xử lý.';
+
+  @override
+  String get reportFailed => 'Gửi báo cáo thất bại';
+
+  @override
+  String get reportContent => 'Nội dung báo cáo';
+
+  @override
+  String get reportSubmit => 'Gửi báo cáo';
+
+  @override
+  String reportTarget(Object title) {
+    return 'Đối tượng: $title';
+  }
 }
