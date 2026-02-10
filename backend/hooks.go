@@ -52,7 +52,50 @@ func SetupHooks(app *pocketbase.PocketBase) {
 		return e.Next()
 	})
 
+	// Hook: Update story favorite_count and bookmark_count when bookmarks change
+	app.OnRecordCreateRequest("bookmarks").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := updateStoryBookmarkCountsTransactional(app, e.Record.GetString("story")); err != nil {
+			log.Printf("Failed to update story bookmark counts: %v", err)
+		}
+		return e.Next()
+	})
+
+	app.OnRecordUpdateRequest("bookmarks").BindFunc(func(e *core.RecordRequestEvent) error {
+		// Need to update both old and new story (in case type/story changed)
+		oldStoryId := ""
+		if orig := e.Record.Original(); orig != nil {
+			oldStoryId = orig.GetString("story")
+		}
+		newStoryId := e.Record.GetString("story")
+		for _, id := range uniqueStoryIds(oldStoryId, newStoryId) {
+			if err := updateStoryBookmarkCountsTransactional(app, id); err != nil {
+				log.Printf("Failed to update story bookmark counts: %v", err)
+			}
+		}
+		return e.Next()
+	})
+
+	app.OnRecordDeleteRequest("bookmarks").BindFunc(func(e *core.RecordRequestEvent) error {
+		if err := updateStoryBookmarkCountsTransactional(app, e.Record.GetString("story")); err != nil {
+			log.Printf("Failed to update story bookmark counts: %v", err)
+		}
+		return e.Next()
+	})
+
 	log.Println("✅ Hooks configured successfully")
+}
+
+// uniqueStoryIds returns unique non-empty story IDs
+func uniqueStoryIds(ids ...string) []string {
+	seen := make(map[string]bool)
+	var result []string
+	for _, id := range ids {
+		if id != "" && !seen[id] {
+			seen[id] = true
+			result = append(result, id)
+		}
+	}
+	return result
 }
 
 // escapeFilter escapes special characters in filter strings to prevent injection
@@ -172,6 +215,60 @@ func updateStoryRatingTransactional(app core.App, storyId string) error {
 			story.Set("average_rating", average)
 			story.Set("review_count", len(reviews))
 		}
+
+		return txApp.Save(story)
+	})
+}
+
+// updateStoryBookmarkCountsTransactional updates favorite_count and bookmark_count from bookmarks
+func updateStoryBookmarkCountsTransactional(app core.App, storyId string) error {
+	if storyId == "" {
+		return nil
+	}
+
+	return app.RunInTransaction(func(txApp core.App) error {
+		storiesCollection, err := txApp.FindCollectionByNameOrId("stories")
+		if err != nil {
+			return err
+		}
+
+		story, err := txApp.FindRecordById(storiesCollection, storyId)
+		if err != nil {
+			return err
+		}
+
+		bookmarksCollection, err := txApp.FindCollectionByNameOrId("bookmarks")
+		if err != nil {
+			return err
+		}
+
+		safeStoryId := escapeFilter(storyId)
+		filter := `story="` + safeStoryId + `"`
+
+		bookmarks, err := txApp.FindRecordsByFilter(
+			bookmarksCollection.Id,
+			filter,
+			"",
+			10000,
+			0,
+		)
+		if err != nil {
+			return err
+		}
+
+		favoriteCount := 0
+		bookmarkCount := 0
+		for _, bm := range bookmarks {
+			switch bm.GetString("type") {
+			case "favorite":
+				favoriteCount++
+			case "bookmark":
+				bookmarkCount++
+			}
+		}
+
+		story.Set("favorite_count", favoriteCount)
+		story.Set("bookmark_count", bookmarkCount)
 
 		return txApp.Save(story)
 	})

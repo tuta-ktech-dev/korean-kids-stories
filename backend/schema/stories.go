@@ -67,6 +67,14 @@ func EnsureStoriesCollection(app core.App) {
 		changes = true
 	}
 
+	// Bookmark/favorite counts (auto-updated by hooks)
+	if AddNumberField(collection, "favorite_count", false, Ptr(0.0), nil) {
+		changes = true
+	}
+	if AddNumberField(collection, "bookmark_count", false, Ptr(0.0), nil) {
+		changes = true
+	}
+
 	// Add system fields
 	if AddSystemFields(collection) {
 		changes = true
