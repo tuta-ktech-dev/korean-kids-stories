@@ -415,6 +415,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get otpSentMessage => 'Chúng tôi đã gửi liên kết xác minh đến\n';
 
   @override
+  String get otpEnterCode => 'Hoặc nhập mã 6 số từ email';
+
+  @override
+  String get verify => 'Xác minh';
+
+  @override
   String get checkEmail => 'Kiểm tra email';
 
   @override

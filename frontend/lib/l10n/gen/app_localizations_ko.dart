@@ -412,6 +412,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get otpSentMessage => '아래 이메일로 인증 링크를 보냈습니다\n';
 
   @override
+  String get otpEnterCode => '이메일에서 받은 6자리 코드를 입력하세요';
+
+  @override
+  String get verify => '인증';
+
+  @override
   String get checkEmail => '이메일을 확인하세요';
 
   @override

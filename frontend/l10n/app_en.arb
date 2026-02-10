@@ -140,6 +140,8 @@
   "chapterTitleFormatted": "Chapter {number}",
   "otpTitle": "Check your email",
   "otpSentMessage": "We sent a verification link to\n",
+  "otpEnterCode": "Or enter the 6-digit code from email",
+  "verify": "Verify",
   "checkEmail": "Check your email",
   "clickVerifyLink": "Click the verification link",
   "loginInstruction": "Login",

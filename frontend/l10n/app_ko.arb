@@ -137,6 +137,8 @@
   "chapterTitleFormatted": "제 {number} 화",
   "otpTitle": "이메일을 확인해주세요",
   "otpSentMessage": "아래 이메일로 인증 링크를 보냈습니다\n",
+  "otpEnterCode": "이메일에서 받은 6자리 코드를 입력하세요",
+  "verify": "인증",
   "checkEmail": "이메일을 확인하세요",
   "clickVerifyLink": "인증 링크를 클릭하세요",
   "loginInstruction": "로그인하세요",

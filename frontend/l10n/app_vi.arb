@@ -133,6 +133,8 @@
   "chapterTitleFormatted": "Chương {number}",
   "otpTitle": "Kiểm tra email của bạn",
   "otpSentMessage": "Chúng tôi đã gửi liên kết xác minh đến\n",
+  "otpEnterCode": "Hoặc nhập mã 6 số từ email",
+  "verify": "Xác minh",
   "checkEmail": "Kiểm tra email",
   "clickVerifyLink": "Nhấp vào liên kết xác minh",
   "loginInstruction": "Đăng nhập",

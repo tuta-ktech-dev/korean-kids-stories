@@ -892,6 +892,18 @@ abstract class AppLocalizations {
   /// **'We sent a verification link to\n'**
   String get otpSentMessage;
 
+  /// No description provided for @otpEnterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Or enter the 6-digit code from email'**
+  String get otpEnterCode;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
+
   /// No description provided for @checkEmail.
   ///
   /// In en, this message translates to:

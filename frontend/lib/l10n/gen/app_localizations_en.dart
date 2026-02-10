@@ -416,6 +416,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otpSentMessage => 'We sent a verification link to\n';
 
   @override
+  String get otpEnterCode => 'Or enter the 6-digit code from email';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
   String get checkEmail => 'Check your email';
 
   @override

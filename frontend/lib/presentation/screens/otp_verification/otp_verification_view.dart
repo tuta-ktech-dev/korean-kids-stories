@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/theme/app_theme.dart';
-
-import '../../cubits/auth_cubit/auth_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import 'package:pinput/pinput.dart';
+
+import '../../../core/theme/app_theme.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
 
 /// Screen hiển thị sau khi đăng ký - yêu cầu user check email để verify
 class OtpVerificationView extends StatefulWidget {
@@ -19,6 +23,10 @@ class OtpVerificationView extends StatefulWidget {
 class _OtpVerificationViewState extends State<OtpVerificationView> {
   int _resendTimer = 60;
   bool _canResend = false;
+  Timer? _resendTimerSubscription;
+  final _otpController = TextEditingController();
+  final _otpFocusNode = FocusNode();
+  bool _isVerifying = false;
 
   @override
   void initState() {
@@ -26,40 +34,67 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
     _startResendTimer();
   }
 
+  @override
+  void dispose() {
+    _resendTimerSubscription?.cancel();
+    _otpController.dispose();
+    _otpFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onOtpCompleted(String code) async {
+    if (_isVerifying || code.length != 6) return;
+    setState(() => _isVerifying = true);
+    try {
+      await context.read<AuthCubit>().verifyEmail(code);
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
+    }
+  }
+
   void _startResendTimer() {
-    setState(() => _canResend = false);
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted && _resendTimer > 0) {
-        setState(() => _resendTimer--);
-        _startResendTimer();
-      } else if (mounted) {
-        setState(() {
-          _canResend = true;
-          _resendTimer = 60;
-        });
-      }
+    _resendTimerSubscription?.cancel();
+    setState(() {
+      _canResend = false;
+      _resendTimer = 60;
     });
+    _resendTimerSubscription = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) {
+        if (!mounted) return;
+        if (_resendTimer > 1) {
+          setState(() => _resendTimer--);
+        } else {
+          _resendTimerSubscription?.cancel();
+          setState(() {
+            _canResend = true;
+            _resendTimer = 60;
+          });
+        }
+      },
+    );
   }
 
   Future<void> _resendVerificationEmail() async {
-    if (!_canResend) return;
+    if (!_canResend || widget.email == null) return;
 
-    if (widget.email != null) {
-      context.read<AuthCubit>().resendVerificationEmail(widget.email!);
-    }
+    final success =
+        await context.read<AuthCubit>().resendVerificationEmail(widget.email!);
+    if (!mounted) return;
 
-    _startResendTimer();
-
-    if (mounted) {
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             context.l10n.emailResent,
             style: AppTheme.bodyMedium(context),
           ),
+          backgroundColor: Colors.green,
         ),
       );
+      _startResendTimer();
     }
+    // AuthError shown by BlocConsumer listener
   }
 
   void _onLoginPressed() {
@@ -99,7 +134,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.router.replaceNamed('/login'),
             ),
           ),
           body: SafeArea(
@@ -118,12 +153,15 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
                   ),
                   const SizedBox(height: 32),
 
-                  Text('이메일을 확인해주세요', style: AppTheme.headingLarge(context)),
+                  Text(
+                    context.l10n.otpTitle,
+                    style: AppTheme.headingLarge(context),
+                  ),
                   const SizedBox(height: 16),
 
                   Text.rich(
                     TextSpan(
-                      text: '아래 이메일로 인증 링크를 별냈습니다\n',
+                      text: context.l10n.otpSentMessage,
                       style: AppTheme.bodyMedium(context),
                       children: [
                         TextSpan(
@@ -138,7 +176,81 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
+
+                  // OTP input - nhảy ô tiếp theo khi nhập
+                  Text(
+                    context.l10n.otpEnterCode,
+                    style: AppTheme.bodyMedium(context).copyWith(
+                      color: AppTheme.textMutedColor(context),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Pinput(
+                    length: 6,
+                    controller: _otpController,
+                    focusNode: _otpFocusNode,
+                    enabled: !_isVerifying,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    autofocus: true,
+                    onCompleted: _onOtpCompleted,
+                    defaultPinTheme: PinTheme(
+                      width: 48,
+                      height: 56,
+                      textStyle: AppTheme.bodyLarge(context).copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceColor(context),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.textMutedColor(context)
+                              .withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ),
+                    focusedPinTheme: PinTheme(
+                      width: 48,
+                      height: 56,
+                      textStyle: AppTheme.bodyLarge(context).copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor(context),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceColor(context),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.primaryColor(context),
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    submittedPinTheme: PinTheme(
+                      width: 48,
+                      height: 56,
+                      textStyle: AppTheme.bodyLarge(context).copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor(context),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceColor(context),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.primaryColor(context)
+                              .withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                    separatorBuilder: (index) => const SizedBox(width: 8),
+                  ),
+                  const SizedBox(height: 32),
 
                   // Instructions
                   Container(

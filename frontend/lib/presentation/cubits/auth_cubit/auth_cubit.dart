@@ -126,17 +126,19 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// Resend verification email
-  Future<void> resendVerificationEmail([String? email]) async {
+  /// Resend verification email. Returns true on success.
+  Future<bool> resendVerificationEmail([String? email]) async {
     final targetEmail = email ?? _pendingEmail;
-    if (targetEmail != null) {
-      try {
-        await _authRepository.resendVerificationEmail(targetEmail);
-      } on PocketbaseException catch (e) {
-        emit(AuthError(e.message));
-      } catch (e) {
-        emit(const AuthError('인증 메일 재발송에 실패했습니다'));
-      }
+    if (targetEmail == null) return false;
+    try {
+      await _authRepository.resendVerificationEmail(targetEmail);
+      return true;
+    } on PocketbaseException catch (e) {
+      emit(AuthError(e.message));
+      return false;
+    } catch (e) {
+      emit(const AuthError('인증 메일 재발송에 실패했습니다'));
+      return false;
     }
   }
 
