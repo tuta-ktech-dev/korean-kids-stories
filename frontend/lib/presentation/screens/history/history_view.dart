@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../components/cards/history_card.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
@@ -61,7 +62,7 @@ class _HistoryViewState extends State<HistoryView> {
                       icon: const Icon(Icons.menu_book),
                     ),
                     Tab(
-                      text: context.l10n.completedStories,
+                      text: context.l10n.completedChapters,
                       icon: const Icon(Icons.check_circle),
                     ),
                   ],
@@ -203,12 +204,11 @@ class _ReadingHistoryTab extends StatelessWidget {
         final item = items[index];
         return HistoryCard(
           title: item.story.title,
-          subtitle: item.displaySubtitle,
+          subtitle: _formatHistorySubtitle(context, item),
           icon: Icons.menu_book,
           color: _getColorForIndex(index),
-          timeAgo: item.timeAgo,
+          timeAgo: _formatTimeAgo(context, item.lastReadAt),
           onTap: () {
-            // Navigate to reader
             context.router.pushNamed(
               '/reader/${item.story.id}/${item.chapter?.id ?? ""}',
             );
@@ -217,6 +217,7 @@ class _ReadingHistoryTab extends StatelessWidget {
       },
     );
   }
+
 }
 
 class _CompletedStoriesTab extends StatelessWidget {
@@ -230,8 +231,8 @@ class _CompletedStoriesTab extends StatelessWidget {
       return _buildEmptyState(
         context,
         icon: Icons.check_circle_outline,
-        title: context.l10n.noCompletedStoriesYet,
-        subtitle: context.l10n.completeStoryHint,
+        title: context.l10n.noCompletedChaptersYet,
+        subtitle: context.l10n.completeChapterHint,
       );
     }
 
@@ -242,16 +243,45 @@ class _CompletedStoriesTab extends StatelessWidget {
         final item = items[index];
         return HistoryCard(
           title: item.story.title,
-          subtitle: item.displaySubtitle,
+          subtitle: _formatHistorySubtitle(context, item),
           icon: Icons.check_circle,
           color: AppTheme.primaryMint,
-          timeAgo: item.timeAgo,
+          timeAgo: _formatTimeAgo(context, item.lastReadAt),
           onTap: () {
             context.router.pushNamed('/story/${item.story.id}');
           },
         );
       },
     );
+  }
+
+}
+
+String _formatHistorySubtitle(BuildContext context, dynamic item) {
+  final l10n = context.l10n;
+  final percent = item.isCompleted ? 100 : item.percentRead.toInt();
+  final percentStr = l10n.historyPercentComplete(percent);
+  if (item.chapter != null) {
+    return '${item.chapter!.title} • $percentStr';
+  }
+  return percentStr;
+}
+
+String _formatTimeAgo(BuildContext context, DateTime? lastReadAt) {
+  if (lastReadAt == null) return '';
+  final l10n = context.l10n;
+  final diff = DateTime.now().difference(lastReadAt);
+
+  if (diff.inMinutes < 60) {
+    return l10n.timeAgoMinutes(diff.inMinutes);
+  } else if (diff.inHours < 24) {
+    return l10n.timeAgoHours(diff.inHours);
+  } else if (diff.inDays < 7) {
+    return l10n.timeAgoDays(diff.inDays);
+  } else if (diff.inDays < 30) {
+    return l10n.timeAgoWeeks((diff.inDays / 7).floor());
+  } else {
+    return l10n.timeAgoMonths((diff.inDays / 30).floor());
   }
 }
 

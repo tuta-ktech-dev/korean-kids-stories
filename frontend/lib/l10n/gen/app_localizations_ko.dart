@@ -471,6 +471,39 @@ class AppLocalizationsKo extends AppLocalizations {
   String get completedStories => '완료한 이야기';
 
   @override
+  String get completedChapters => '완료한 챕터';
+
+  @override
+  String historyPercentComplete(Object percent) {
+    return '$percent% 완료';
+  }
+
+  @override
+  String timeAgoMinutes(Object count) {
+    return '$count분 전';
+  }
+
+  @override
+  String timeAgoHours(Object count) {
+    return '$count시간 전';
+  }
+
+  @override
+  String timeAgoDays(Object count) {
+    return '$count일 전';
+  }
+
+  @override
+  String timeAgoWeeks(Object count) {
+    return '$count주 전';
+  }
+
+  @override
+  String timeAgoMonths(Object count) {
+    return '$count개월 전';
+  }
+
+  @override
   String get currentStreak => '연속 학습';
 
   @override
@@ -486,7 +519,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noCompletedStoriesYet => '완료한 이야기가 없어요';
 
   @override
+  String get noCompletedChaptersYet => '완료한 챕터가 없어요';
+
+  @override
   String get completeStoryHint => '이야기를 끝까지 읽으면 여기에 표시돼요!';
+
+  @override
+  String get completeChapterHint => '챕터를 끝까지 읽으면 여기에 표시돼요!';
 
   @override
   String get addNote => '메모 추가';
@@ -559,6 +598,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get unlockedStickers => '획득함';
+
+  @override
+  String get readStoriesToUnlockStickers => '이야기를 읽고 스티커를 모아보세요!';
+
+  @override
+  String get storyStickers => '스토리 스티커';
 
   @override
   String get error => '오류';

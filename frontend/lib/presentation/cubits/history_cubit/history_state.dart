@@ -32,35 +32,6 @@ class HistoryItem extends Equatable {
         lastReadAt,
         lastPosition,
       ];
-
-  String get displaySubtitle {
-    if (chapter != null) {
-      final chapterInfo = chapter!.title;
-      if (isCompleted) {
-        return '$chapterInfo • 100% 완료';
-      }
-      return '$chapterInfo • ${percentRead.toInt()}% 완료';
-    }
-    return '${percentRead.toInt()}% 완료';
-  }
-
-  String get timeAgo {
-    if (lastReadAt == null) return '';
-    final now = DateTime.now();
-    final diff = now.difference(lastReadAt!);
-
-    if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}분 전';
-    } else if (diff.inHours < 24) {
-      return '${diff.inHours}시간 전';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays}일 전';
-    } else if (diff.inDays < 30) {
-      return '${(diff.inDays / 7).floor()}주 전';
-    } else {
-      return '${(diff.inDays / 30).floor()}개월 전';
-    }
-  }
 }
 
 /// Reading stats

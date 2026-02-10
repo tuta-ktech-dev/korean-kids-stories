@@ -476,6 +476,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completedStories => 'Completed Stories';
 
   @override
+  String get completedChapters => 'Completed Chapters';
+
+  @override
+  String historyPercentComplete(Object percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String timeAgoMinutes(Object count) {
+    return '$count min ago';
+  }
+
+  @override
+  String timeAgoHours(Object count) {
+    return '$count hrs ago';
+  }
+
+  @override
+  String timeAgoDays(Object count) {
+    return '$count days ago';
+  }
+
+  @override
+  String timeAgoWeeks(Object count) {
+    return '$count wks ago';
+  }
+
+  @override
+  String timeAgoMonths(Object count) {
+    return '$count mo ago';
+  }
+
+  @override
   String get currentStreak => 'Current Streak';
 
   @override
@@ -491,7 +524,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCompletedStoriesYet => 'No completed stories yet';
 
   @override
+  String get noCompletedChaptersYet => 'No completed chapters yet';
+
+  @override
   String get completeStoryHint => 'Complete a story to see it here!';
+
+  @override
+  String get completeChapterHint => 'Complete a chapter to see it here!';
 
   @override
   String get addNote => 'Add Note';
@@ -565,6 +604,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlockedStickers => 'Unlocked';
+
+  @override
+  String get readStoriesToUnlockStickers => 'Read stories to unlock stickers!';
+
+  @override
+  String get storyStickers => 'Story Stickers';
 
   @override
   String get error => 'Error';

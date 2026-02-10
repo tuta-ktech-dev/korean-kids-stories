@@ -1006,6 +1006,48 @@ abstract class AppLocalizations {
   /// **'Completed Stories'**
   String get completedStories;
 
+  /// No description provided for @completedChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Chapters'**
+  String get completedChapters;
+
+  /// No description provided for @historyPercentComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% complete'**
+  String historyPercentComplete(Object percent);
+
+  /// No description provided for @timeAgoMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String timeAgoMinutes(Object count);
+
+  /// No description provided for @timeAgoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hrs ago'**
+  String timeAgoHours(Object count);
+
+  /// No description provided for @timeAgoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String timeAgoDays(Object count);
+
+  /// No description provided for @timeAgoWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} wks ago'**
+  String timeAgoWeeks(Object count);
+
+  /// No description provided for @timeAgoMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mo ago'**
+  String timeAgoMonths(Object count);
+
   /// No description provided for @currentStreak.
   ///
   /// In en, this message translates to:
@@ -1036,11 +1078,23 @@ abstract class AppLocalizations {
   /// **'No completed stories yet'**
   String get noCompletedStoriesYet;
 
+  /// No description provided for @noCompletedChaptersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed chapters yet'**
+  String get noCompletedChaptersYet;
+
   /// No description provided for @completeStoryHint.
   ///
   /// In en, this message translates to:
   /// **'Complete a story to see it here!'**
   String get completeStoryHint;
+
+  /// No description provided for @completeChapterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a chapter to see it here!'**
+  String get completeChapterHint;
 
   /// No description provided for @addNote.
   ///
@@ -1185,6 +1239,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlocked'**
   String get unlockedStickers;
+
+  /// No description provided for @readStoriesToUnlockStickers.
+  ///
+  /// In en, this message translates to:
+  /// **'Read stories to unlock stickers!'**
+  String get readStoriesToUnlockStickers;
+
+  /// No description provided for @storyStickers.
+  ///
+  /// In en, this message translates to:
+  /// **'Story Stickers'**
+  String get storyStickers;
 
   /// No description provided for @error.
   ///

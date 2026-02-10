@@ -23,10 +23,12 @@ class StatsCubit extends Cubit<StatsState> {
     emit(state.copyWith(isLoading: true, error: null));
     try {
       final stats = await _userStatsRepo.getMyStats();
-      final stickers = await _stickerRepo.getMyUnlockedStickers();
+      final unlocked = await _stickerRepo.getMyUnlockedStickers();
+      final levelStickers = await _stickerRepo.getLevelStickers();
       emit(state.copyWith(
         stats: stats,
-        unlockedStickers: stickers,
+        unlockedStickers: unlocked,
+        levelStickers: levelStickers,
         isLoading: false,
       ));
     } catch (e) {

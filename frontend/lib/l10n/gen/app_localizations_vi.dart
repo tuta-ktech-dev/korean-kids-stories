@@ -474,6 +474,39 @@ class AppLocalizationsVi extends AppLocalizations {
   String get completedStories => 'Truyện đã đọc';
 
   @override
+  String get completedChapters => 'Chương đã đọc';
+
+  @override
+  String historyPercentComplete(Object percent) {
+    return '$percent% hoàn thành';
+  }
+
+  @override
+  String timeAgoMinutes(Object count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String timeAgoHours(Object count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String timeAgoDays(Object count) {
+    return '$count ngày trước';
+  }
+
+  @override
+  String timeAgoWeeks(Object count) {
+    return '$count tuần trước';
+  }
+
+  @override
+  String timeAgoMonths(Object count) {
+    return '$count tháng trước';
+  }
+
+  @override
   String get currentStreak => 'Chuỗi ngày học';
 
   @override
@@ -489,7 +522,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noCompletedStoriesYet => 'Chưa có truyện hoàn thành';
 
   @override
+  String get noCompletedChaptersYet => 'Chưa có chương hoàn thành';
+
+  @override
   String get completeStoryHint => 'Đọc xong một truyện để xem ở đây!';
+
+  @override
+  String get completeChapterHint => 'Đọc xong một chương để xem ở đây!';
 
   @override
   String get addNote => 'Thêm ghi chú';
@@ -562,6 +601,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unlockedStickers => 'Đã mở khóa';
+
+  @override
+  String get readStoriesToUnlockStickers =>
+      'Đọc truyện để mở khóa sticker nhé!';
+
+  @override
+  String get storyStickers => 'Sticker truyện';
 
   @override
   String get error => 'Lỗi';

@@ -144,35 +144,30 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 		}
 		stats.Set("last_activity_date", today)
 
-		// Check story completed
+		// Check story completed: user must complete ALL chapters that exist for this story
 		storyCompleted := false
 		storiesCol, err := txApp.FindCollectionByNameOrId("stories")
 		if err == nil {
-			story, err := txApp.FindRecordById(storiesCol, storyID)
-			if err == nil {
-				totalChapters := int(story.GetFloat("total_chapters"))
-				if totalChapters > 0 {
-					progressCol, _ := txApp.FindCollectionByNameOrId("reading_progress")
-					if progressCol != nil {
-						// Count completed chapters for this story by this user
-						chaptersOfStory, _ := txApp.FindRecordsByFilter(
-							chaptersCol.Id,
-							`story="`+escapeFilter(storyID)+`"`,
-							"chapter_number",
-							500,
-							0,
-						)
-						completedCount := 0
-						for _, ch := range chaptersOfStory {
-							cid := ch.Id
-							filter := `user="` + escapeFilter(userID) + `" && chapter="` + escapeFilter(cid) + `" && is_completed=true`
-							progs, _ := txApp.FindRecordsByFilter(progressCol.Id, filter, "", 1, 0)
-							if len(progs) > 0 {
-								completedCount++
-							}
+			progressCol, _ := txApp.FindCollectionByNameOrId("reading_progress")
+			if progressCol != nil {
+				chaptersOfStory, _ := txApp.FindRecordsByFilter(
+					chaptersCol.Id,
+					`story="`+escapeFilter(storyID)+`"`,
+					"chapter_number",
+					500,
+					0,
+				)
+				if len(chaptersOfStory) > 0 {
+					completedCount := 0
+					for _, ch := range chaptersOfStory {
+						filter := `user="` + escapeFilter(userID) + `" && chapter="` + escapeFilter(ch.Id) + `" && is_completed=true`
+						progs, _ := txApp.FindRecordsByFilter(progressCol.Id, filter, "", 1, 0)
+						if len(progs) > 0 {
+							completedCount++
 						}
-						storyCompleted = completedCount >= totalChapters
 					}
+					// Use actual chapter count, not story.total_chapters (avoids mismatch when chapters added/removed)
+					storyCompleted = completedCount >= len(chaptersOfStory)
 				}
 			}
 		}
