@@ -145,6 +145,49 @@ class PocketbaseService {
     }
   }
 
+  /// Fetch stories with server-side pagination.
+  /// Returns items for the given [page] and [perPage], plus [totalItems].
+  Future<({List<Story> items, int totalItems})> getStoriesPage({
+    int page = 1,
+    int perPage = 20,
+    String? category,
+    String? search,
+  }) async {
+    try {
+      final filters = <String>[];
+      if (category != null && category.isNotEmpty && category != 'all') {
+        filters.add('category="${category.replaceAll('"', '\\"')}"');
+      }
+      if (search != null && search.isNotEmpty) {
+        final escapedSearch = search.replaceAll('"', '\\"');
+        filters.add('title~"$escapedSearch"');
+      }
+      filters.add('is_published=true');
+      final filterString = filters.join(' && ');
+
+      final result = await pb.collection('stories').getList(
+            page: page,
+            perPage: perPage,
+            filter: filterString,
+          );
+      final items = result.items
+          .map((record) => Story.fromRecord(record, pb: pb))
+          .toList();
+      return (items: items, totalItems: result.totalItems);
+    } on ClientException catch (e) {
+      throw PocketbaseException(
+        message: e.response['message']?.toString() ?? 'Failed to fetch stories',
+        statusCode: e.statusCode,
+        originalError: e,
+      );
+    } catch (e) {
+      throw PocketbaseException(
+        message: 'Failed to fetch stories',
+        originalError: e,
+      );
+    }
+  }
+
   /// Fetch popular searches from API. Cached 24h in SharedPreferences.
   Future<List<String>> getPopularSearches() async {
     const cacheKey = 'popular_searches_cache';

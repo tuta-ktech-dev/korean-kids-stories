@@ -232,15 +232,12 @@ class HomeView extends StatelessWidget {
       }
 
       return SliverToBoxAdapter(
-        child: SizedBox(
-          height: 300,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            scrollDirection: Axis.horizontal,
-            itemCount: stories.length,
-            itemBuilder: (context, index) =>
-                _buildStoryCard(stories[index], context),
-          ),
+        child: _StoriesHorizontalList(
+          stories: stories,
+          hasMore: state.hasMore,
+          isLoadingMore: state.isLoadingMore,
+          onLoadMore: () => context.read<HomeCubit>().loadMore(),
+          buildCard: (s) => _buildStoryCard(s, context),
         ),
       );
     }
@@ -352,6 +349,73 @@ class HomeView extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Horizontal list with load-more on scroll
+class _StoriesHorizontalList extends StatefulWidget {
+  const _StoriesHorizontalList({
+    required this.stories,
+    required this.hasMore,
+    required this.isLoadingMore,
+    required this.onLoadMore,
+    required this.buildCard,
+  });
+
+  final List<HomeStory> stories;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final VoidCallback onLoadMore;
+  final Widget Function(HomeStory) buildCard;
+
+  @override
+  State<_StoriesHorizontalList> createState() => _StoriesHorizontalListState();
+}
+
+class _StoriesHorizontalListState extends State<_StoriesHorizontalList> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onScroll);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!widget.hasMore || widget.isLoadingMore) return;
+    final pos = _controller.position;
+    if (pos.pixels >= pos.maxScrollExtent - 150) {
+      widget.onLoadMore();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      child: ListView.builder(
+        controller: _controller,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.stories.length + (widget.hasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= widget.stories.length) {
+            return const SizedBox(
+              width: 80,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return widget.buildCard(widget.stories[index]);
+        },
       ),
     );
   }

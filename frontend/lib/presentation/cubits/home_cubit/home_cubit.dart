@@ -17,32 +17,33 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   final StoryRepository _storyRepo;
+  static const int _perPage = 20;
+  int _currentPage = 1;
 
   Future<void> initialize() async {
     emit(const HomeLoading());
 
     try {
-      // Fetch categories, stories and sections in parallel
       final results = await Future.wait([
         _fetchCategories(),
-        _fetchStories(),
+        _fetchStoriesPage(1, null),
         _fetchSections(),
       ]);
 
       final categories = results[0] as List<Category>;
-      final stories = results[1] as List<HomeStory>;
+      final storyResult = results[1] as ({List<HomeStory> stories, bool hasMore});
       final sections = results[2] as StorySections;
 
       emit(
         HomeLoaded(
           categories: categories,
-          stories: stories,
+          stories: storyResult.stories,
           sections: sections,
-          selectedCategoryId: categories.isNotEmpty
-              ? categories.first.id
-              : null,
+          selectedCategoryId: categories.isNotEmpty ? categories.first.id : null,
+          hasMore: storyResult.hasMore,
         ),
       );
+      _currentPage = 1;
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
       debugPrint('HomeCubit initialization error: $e');
@@ -88,6 +89,21 @@ class HomeCubit extends Cubit<HomeState> {
   Future<List<HomeStory>> _fetchStories({String? category}) async {
     final stories = await _storyRepo.getStories(category: category);
     return stories.map((s) => _mapToHomeStory(s)).toList();
+  }
+
+  Future<({List<HomeStory> stories, bool hasMore})> _fetchStoriesPage(
+    int page,
+    String? category,
+  ) async {
+    final result = await _storyRepo.getStoriesPaginated(
+      page: page,
+      perPage: _perPage,
+      category: category == 'all' ? null : category,
+    );
+    return (
+      stories: result.stories.map((s) => _mapToHomeStory(s)).toList(),
+      hasMore: result.hasMore,
+    );
   }
 
   Future<StorySections> _fetchSections() async {
@@ -195,30 +211,62 @@ class HomeCubit extends Cubit<HomeState> {
       orElse: () => current.categories.first,
     );
 
-    // Emit loading state for stories
     emit(
       current.copyWith(selectedCategoryId: categoryId, isLoadingStories: true),
     );
 
     try {
       List<HomeStory> stories;
+      bool hasMore;
 
       if (category.isSpecial) {
-        // TODO: Load favorites from local storage
         stories = await _fetchStories();
+        hasMore = false;
       } else {
-        stories = await _fetchStories(category: category.filterValue);
+        final result = await _fetchStoriesPage(1, category.filterValue);
+        stories = result.stories;
+        hasMore = result.hasMore;
       }
 
+      _currentPage = 1;
       emit(
         current.copyWith(
           selectedCategoryId: categoryId,
           stories: stories,
           isLoadingStories: false,
+          hasMore: hasMore,
         ),
       );
     } catch (e) {
       emit(HomeError('Failed to load stories: $e'));
+    }
+  }
+
+  Future<void> loadMore() async {
+    if (state is! HomeLoaded) return;
+    final current = state as HomeLoaded;
+    if (current.isLoadingMore || !current.hasMore) return;
+    if (current.selectedCategory?.isSpecial == true) return;
+
+    emit(current.copyWith(isLoadingMore: true));
+
+    try {
+      final nextPage = _currentPage + 1;
+      final category = current.selectedCategory?.filterValue;
+      final result = await _fetchStoriesPage(nextPage, category);
+
+      _currentPage = nextPage;
+      final combined = [...current.stories, ...result.stories];
+      emit(
+        current.copyWith(
+          stories: combined,
+          hasMore: result.hasMore,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e) {
+      emit(current.copyWith(isLoadingMore: false));
+      debugPrint('HomeCubit loadMore error: $e');
     }
   }
 
@@ -235,24 +283,30 @@ class HomeCubit extends Cubit<HomeState> {
     if (state is! HomeLoaded) return;
     final current = state as HomeLoaded;
     try {
+      final cat = current.selectedCategory;
+      final isSpecial = cat?.isSpecial == true;
       final results = await Future.wait([
         _fetchCategories(),
-        _fetchStories(
-          category: current.selectedCategory?.filterValue,
-        ),
+        isSpecial
+            ? _fetchStories(category: null)
+                .then((s) => (stories: s, hasMore: false))
+            : _fetchStoriesPage(1, cat?.filterValue),
         _fetchSections(),
       ]);
 
       final categories = results[0] as List<Category>;
-      final stories = results[1] as List<HomeStory>;
+      final storyResult = results[1] as ({List<HomeStory> stories, bool hasMore});
+      final stories = storyResult.stories;
       final sections = results[2] as StorySections;
 
+      _currentPage = 1;
       emit(
         HomeLoaded(
           categories: categories,
           stories: stories,
           sections: sections,
           selectedCategoryId: current.selectedCategoryId,
+          hasMore: storyResult.hasMore,
         ),
       );
     } catch (_) {

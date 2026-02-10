@@ -21,7 +21,8 @@ func EnsureChaptersCollection(app core.App) {
 	}
 
 	changes := false
-	if SetRules(collection, "@request.auth.id != ''", "@request.auth.id != ''", "", "", "") {
+	// List/view: allow public read (chapters of published stories - no auth needed)
+	if SetRules(collection, "", "", "", "", "") {
 		changes = true
 	}
 

@@ -68,39 +68,30 @@ class StoryRepository {
     return _pbService.getChapterAudios(chapterId);
   }
 
-  /// Fetch stories with pagination support
-  /// 
-  /// [page] - Page number (1-based)
-  /// [perPage] - Items per page
-  /// [filters] - Additional filter parameters
-  /// 
-  /// Returns paginated results
+  /// Fetch stories with server-side pagination
   Future<StoryListResult> getStoriesPaginated({
     int page = 1,
     int perPage = 20,
     String? category,
     String? search,
   }) async {
-    // Currently using the basic getStories and implementing pagination client-side
-    // In production, you'd want server-side pagination
-    final allStories = await _pbService.getStories(
-      category: category,
+    final result = await _pbService.getStoriesPage(
+      page: page,
+      perPage: perPage,
+      category: category == 'all' ? null : category,
       search: search,
     );
-
-    final start = (page - 1) * perPage;
-    final end = start + perPage;
-    final paginatedStories = allStories.sublist(
-      start.clamp(0, allStories.length),
-      end.clamp(0, allStories.length),
-    );
+    final totalPages = result.totalItems <= 0
+        ? 1
+        : (result.totalItems / perPage).ceil();
+    final hasMore = page < totalPages;
 
     return StoryListResult(
-      stories: paginatedStories,
-      totalItems: allStories.length,
+      stories: result.items,
+      totalItems: result.totalItems,
       currentPage: page,
-      totalPages: (allStories.length / perPage).ceil(),
-      hasMore: end < allStories.length,
+      totalPages: totalPages,
+      hasMore: hasMore,
     );
   }
 

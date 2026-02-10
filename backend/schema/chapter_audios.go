@@ -22,7 +22,8 @@ func EnsureChapterAudiosCollection(app core.App) {
 
 	changes := false
 	// Auth required for list/view (audio files)
-	if SetRules(collection, "@request.auth.id != ''", "@request.auth.id != ''", "", "", "") {
+	// List/view: allow public (audio for reading - no auth needed)
+	if SetRules(collection, "", "", "", "", "") {
 		changes = true
 	}
 

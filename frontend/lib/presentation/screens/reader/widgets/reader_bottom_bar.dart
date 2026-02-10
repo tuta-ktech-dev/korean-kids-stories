@@ -19,7 +19,12 @@ class ReaderBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        MediaQuery.of(context).viewInsets.bottom,
+      ),
       decoration: BoxDecoration(
         color: isDarkMode
             ? const Color(0xFF2A2A2A)

@@ -28,14 +28,15 @@ class StoryDetailBottomBar extends StatelessWidget {
       buildWhen: (p, c) => c is FavoriteLoaded,
       builder: (context, favState) {
         final isFavorite =
-            favState is FavoriteLoaded && favState.favoriteIds.contains(story.id);
+            favState is FavoriteLoaded &&
+            favState.favoriteIds.contains(story.id);
         return BlocBuilder<BookmarkCubit, BookmarkState>(
           buildWhen: (p, c) => c is BookmarkLoaded,
           builder: (context, bmState) {
             final isBookmarked =
                 bmState is BookmarkLoaded && bmState.isBookmarked(story.id);
             return Container(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
               decoration: BoxDecoration(
                 color: AppTheme.surfaceColor(context),
                 boxShadow: [
@@ -73,9 +74,7 @@ class StoryDetailBottomBar extends StatelessWidget {
                         backgroundColor: isBookmarked
                             ? AppTheme.primaryColor(context)
                             : null,
-                        foregroundColor: isBookmarked
-                            ? Colors.white
-                            : null,
+                        foregroundColor: isBookmarked ? Colors.white : null,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -100,6 +99,21 @@ class StoryDetailBottomBar extends StatelessWidget {
   }
 
   void _openReader(BuildContext context, int chapterIndex) {
+    if (story.requiredLogin) {
+      final authState = context.read<AuthCubit>().state;
+      if (authState is! Authenticated) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.loginRequired),
+            action: SnackBarAction(
+              label: context.l10n.login,
+              onPressed: () => context.router.pushNamed('/login'),
+            ),
+          ),
+        );
+        return;
+      }
+    }
     context.router.root.pushNamed(
       '/reader/${story.id}/${chapters[chapterIndex].id}',
     );
@@ -138,9 +152,9 @@ class StoryDetailBottomBar extends StatelessWidget {
     }
     if (isBookmarked) {
       context.read<BookmarkCubit>().toggleBookmark(story.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.bookmarkRemoved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.bookmarkRemoved)));
     } else {
       showNoteSheet(
         context,
@@ -151,16 +165,13 @@ class StoryDetailBottomBar extends StatelessWidget {
           final favoriteCubit = context.read<FavoriteCubit>();
           await bookmarkCubit.toggleBookmark(story.id);
           if (note.trim().isNotEmpty) {
-            await noteCubit.addStoryNote(
-                  storyId: story.id,
-                  note: note.trim(),
-                );
+            await noteCubit.addStoryNote(storyId: story.id, note: note.trim());
           }
           favoriteCubit.loadFavorites();
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.l10n.bookmarkAdded)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(context.l10n.bookmarkAdded)));
           }
         },
       );

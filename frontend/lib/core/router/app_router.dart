@@ -84,10 +84,12 @@ class MainScreen extends StatelessWidget {
 
             return Scaffold(
               body: child,
-              bottomNavigationBar: AppBottomNav(
-                currentIndex: tabsRouter.activeIndex,
-                onTap: tabsRouter.setActiveIndex,
-                isAuthenticated: isAuthenticated,
+              bottomNavigationBar: SafeArea(
+                child: AppBottomNav(
+                  currentIndex: tabsRouter.activeIndex,
+                  onTap: tabsRouter.setActiveIndex,
+                  isAuthenticated: isAuthenticated,
+                ),
               ),
             );
           },

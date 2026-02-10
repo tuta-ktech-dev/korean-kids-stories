@@ -115,6 +115,8 @@ class HomeLoaded extends HomeState {
   final StorySections sections;
   final String? selectedCategoryId;
   final bool isLoadingStories;
+  final bool isLoadingMore;
+  final bool hasMore;
 
   const HomeLoaded({
     required this.categories,
@@ -122,6 +124,8 @@ class HomeLoaded extends HomeState {
     this.sections = const StorySections(),
     this.selectedCategoryId,
     this.isLoadingStories = false,
+    this.isLoadingMore = false,
+    this.hasMore = false,
   });
 
   Category? get selectedCategory {
@@ -133,7 +137,8 @@ class HomeLoaded extends HomeState {
   }
 
   @override
-  List<Object?> get props => [categories, stories, sections, selectedCategoryId, isLoadingStories];
+  List<Object?> get props =>
+      [categories, stories, sections, selectedCategoryId, isLoadingStories, isLoadingMore, hasMore];
 
   HomeLoaded copyWith({
     List<Category>? categories,
@@ -141,6 +146,8 @@ class HomeLoaded extends HomeState {
     StorySections? sections,
     String? selectedCategoryId,
     bool? isLoadingStories,
+    bool? isLoadingMore,
+    bool? hasMore,
   }) {
     return HomeLoaded(
       categories: categories ?? this.categories,
@@ -148,6 +155,8 @@ class HomeLoaded extends HomeState {
       sections: sections ?? this.sections,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       isLoadingStories: isLoadingStories ?? this.isLoadingStories,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
     );
   }
 }
