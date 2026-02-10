@@ -25,6 +25,7 @@ func main() {
 		schema.EnsureAllSchema(app)
 		schema.SeedAppConfig(app)
 		schema.SeedContentPages(app)
+		schema.SeedLevelStickers(app)
 		api.RegisterPopularRoutes(se)
 
 		// Refresh popular searches every 24h

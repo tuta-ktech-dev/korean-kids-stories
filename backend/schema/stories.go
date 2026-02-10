@@ -55,6 +55,9 @@ func EnsureStoriesCollection(app core.App) {
 	if AddBoolField(collection, "has_illustrations") {
 		changes = true
 	}
+	if AddBoolField(collection, "has_sticker") {
+		changes = true
+	}
 	if AddNumberField(collection, "view_count", false, Ptr(0.0), nil) {
 		changes = true
 	}

@@ -24,4 +24,7 @@ func EnsureAllSchema(app core.App) {
 	EnsureNotesCollection(app)
 	EnsureReviewsCollection(app)
 	EnsureViewsCollection(app)
+	EnsureStickersCollection(app)
+	EnsureUserStatsCollection(app)
+	EnsureUserStickersCollection(app)
 }
