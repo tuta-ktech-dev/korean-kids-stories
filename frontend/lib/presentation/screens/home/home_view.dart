@@ -19,8 +19,11 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+        child: RefreshIndicator(
+          onRefresh: () => context.read<HomeCubit>().fullRefresh(),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
             // Header
             SliverToBoxAdapter(
               child: GradientHeader(
@@ -106,6 +109,7 @@ class HomeView extends StatelessWidget {
 
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
           ],
+          ),
         ),
       ),
     );

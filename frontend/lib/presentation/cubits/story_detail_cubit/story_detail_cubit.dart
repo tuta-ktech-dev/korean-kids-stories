@@ -64,4 +64,24 @@ class StoryDetailCubit extends Cubit<StoryDetailState> {
   }
 
   void refresh() => load();
+
+  /// Refresh story data in background without showing loading state.
+  /// Use after review submit/delete to update average_rating smoothly.
+  Future<void> refreshSilently() async {
+    if (state is! StoryDetailLoaded) return;
+    try {
+      await _storyRepository.initialize();
+      final results = await Future.wait([
+        _storyRepository.getStory(_storyId),
+        _storyRepository.getChapters(_storyId),
+      ]);
+      final story = results[0] as Story?;
+      final chapters = results[1] as List<Chapter>;
+      if (story != null) {
+        emit(StoryDetailLoaded(story: story, chapters: chapters));
+      }
+    } catch (_) {
+      // Ignore - keep showing current data
+    }
+  }
 }

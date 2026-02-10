@@ -160,5 +160,18 @@
   "saveNote": "저장",
   "bookmarkAdded": "북마크에 추가됨",
   "bookmarkRemoved": "북마크에서 제거됨",
-  "addToBookmarks": "나중에 읽기"
+  "addToBookmarks": "나중에 읽기",
+  "reviews": "리뷰",
+  "reviewsTitle": "리뷰",
+  "writeReview": "리뷰 작성",
+  "yourRating": "별점",
+  "optionalComment": "선택 댓글",
+  "submitReview": "제출",
+  "editReview": "리뷰 수정",
+  "yourReview": "내 리뷰",
+  "deleteReview": "삭제",
+  "noReviewsYet": "아직 리뷰가 없습니다",
+  "beFirstToReview": "첫 번째 리뷰를 작성해 보세요!",
+  "loginToReview": "리뷰를 작성하려면 로그인하세요",
+  "deleteReviewConfirmation": "리뷰를 삭제하시겠습니까?"
 }

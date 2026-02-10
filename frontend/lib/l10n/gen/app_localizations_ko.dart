@@ -484,4 +484,43 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get addToBookmarks => '나중에 읽기';
+
+  @override
+  String get reviews => '리뷰';
+
+  @override
+  String get reviewsTitle => '리뷰';
+
+  @override
+  String get writeReview => '리뷰 작성';
+
+  @override
+  String get yourRating => '별점';
+
+  @override
+  String get optionalComment => '선택 댓글';
+
+  @override
+  String get submitReview => '제출';
+
+  @override
+  String get editReview => '리뷰 수정';
+
+  @override
+  String get yourReview => '내 리뷰';
+
+  @override
+  String get deleteReview => '삭제';
+
+  @override
+  String get noReviewsYet => '아직 리뷰가 없습니다';
+
+  @override
+  String get beFirstToReview => '첫 번째 리뷰를 작성해 보세요!';
+
+  @override
+  String get loginToReview => '리뷰를 작성하려면 로그인하세요';
+
+  @override
+  String get deleteReviewConfirmation => '리뷰를 삭제하시겠습니까?';
 }

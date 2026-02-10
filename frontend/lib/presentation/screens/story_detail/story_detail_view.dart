@@ -10,6 +10,7 @@ import 'widgets/story_detail_bottom_bar.dart';
 import 'widgets/story_detail_chapter_list.dart';
 import 'widgets/story_detail_header.dart';
 import 'widgets/story_detail_info.dart';
+import 'widgets/story_detail_review_section.dart';
 
 class StoryDetailView extends StatelessWidget {
   final String storyId;
@@ -142,6 +143,12 @@ class _ContentView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         StoryDetailInfo(story: story),
+                        StoryDetailReviewSection(
+                          storyId: story.id,
+                          category: story.category,
+                          onReviewChanged: () =>
+                              context.read<StoryDetailCubit>().refreshSilently(),
+                        ),
                         const SizedBox(height: 32),
                         Text(
                           context.l10n.tableOfContents,

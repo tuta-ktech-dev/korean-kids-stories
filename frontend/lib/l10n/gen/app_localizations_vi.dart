@@ -487,4 +487,43 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get addToBookmarks => 'Lưu để đọc sau';
+
+  @override
+  String get reviews => 'Đánh giá';
+
+  @override
+  String get reviewsTitle => 'Đánh giá';
+
+  @override
+  String get writeReview => 'Viết đánh giá';
+
+  @override
+  String get yourRating => 'Điểm của bạn';
+
+  @override
+  String get optionalComment => 'Bình luận (không bắt buộc)';
+
+  @override
+  String get submitReview => 'Gửi';
+
+  @override
+  String get editReview => 'Sửa đánh giá';
+
+  @override
+  String get yourReview => 'Đánh giá của bạn';
+
+  @override
+  String get deleteReview => 'Xóa';
+
+  @override
+  String get noReviewsYet => 'Chưa có đánh giá';
+
+  @override
+  String get beFirstToReview => 'Hãy là người đầu tiên đánh giá!';
+
+  @override
+  String get loginToReview => 'Đăng nhập để viết đánh giá';
+
+  @override
+  String get deleteReviewConfirmation => 'Bạn có chắc muốn xóa đánh giá này?';
 }

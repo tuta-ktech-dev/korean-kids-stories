@@ -156,5 +156,18 @@
   "saveNote": "Lưu",
   "bookmarkAdded": "Đã thêm vào đánh dấu",
   "bookmarkRemoved": "Đã xóa khỏi đánh dấu",
-  "addToBookmarks": "Lưu để đọc sau"
+  "addToBookmarks": "Lưu để đọc sau",
+  "reviews": "Đánh giá",
+  "reviewsTitle": "Đánh giá",
+  "writeReview": "Viết đánh giá",
+  "yourRating": "Điểm của bạn",
+  "optionalComment": "Bình luận (không bắt buộc)",
+  "submitReview": "Gửi",
+  "editReview": "Sửa đánh giá",
+  "yourReview": "Đánh giá của bạn",
+  "deleteReview": "Xóa",
+  "noReviewsYet": "Chưa có đánh giá",
+  "beFirstToReview": "Hãy là người đầu tiên đánh giá!",
+  "loginToReview": "Đăng nhập để viết đánh giá",
+  "deleteReviewConfirmation": "Bạn có chắc muốn xóa đánh giá này?"
 }

@@ -17,6 +17,7 @@ import 'data/repositories/bookmark_repository.dart' as _i318;
 import 'data/repositories/favorite_repository.dart' as _i266;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
+import 'data/repositories/review_repository.dart' as _i1049;
 import 'data/repositories/story_repository.dart' as _i691;
 import 'data/services/pocketbase_service.dart' as _i700;
 import 'data/services/tracking_service.dart' as _i194;
@@ -70,6 +71,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i627.NoteRepository>(
       () => _i627.NoteRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i1049.ReviewRepository>(
+      () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i433.ReaderCubit>(
       () => _i433.ReaderCubit(

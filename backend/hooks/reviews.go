@@ -9,22 +9,22 @@ import (
 
 // RegisterReviewsHooks registers hooks for the reviews collection
 func RegisterReviewsHooks(app *pocketbase.PocketBase) {
-	app.OnRecordCreateRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
-		if err := updateStoryRatingTransactional(app, e.Record.GetString("story")); err != nil {
+	app.OnRecordAfterCreateSuccess("reviews").BindFunc(func(e *core.RecordEvent) error {
+		if err := updateStoryRatingTransactional(e.App, e.Record.GetString("story")); err != nil {
 			log.Printf("Failed to update story rating: %v", err)
 		}
 		return e.Next()
 	})
 
-	app.OnRecordUpdateRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
-		if err := updateStoryRatingTransactional(app, e.Record.GetString("story")); err != nil {
+	app.OnRecordAfterUpdateSuccess("reviews").BindFunc(func(e *core.RecordEvent) error {
+		if err := updateStoryRatingTransactional(e.App, e.Record.GetString("story")); err != nil {
 			log.Printf("Failed to update story rating: %v", err)
 		}
 		return e.Next()
 	})
 
-	app.OnRecordDeleteRequest("reviews").BindFunc(func(e *core.RecordRequestEvent) error {
-		if err := updateStoryRatingTransactional(app, e.Record.GetString("story")); err != nil {
+	app.OnRecordAfterDeleteSuccess("reviews").BindFunc(func(e *core.RecordEvent) error {
+		if err := updateStoryRatingTransactional(e.App, e.Record.GetString("story")); err != nil {
 			log.Printf("Failed to update story rating: %v", err)
 		}
 		return e.Next()

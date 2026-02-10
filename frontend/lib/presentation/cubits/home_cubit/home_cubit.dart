@@ -230,6 +230,36 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  /// Full refresh for pull-to-refresh - reloads all data without showing loading.
+  Future<void> fullRefresh() async {
+    if (state is! HomeLoaded) return;
+    final current = state as HomeLoaded;
+    try {
+      final results = await Future.wait([
+        _fetchCategories(),
+        _fetchStories(
+          category: current.selectedCategory?.filterValue,
+        ),
+        _fetchSections(),
+      ]);
+
+      final categories = results[0] as List<Category>;
+      final stories = results[1] as List<HomeStory>;
+      final sections = results[2] as StorySections;
+
+      emit(
+        HomeLoaded(
+          categories: categories,
+          stories: stories,
+          sections: sections,
+          selectedCategoryId: current.selectedCategoryId,
+        ),
+      );
+    } catch (_) {
+      // Keep current state on error
+    }
+  }
+
   // Helper to convert icon string to IconData
   static IconData getIconData(String iconName) {
     switch (iconName) {

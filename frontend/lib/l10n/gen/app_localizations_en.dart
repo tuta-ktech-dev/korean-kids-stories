@@ -489,4 +489,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addToBookmarks => 'Save for later';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get reviewsTitle => 'Reviews';
+
+  @override
+  String get writeReview => 'Write a review';
+
+  @override
+  String get yourRating => 'Your rating';
+
+  @override
+  String get optionalComment => 'Optional comment';
+
+  @override
+  String get submitReview => 'Submit';
+
+  @override
+  String get editReview => 'Edit review';
+
+  @override
+  String get yourReview => 'Your review';
+
+  @override
+  String get deleteReview => 'Delete';
+
+  @override
+  String get noReviewsYet => 'No reviews yet';
+
+  @override
+  String get beFirstToReview => 'Be the first to review!';
+
+  @override
+  String get loginToReview => 'Login to write a review';
+
+  @override
+  String get deleteReviewConfirmation =>
+      'Are you sure you want to delete your review?';
 }

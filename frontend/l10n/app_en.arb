@@ -163,5 +163,18 @@
   "saveNote": "Save",
   "bookmarkAdded": "Added to bookmarks",
   "bookmarkRemoved": "Removed from bookmarks",
-  "addToBookmarks": "Save for later"
+  "addToBookmarks": "Save for later",
+  "reviews": "Reviews",
+  "reviewsTitle": "Reviews",
+  "writeReview": "Write a review",
+  "yourRating": "Your rating",
+  "optionalComment": "Optional comment",
+  "submitReview": "Submit",
+  "editReview": "Edit review",
+  "yourReview": "Your review",
+  "deleteReview": "Delete",
+  "noReviewsYet": "No reviews yet",
+  "beFirstToReview": "Be the first to review!",
+  "loginToReview": "Login to write a review",
+  "deleteReviewConfirmation": "Are you sure you want to delete your review?"
 }

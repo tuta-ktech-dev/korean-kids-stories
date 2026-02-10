@@ -1035,6 +1035,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save for later'**
   String get addToBookmarks;
+
+  /// No description provided for @reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviews;
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviewsTitle;
+
+  /// No description provided for @writeReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a review'**
+  String get writeReview;
+
+  /// No description provided for @yourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating'**
+  String get yourRating;
+
+  /// No description provided for @optionalComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional comment'**
+  String get optionalComment;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitReview;
+
+  /// No description provided for @editReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit review'**
+  String get editReview;
+
+  /// No description provided for @yourReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your review'**
+  String get yourReview;
+
+  /// No description provided for @deleteReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteReview;
+
+  /// No description provided for @noReviewsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get noReviewsYet;
+
+  /// No description provided for @beFirstToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to review!'**
+  String get beFirstToReview;
+
+  /// No description provided for @loginToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to write a review'**
+  String get loginToReview;
+
+  /// No description provided for @deleteReviewConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your review?'**
+  String get deleteReviewConfirmation;
 }
 
 class _AppLocalizationsDelegate
