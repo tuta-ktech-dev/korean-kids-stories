@@ -31,6 +31,7 @@ class WordTiming {
 
 class Chapter {
   final String id;
+  final String storyId;
   final String title;
   final int chapterNumber;
   final String content;
@@ -44,6 +45,7 @@ class Chapter {
 
   Chapter({
     required this.id,
+    required this.storyId,
     required this.title,
     required this.chapterNumber,
     required this.content,
@@ -71,6 +73,7 @@ class Chapter {
 
     return Chapter(
       id: record.id,
+      storyId: record.getStringValue('story'),
       title: record.getStringValue('title'),
       chapterNumber: record.getIntValue('chapter_number'),
       content: record.getStringValue('content'),
@@ -90,6 +93,7 @@ class Chapter {
 
   Chapter copyWith({
     String? id,
+    String? storyId,
     String? title,
     int? chapterNumber,
     String? content,
@@ -103,6 +107,7 @@ class Chapter {
   }) {
     return Chapter(
       id: id ?? this.id,
+      storyId: storyId ?? this.storyId,
       title: title ?? this.title,
       chapterNumber: chapterNumber ?? this.chapterNumber,
       content: content ?? this.content,

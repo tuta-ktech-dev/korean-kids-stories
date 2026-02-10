@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../data/repositories/progress_repository.dart';
+import '../../../data/repositories/reading_history_repository.dart';
 import '../../../injection.dart';
 import 'progress_state.dart';
 
@@ -9,11 +10,16 @@ import 'progress_state.dart';
 /// Used by Reader (save on scroll/dispose), History, Library, etc.
 @lazySingleton
 class ProgressCubit extends Cubit<ProgressState> {
-  ProgressCubit({ProgressRepository? progressRepository})
-      : _repo = progressRepository ?? getIt<ProgressRepository>(),
+  ProgressCubit({
+    ProgressRepository? progressRepository,
+    ReadingHistoryRepository? readingHistoryRepository,
+  })  : _repo = progressRepository ?? getIt<ProgressRepository>(),
+        _historyRepo =
+            readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
         super(const ProgressInitial());
 
   final ProgressRepository _repo;
+  final ReadingHistoryRepository _historyRepo;
 
   /// Get progress for a chapter (for initial load, History, etc.)
   Future<ReadingProgress?> getProgress(String chapterId) async {
@@ -21,11 +27,13 @@ class ProgressCubit extends Cubit<ProgressState> {
   }
 
   /// Persist progress. No emit - Reader gets progress from scroll.
+  /// [storyId] - optional, when provided also logs to reading_history.
   Future<void> saveProgress({
     required String chapterId,
     required double percentRead,
     double? lastPosition,
     bool? isCompleted,
+    String? storyId,
   }) async {
     await _repo.saveProgress(
       chapterId: chapterId,
@@ -33,5 +41,14 @@ class ProgressCubit extends Cubit<ProgressState> {
       lastPosition: lastPosition,
       isCompleted: isCompleted,
     );
+
+    if (storyId != null && storyId.isNotEmpty) {
+      _historyRepo.logAction(
+        storyId: storyId,
+        chapterId: chapterId,
+        action: isCompleted == true ? 'complete' : 'read',
+        progressPercent: percentRead,
+      );
+    }
   }
 }

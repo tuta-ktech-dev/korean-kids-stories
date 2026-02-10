@@ -17,6 +17,7 @@ import 'data/repositories/bookmark_repository.dart' as _i318;
 import 'data/repositories/favorite_repository.dart' as _i266;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
+import 'data/repositories/reading_history_repository.dart' as _i821;
 import 'data/repositories/review_repository.dart' as _i1049;
 import 'data/repositories/story_repository.dart' as _i691;
 import 'data/services/pocketbase_service.dart' as _i700;
@@ -75,14 +76,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i433.ReaderCubit>(
-      () => _i433.ReaderCubit(
-        storyRepository: gh<_i691.StoryRepository>(),
-        progressRepository: gh<_i369.ProgressRepository>(),
-      ),
+    gh.factory<_i821.ReadingHistoryRepository>(
+      () => _i821.ReadingHistoryRepository(gh<_i700.PocketbaseService>()),
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),
+    );
+    gh.lazySingleton<_i1000.ProgressCubit>(
+      () => _i1000.ProgressCubit(
+        progressRepository: gh<_i369.ProgressRepository>(),
+        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
+      ),
     );
     gh.lazySingleton<_i476.HistoryCubit>(
       () => _i476.HistoryCubit(
@@ -102,15 +106,17 @@ extension GetItInjectableX on _i174.GetIt {
         pocketbaseService: gh<_i700.PocketbaseService>(),
       ),
     );
+    gh.factory<_i433.ReaderCubit>(
+      () => _i433.ReaderCubit(
+        storyRepository: gh<_i691.StoryRepository>(),
+        progressRepository: gh<_i369.ProgressRepository>(),
+        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
+      ),
+    );
     gh.lazySingleton<_i349.SearchCubit>(
       () => _i349.SearchCubit(
         storyRepository: gh<_i691.StoryRepository>(),
         pocketbaseService: gh<_i700.PocketbaseService>(),
-      ),
-    );
-    gh.lazySingleton<_i1000.ProgressCubit>(
-      () => _i1000.ProgressCubit(
-        progressRepository: gh<_i369.ProgressRepository>(),
       ),
     );
     gh.lazySingleton<_i519.AuthCubit>(

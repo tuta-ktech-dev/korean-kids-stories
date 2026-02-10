@@ -2,8 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../data/repositories/progress_repository.dart';
-import '../../../data/services/pocketbase_service.dart';
+import '../../../data/repositories/reading_history_repository.dart';
 import '../../../data/repositories/story_repository.dart';
+import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import 'reader_state.dart';
 export 'reader_state.dart';
@@ -13,12 +14,16 @@ class ReaderCubit extends Cubit<ReaderState> {
   ReaderCubit({
     StoryRepository? storyRepository,
     ProgressRepository? progressRepository,
+    ReadingHistoryRepository? readingHistoryRepository,
   })  : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
         _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
+        _historyRepository =
+            readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
         super(const ReaderInitial());
 
   final StoryRepository _storyRepository;
   final ProgressRepository _progressRepository;
+  final ReadingHistoryRepository _historyRepository;
 
   Future<void> loadChapter(String chapterId) async {
     emit(const ReaderLoading());
@@ -34,6 +39,11 @@ class ReaderCubit extends Cubit<ReaderState> {
           chapter: chapter,
           progress: percent / 100,
         ));
+        _historyRepository.logAction(
+          storyId: chapter.storyId,
+          chapterId: chapterId,
+          action: 'view',
+        );
       } else {
         emit(const ReaderError('챕터를 찾을 수 없습니다'));
       }

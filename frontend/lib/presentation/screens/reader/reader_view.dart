@@ -69,6 +69,7 @@ class _ReaderViewState extends State<ReaderView> {
           chapterId: _chapterId!,
           percentRead: pct.clamp(0.0, 100.0),
           isCompleted: _lastProgress >= 0.99,
+          storyId: widget.storyId,
         );
       }
     }
@@ -92,6 +93,7 @@ class _ReaderViewState extends State<ReaderView> {
             chapterId: chapterId,
             percentRead: pct.clamp(0.0, 100.0),
             isCompleted: _lastProgress >= 0.99,
+            storyId: widget.storyId,
           );
         }
       }

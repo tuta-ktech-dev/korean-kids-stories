@@ -104,15 +104,10 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   /// Fetch story for chapter
-  /// Note: Need to update Chapter model to have story relation
   Future<Story?> _fetchStoryForChapter(Chapter chapter) async {
     try {
-      // Temporarily return first story - need proper implementation
-      final stories = await _storyRepo.getStories();
-      if (stories.isNotEmpty) {
-        return stories.first;
-      }
-      return null;
+      if (chapter.storyId.isEmpty) return null;
+      return await _storyRepo.getStory(chapter.storyId);
     } catch (e) {
       return null;
     }

@@ -43,7 +43,7 @@ class ReadingProgress {
       lastPosition: record.getDoubleValue('last_position'),
       isCompleted: record.getBoolValue('is_completed'),
       bookmarks: bookmarks,
-      lastReadAt: DateTime.tryParse(record.getStringValue('last_read_at')),
+      lastReadAt: _parseProgressDateTime(record.data['updated']),
     );
   }
 
@@ -110,6 +110,13 @@ class Bookmark {
   }
 }
 
+DateTime? _parseProgressDateTime(dynamic value) {
+  if (value == null) return null;
+  if (value is DateTime) return value;
+  if (value is String) return DateTime.tryParse(value);
+  return null;
+}
+
 /// Repository cho reading progress operations
 @injectable
 class ProgressRepository {
@@ -150,7 +157,7 @@ class ProgressRepository {
 
       final result = await _pb.collection('reading_progress').getFullList(
             filter: 'user="$userId"',
-            sort: '-last_read_at',
+            sort: '-updated',
           );
 
       return result.map((r) => ReadingProgress.fromRecord(r)).toList();
@@ -181,11 +188,10 @@ class ProgressRepository {
           ? 0.0
           : percentRead.clamp(0.0, 100.0);
 
-      final data = {
+      final data = <String, dynamic>{
         'user': userId,
         'chapter': chapterId,
         'percent_read': safePercent,
-        'last_read_at': DateTime.now().toIso8601String(),
       };
 
       if (lastPosition != null) {
@@ -250,7 +256,6 @@ class ProgressRepository {
                 'percent_read': 0.0,
                 'is_completed': false,
                 'last_position': safePosition,
-                'last_read_at': DateTime.now().toIso8601String(),
                 'bookmarks': [Bookmark(position: safePosition, note: note).toJson()],
               },
             );
