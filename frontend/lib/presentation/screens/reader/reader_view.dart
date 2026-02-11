@@ -32,6 +32,7 @@ class _ReaderViewState extends State<ReaderView> {
   final ScrollController _scrollController = ScrollController();
   bool _hasRestoredScroll = false;
   DateTime? _sessionStartTime;
+  bool _skipNextZeroProgress = false;
 
   @override
   void initState() {
@@ -90,6 +91,13 @@ class _ReaderViewState extends State<ReaderView> {
   void _onScrollProgress(BuildContext context, double progress) {
     // Ignore invalid progress (e.g. 0/0 when maxScrollExtent is 0)
     if (progress.isNaN || progress.isInfinite) return;
+    // Skip save when progress=0 from jumpTo(0) during chapter switch
+    if (progress == 0 && _skipNextZeroProgress) {
+      _skipNextZeroProgress = false;
+      _lastProgress = progress;
+      context.read<ReaderCubit>().updateProgress(progress);
+      return;
+    }
     _lastProgress = progress;
     context.read<ReaderCubit>().updateProgress(progress);
 
@@ -118,7 +126,23 @@ class _ReaderViewState extends State<ReaderView> {
   }
 
   void _switchChapter(BuildContext context, String chapterId) {
+    // Save current chapter before switching (jumpTo would trigger scroll→wrong save)
+    _saveDebounce?.cancel();
+    final oldChapterId = _chapterId;
+    if (oldChapterId != null && _lastProgress > 0) {
+      final pct = (_lastProgress * 100).clamp(0.0, 100.0);
+      if (!pct.isNaN && !pct.isInfinite) {
+        _progressCubit?.saveProgress(
+          chapterId: oldChapterId,
+          percentRead: pct,
+          isCompleted: _lastProgress >= 0.99,
+          storyId: widget.storyId,
+          durationSeconds: _getDurationSeconds(),
+        );
+      }
+    }
     _hasRestoredScroll = false;
+    _skipNextZeroProgress = true;
     _scrollController.jumpTo(0);
     context.read<ReaderCubit>().loadChapter(chapterId, skipLoading: true);
   }
