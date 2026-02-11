@@ -117,6 +117,11 @@ class _ReaderViewState extends State<ReaderView> {
     });
   }
 
+  void _switchChapter(BuildContext context, String chapterId) {
+    _hasRestoredScroll = false;
+    _scrollController.jumpTo(0);
+    context.read<ReaderCubit>().loadChapter(chapterId, skipLoading: true);
+  }
 
   Widget _buildContent(
     BuildContext context,
@@ -124,6 +129,10 @@ class _ReaderViewState extends State<ReaderView> {
     bool isDarkMode,
     double fontSize, {
     void Function(double progress)? onScrollProgress,
+    Chapter? prevChapter,
+    VoidCallback? onPrevChapter,
+    Chapter? nextChapter,
+    VoidCallback? onNextChapter,
   }) {
     return SafeArea(
       top: false,
@@ -173,6 +182,65 @@ class _ReaderViewState extends State<ReaderView> {
                     : Colors.black87,
               ),
             ),
+            if (prevChapter != null || nextChapter != null) ...[
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  if (prevChapter != null && onPrevChapter != null)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onPrevChapter,
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          size: 20,
+                          color: AppTheme.primaryColor(context),
+                        ),
+                        label: Text(
+                          context.l10n.previousChapter,
+                          style: TextStyle(
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(
+                            color: AppTheme.primaryColor(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (prevChapter != null && nextChapter != null)
+                    const SizedBox(width: 12),
+                  if (nextChapter != null && onNextChapter != null)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onNextChapter,
+                        icon: Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 20,
+                          color: AppTheme.primaryColor(context),
+                        ),
+                        label: Text(
+                          context.l10n.nextChapter,
+                          style: TextStyle(
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(
+                            color: AppTheme.primaryColor(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 24),
             ],
           ),
@@ -266,16 +334,29 @@ class _ReaderViewState extends State<ReaderView> {
                 : null,
             body: GestureDetector(
               onTap: _toggleControls,
-              child: state.hasAudio
-                  ? Column(
-                      children: [
-                        Expanded(
-                          child: _buildContent(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: state.hasAudio
+                    ? Column(
+                        key: ValueKey(chapter.id),
+                        children: [
+                          Expanded(
+                            child: _buildContent(
                             context,
                             chapter,
                             isDarkMode,
                             fontSize,
                             onScrollProgress: (p) => _onScrollProgress(context, p),
+                            prevChapter: state.prevChapter,
+                            onPrevChapter: state.prevChapter != null
+                                ? () => _switchChapter(context, state.prevChapter!.id)
+                                : null,
+                            nextChapter: state.nextChapter,
+                            onNextChapter: state.nextChapter != null
+                                ? () => _switchChapter(context, state.nextChapter!.id)
+                                : null,
                           ),
                         ),
                         ReaderBottomBar(
@@ -287,13 +368,25 @@ class _ReaderViewState extends State<ReaderView> {
                         ),
                       ],
                     )
-                  : _buildContent(
+                  : KeyedSubtree(
+                      key: ValueKey(chapter.id),
+                      child: _buildContent(
                       context,
                       chapter,
                       isDarkMode,
                       fontSize,
                       onScrollProgress: (p) => _onScrollProgress(context, p),
+                      prevChapter: state.prevChapter,
+                      onPrevChapter: state.prevChapter != null
+                          ? () => _switchChapter(context, state.prevChapter!.id)
+                          : null,
+                      nextChapter: state.nextChapter,
+                      onNextChapter: state.nextChapter != null
+                          ? () => _switchChapter(context, state.nextChapter!.id)
+                          : null,
                     ),
+                  ),
+              ),
             ),
           );
         }

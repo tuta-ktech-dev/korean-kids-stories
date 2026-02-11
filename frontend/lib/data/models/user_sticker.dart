@@ -25,7 +25,7 @@ class UserSticker {
   }) {
     Sticker? sticker;
     final expanded = record.get<List<RecordModel>>('expand.sticker');
-    if (expanded != null && expanded.isNotEmpty) {
+    if (expanded.isNotEmpty) {
       sticker = Sticker.fromRecord(expanded.first, pb: pb);
     }
 

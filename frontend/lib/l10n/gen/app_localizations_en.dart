@@ -211,6 +211,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startReading => 'Start Reading';
 
   @override
+  String get nextChapter => 'Next chapter';
+
+  @override
+  String get previousChapter => 'Previous chapter';
+
+  @override
   String get bookmark => 'Save';
 
   @override
@@ -610,6 +616,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storyStickers => 'Story Stickers';
+
+  @override
+  String get stickersLoginPrompt =>
+      'Collect stickers by reading stories! Login to get started.';
 
   @override
   String get error => 'Error';

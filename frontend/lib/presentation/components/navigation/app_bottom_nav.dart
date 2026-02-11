@@ -20,14 +20,14 @@ class AppBottomNav extends StatelessWidget {
     final items = isAuthenticated
         ? [
             _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
-            _NavItemData(icon: Icons.search_rounded, label: l10n.searchTab),
+            _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
             _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
             _NavItemData(icon: Icons.library_books_rounded, label: l10n.libraryTab),
             _NavItemData(icon: Icons.person_rounded, label: l10n.profileTab),
           ]
         : [
             _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
-            _NavItemData(icon: Icons.search_rounded, label: l10n.searchTab),
+            _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
             _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
           ];
 

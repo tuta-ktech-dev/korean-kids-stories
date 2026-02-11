@@ -211,6 +211,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get startReading => 'Bắt đầu đọc';
 
   @override
+  String get nextChapter => 'Chương tiếp';
+
+  @override
+  String get previousChapter => 'Chương trước';
+
+  @override
   String get bookmark => 'Lưu';
 
   @override
@@ -608,6 +614,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get storyStickers => 'Sticker truyện';
+
+  @override
+  String get stickersLoginPrompt =>
+      'Sưu tầm sticker bằng cách đọc truyện! Đăng nhập để bắt đầu.';
 
   @override
   String get error => 'Lỗi';

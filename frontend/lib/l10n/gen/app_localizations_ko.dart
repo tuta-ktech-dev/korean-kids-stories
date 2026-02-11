@@ -210,6 +210,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startReading => '시작하기';
 
   @override
+  String get nextChapter => '다음 화';
+
+  @override
+  String get previousChapter => '이전 화';
+
+  @override
   String get bookmark => '저장';
 
   @override
@@ -604,6 +610,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get storyStickers => '스토리 스티커';
+
+  @override
+  String get stickersLoginPrompt => '이야기를 읽고 스티커를 모아보세요! 로그인하고 시작해요.';
 
   @override
   String get error => '오류';

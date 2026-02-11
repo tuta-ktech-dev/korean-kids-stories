@@ -7,23 +7,12 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/sticker.dart';
 import '../../../injection.dart';
 import '../../../utils/extensions/context_extension.dart';
+import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/stats_cubit/stats_cubit.dart';
 
 @RoutePage()
 class StickersScreen extends StatelessWidget {
   const StickersScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<StatsCubit>()..loadStats(),
-      child: const _StickersView(),
-    );
-  }
-}
-
-class _StickersView extends StatelessWidget {
-  const _StickersView();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +26,91 @@ class _StickersView extends StatelessWidget {
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
       ),
-      body: BlocBuilder<StatsCubit, StatsState>(
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, authState) {
+          if (authState is Unauthenticated || authState is AuthInitial) {
+            return _StickersGuestPrompt();
+          }
+          return BlocProvider(
+            create: (_) => getIt<StatsCubit>()..loadStats(),
+            child: const _StickersView(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StickersGuestPrompt extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor(context).withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.emoji_events_outlined,
+                size: 48,
+                color: AppTheme.primaryColor(context),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              context.l10n.myStickers,
+              style: AppTheme.headingMedium(context),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              context.l10n.stickersLoginPrompt,
+              style: AppTheme.bodyLarge(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.router.pushNamed('/login'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Text(context.l10n.loginAction),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => context.router.pushNamed('/register'),
+              child: Text(
+                context.l10n.signUp,
+                style: AppTheme.bodyLarge(context).copyWith(
+                  color: AppTheme.primaryColor(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StickersView extends StatelessWidget {
+  const _StickersView();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StatsCubit, StatsState>(
         builder: (context, state) {
           if (state.isLoading && state.unlockedStickers.isEmpty) {
             return const Center(child: CircularProgressIndicator());
@@ -135,7 +208,6 @@ class _StickersView extends StatelessWidget {
             ),
           );
         },
-      ),
     );
   }
 

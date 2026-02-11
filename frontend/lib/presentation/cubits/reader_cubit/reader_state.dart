@@ -20,6 +20,10 @@ class ReaderLoading extends ReaderState {
 
 class ReaderLoaded extends ReaderState {
   final Chapter chapter;
+  /// Previous chapter in the story, if any.
+  final Chapter? prevChapter;
+  /// Next chapter in the story, if any.
+  final Chapter? nextChapter;
   /// Multiple audio versions (different voices). Empty if no audio.
   final List<ChapterAudio> audios;
   /// Selected voice for playback. First item if audios not empty.
@@ -31,6 +35,8 @@ class ReaderLoaded extends ReaderState {
 
   const ReaderLoaded({
     required this.chapter,
+    this.prevChapter,
+    this.nextChapter,
     this.audios = const [],
     this.selectedAudio,
     this.fontSize = 18,
@@ -43,6 +49,8 @@ class ReaderLoaded extends ReaderState {
 
   ReaderLoaded copyWith({
     Chapter? chapter,
+    Chapter? prevChapter,
+    Chapter? nextChapter,
     List<ChapterAudio>? audios,
     ChapterAudio? selectedAudio,
     double? fontSize,
@@ -52,6 +60,8 @@ class ReaderLoaded extends ReaderState {
   }) {
     return ReaderLoaded(
       chapter: chapter ?? this.chapter,
+      prevChapter: prevChapter ?? this.prevChapter,
+      nextChapter: nextChapter ?? this.nextChapter,
       audios: audios ?? this.audios,
       selectedAudio: selectedAudio ?? this.selectedAudio,
       fontSize: fontSize ?? this.fontSize,
@@ -62,7 +72,7 @@ class ReaderLoaded extends ReaderState {
   }
 
   @override
-  List<Object?> get props => [chapter, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying];
+  List<Object?> get props => [chapter, prevChapter, nextChapter, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying];
 }
 
 class ReaderError extends ReaderState {

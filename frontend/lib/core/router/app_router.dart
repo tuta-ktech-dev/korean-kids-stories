@@ -51,7 +51,7 @@ class AppRouter extends RootStackRouter {
       page: MainRoute.page,
       children: [
         AutoRoute(path: 'home', page: HomeRoute.page),
-        AutoRoute(path: 'search', page: SearchRoute.page),
+        AutoRoute(path: 'stickers', page: StickersRoute.page),
         AutoRoute(path: 'history', page: HistoryRoute.page),
         AutoRoute(path: 'library', page: LibraryRoute.page),
         AutoRoute(path: 'settings', page: SettingsRoute.page),
@@ -74,7 +74,7 @@ class MainScreen extends StatelessWidget {
           key: ValueKey(isAuthenticated),
           routes: [
             const HomeRoute(),
-            const SearchRoute(),
+            const StickersRoute(),
             const HistoryRoute(),
             if (isAuthenticated) const LibraryRoute(),
             if (isAuthenticated) const SettingsRoute(),

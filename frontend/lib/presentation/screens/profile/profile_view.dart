@@ -120,7 +120,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (avatar.isEmpty) return null;
     final baseUrl = AppConfig.baseUrl;
     final url = '$baseUrl/api/files/users/${record.id}/$avatar';
-    return url + (url.contains('?') ? '&' : '?') + 'v=$_avatarVersion';
+    return '$url${url.contains('?') ? '&' : '?'}v=$_avatarVersion';
   }
 
   Future<void> _saveProfile() async {
@@ -209,24 +209,22 @@ class _ProfileViewState extends State<ProfileView> {
             children: [
               Text(
                 context.l10n.password,
-                style: AppTheme.bodyMedium(ctx).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTheme.bodyMedium(
+                  ctx,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               TextField(
                 controller: oldController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  hintText: context.l10n.oldPassword,
-                ),
+                decoration: InputDecoration(hintText: context.l10n.oldPassword),
               ),
               const SizedBox(height: 16),
               Text(
                 context.l10n.newPassword,
-                style: AppTheme.bodyMedium(ctx).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTheme.bodyMedium(
+                  ctx,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               TextField(
@@ -239,9 +237,9 @@ class _ProfileViewState extends State<ProfileView> {
               const SizedBox(height: 16),
               Text(
                 context.l10n.confirmPassword,
-                style: AppTheme.bodyMedium(ctx).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTheme.bodyMedium(
+                  ctx,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               TextField(
@@ -367,34 +365,34 @@ class _ProfileViewState extends State<ProfileView> {
                               : null,
                           child: _avatarUrl() == null
                               ? (_isUploadingAvatar
-                                  ? const SizedBox(
-                                      width: 48,
-                                      height: 48,
+                                    ? const SizedBox(
+                                        width: 48,
+                                        height: 48,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.person,
+                                        size: 48,
+                                        color: AppTheme.primaryPink,
+                                      ))
+                              : _isUploadingAvatar
+                              ? Container(
+                                  color: Colors.black45,
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 32,
+                                      height: 32,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         color: Colors.white,
                                       ),
-                                    )
-                                  : Icon(
-                                      Icons.person,
-                                      size: 48,
-                                      color: AppTheme.primaryPink,
-                                    ))
-                              : _isUploadingAvatar
-                                  ? Container(
-                                      color: Colors.black45,
-                                      child: const Center(
-                                        child: SizedBox(
-                                          width: 32,
-                                          height: 32,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : null,
+                                    ),
+                                  ),
+                                )
+                              : null,
                         ),
                         Positioned(
                           right: 0,
@@ -429,9 +427,7 @@ class _ProfileViewState extends State<ProfileView> {
                       if (statsState.isLoading && stats == null) {
                         return const SizedBox(
                           height: 100,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       }
                       if (stats == null) return const SizedBox.shrink();
@@ -448,8 +444,9 @@ class _ProfileViewState extends State<ProfileView> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMedium,
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -498,25 +495,23 @@ class _ProfileViewState extends State<ProfileView> {
                 // Name
                 Text(
                   context.l10n.nameLabel,
-                  style: AppTheme.bodyMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTheme.bodyMedium(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: context.l10n.enterName,
-                  ),
+                  decoration: InputDecoration(hintText: context.l10n.enterName),
                 ),
                 const SizedBox(height: 16),
 
                 // Email (read-only)
                 Text(
                   context.l10n.email,
-                  style: AppTheme.bodyMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTheme.bodyMedium(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -527,9 +522,9 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                   child: Text(
                     state.email ?? '',
-                    style: AppTheme.bodyMedium(context).copyWith(
-                      color: AppTheme.textMutedColor(context),
-                    ),
+                    style: AppTheme.bodyMedium(
+                      context,
+                    ).copyWith(color: AppTheme.textMutedColor(context)),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -585,7 +580,9 @@ class _ProfileViewState extends State<ProfileView> {
                         value: _notificationsEnabled,
                         onChanged: (v) async {
                           setState(() => _notificationsEnabled = v);
-                          await _prefsRepo.savePreferences(notificationsEnabled: v);
+                          await _prefsRepo.savePreferences(
+                            notificationsEnabled: v,
+                          );
                         },
                       ),
                     ],
@@ -624,17 +621,14 @@ class _StatItem extends StatelessWidget {
       children: [
         Text(
           value,
-          style: AppTheme.headingMedium(context).copyWith(
-            color: AppTheme.textDark,
-            fontSize: 20,
-          ),
+          style: AppTheme.headingMedium(
+            context,
+          ).copyWith(color: AppTheme.textDark, fontSize: 20),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: AppTheme.caption(context).copyWith(
-            color: AppTheme.textMedium,
-          ),
+          style: AppTheme.caption(context).copyWith(color: AppTheme.textMedium),
         ),
       ],
     );

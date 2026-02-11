@@ -31,11 +31,7 @@ class HomeView extends StatelessWidget {
                 subtitle: context.l10n.homeSubtitle,
                 bottomWidget: AppSearchBar(
                   hintText: context.l10n.homeSearchHint,
-                  onTap: () {
-                    // Navigate to Search Tab (Index 1)
-                    final tabsRouter = AutoTabsRouter.of(context);
-                    tabsRouter.setActiveIndex(1);
-                  },
+                  onTap: () => context.router.push(const SearchRoute()),
                 ),
               ),
             ),

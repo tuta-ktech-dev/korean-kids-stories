@@ -74,6 +74,8 @@
   "storyNotFound": "Story not found",
   "tableOfContents": "Table of Contents",
   "startReading": "Start Reading",
+  "nextChapter": "Next chapter",
+  "previousChapter": "Previous chapter",
   "bookmark": "Save",
   "chapterTitleFallback": "Chapter {number}",
   "free": "Free",
@@ -206,6 +208,7 @@
   "unlockedStickers": "Unlocked",
   "readStoriesToUnlockStickers": "Read stories to unlock stickers!",
   "storyStickers": "Story Stickers",
+  "stickersLoginPrompt": "Collect stickers by reading stories! Login to get started.",
 
   "error": "Error",
   "chapterNotFound": "Chapter not found",

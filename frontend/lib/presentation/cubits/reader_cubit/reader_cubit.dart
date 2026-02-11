@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../data/models/chapter.dart';
 import '../../../data/models/chapter_audio.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/reading_history_repository.dart';
@@ -16,18 +17,20 @@ class ReaderCubit extends Cubit<ReaderState> {
     StoryRepository? storyRepository,
     ProgressRepository? progressRepository,
     ReadingHistoryRepository? readingHistoryRepository,
-  })  : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
-        _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
-        _historyRepository =
-            readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
-        super(const ReaderInitial());
+  }) : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
+       _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
+       _historyRepository =
+           readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
+       super(const ReaderInitial());
 
   final StoryRepository _storyRepository;
   final ProgressRepository _progressRepository;
   final ReadingHistoryRepository _historyRepository;
 
-  Future<void> loadChapter(String chapterId) async {
-    emit(const ReaderLoading());
+  /// Load a chapter. Set [skipLoading] true to avoid showing loading spinner
+  /// when switching between chapters (smoother UX).
+  Future<void> loadChapter(String chapterId, {bool skipLoading = false}) async {
+    if (!skipLoading) emit(const ReaderLoading());
 
     try {
       await _storyRepository.initialize();
@@ -37,24 +40,37 @@ class ReaderCubit extends Cubit<ReaderState> {
         return;
       }
 
+      Chapter? prevChapter;
+      Chapter? nextChapter;
+      final chapters = await _storyRepository.getChapters(chapter.storyId);
+      final idx = chapters.indexWhere((c) => c.id == chapterId);
+      if (idx > 0) prevChapter = chapters[idx - 1];
+      if (idx >= 0 && idx < chapters.length - 1) {
+        nextChapter = chapters[idx + 1];
+      }
+
       final audios = await _storyRepository.getChapterAudios(chapterId);
       final selectedAudio = audios.isNotEmpty ? audios.first : null;
 
       final progress = await _progressRepository.getProgress(chapterId);
       final percent = progress?.percentRead ?? 0.0;
 
-      emit(ReaderLoaded(
-        chapter: chapter,
-        audios: audios,
-        selectedAudio: selectedAudio,
-        progress: percent / 100,
-      ));
+      emit(
+        ReaderLoaded(
+          chapter: chapter,
+          prevChapter: prevChapter,
+          nextChapter: nextChapter,
+          audios: audios,
+          selectedAudio: selectedAudio,
+          progress: percent / 100,
+        ),
+      );
       _historyRepository.logAction(
         storyId: chapter.storyId,
         chapterId: chapterId,
         action: 'view',
       );
-    } on PocketbaseException catch (e) {
+    } on PocketbaseException {
       emit(ReaderError('chapterLoadError'));
     } catch (e) {
       emit(const ReaderError('chapterLoadError'));

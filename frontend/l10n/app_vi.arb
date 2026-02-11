@@ -67,6 +67,8 @@
   "storyNotFound": "Không tìm thấy truyện",
   "tableOfContents": "Mục lục",
   "startReading": "Bắt đầu đọc",
+  "nextChapter": "Chương tiếp",
+  "previousChapter": "Chương trước",
   "bookmark": "Lưu",
   "chapterTitleFallback": "Chương {number}",
   "free": "Miễn phí",
@@ -199,6 +201,7 @@
   "unlockedStickers": "Đã mở khóa",
   "readStoriesToUnlockStickers": "Đọc truyện để mở khóa sticker nhé!",
   "storyStickers": "Sticker truyện",
+  "stickersLoginPrompt": "Sưu tầm sticker bằng cách đọc truyện! Đăng nhập để bắt đầu.",
 
   "error": "Lỗi",
   "chapterNotFound": "Không tìm thấy chương",

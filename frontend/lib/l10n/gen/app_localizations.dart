@@ -502,6 +502,18 @@ abstract class AppLocalizations {
   /// **'Start Reading'**
   String get startReading;
 
+  /// No description provided for @nextChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Next chapter'**
+  String get nextChapter;
+
+  /// No description provided for @previousChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous chapter'**
+  String get previousChapter;
+
   /// No description provided for @bookmark.
   ///
   /// In en, this message translates to:
@@ -1251,6 +1263,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Story Stickers'**
   String get storyStickers;
+
+  /// No description provided for @stickersLoginPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect stickers by reading stories! Login to get started.'**
+  String get stickersLoginPrompt;
 
   /// No description provided for @error.
   ///
