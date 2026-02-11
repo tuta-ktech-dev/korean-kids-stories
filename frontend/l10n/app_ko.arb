@@ -10,6 +10,7 @@
 
   "landingTitle": "한국 동화",
   "landingSubtitle": "전통부터 역사까지, 아이들을 위한 한국 이야기",
+  "landingStartButton": "시작하기",
   "browse": "둘러보기",
   "browseWithoutLogin": "로그인 없이 둘러보기",
   "login": "로그인",
@@ -237,5 +238,19 @@
   "reportContent": "신고 내용",
   "reportSubmit": "신고하기",
   "reportTarget": "대상: {title}",
-  "@reportTarget": {"placeholders": {"title": {}}}
+  "@reportTarget": {"placeholders": {"title": {}}},
+  "parentZone": "부모 전용",
+  "parentZoneSubtitle": "활동 보기 & 프리미엄 관리",
+  "parentZoneEnterPin": "PIN 입력",
+  "parentZonePinHint": "4자리 부모 PIN 입력",
+  "parentZoneWrongPin": "잘못된 PIN입니다. 다시 시도하세요.",
+  "parentZoneSetPin": "부모 PIN 설정",
+  "parentZoneSetPinHint": "부모 전용을 보호할 4자리 PIN을 만드세요",
+  "parentZoneChildActivity": "아이 활동",
+  "parentZonePremium": "프리미엄",
+  "parentZoneComingSoon": "준비 중",
+  "parentZoneAuthReason": "부모 전용에 접근하려면 인증하세요",
+  "parentZoneAuthenticate": "인증",
+  "parentZoneNotSupported": "이 기기는 생체 인식 또는 PIN 인증을 지원하지 않습니다.",
+  "parentZoneAuthFailed": "인증에 실패했습니다. 다시 시도하세요."
 }

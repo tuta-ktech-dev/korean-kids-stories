@@ -2,134 +2,30 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+import '../models/reading_progress.dart';
 import '../services/pocketbase_service.dart';
+import 'local_progress_repository.dart';
 
-/// Model đại diện cho reading progress
-class ReadingProgress {
-  final String id;
-  final String userId;
-  final String chapterId;
-  final double percentRead;
-  final double lastPosition; // vị trí trong audio (ms)
-  final bool isCompleted;
-  final List<Bookmark> bookmarks;
-  final DateTime? lastReadAt;
+export '../models/reading_progress.dart';
 
-  ReadingProgress({
-    required this.id,
-    required this.userId,
-    required this.chapterId,
-    this.percentRead = 0.0,
-    this.lastPosition = 0.0,
-    this.isCompleted = false,
-    this.bookmarks = const [],
-    this.lastReadAt,
-  });
-
-  factory ReadingProgress.fromRecord(RecordModel record) {
-    List<Bookmark> bookmarks = [];
-    final bookmarksData = record.data['bookmarks'];
-    if (bookmarksData is List) {
-      bookmarks = bookmarksData
-          .map((b) => Bookmark.fromJson(b as Map<String, dynamic>))
-          .toList();
-    }
-
-    return ReadingProgress(
-      id: record.id,
-      userId: record.getStringValue('user'),
-      chapterId: record.getStringValue('chapter'),
-      percentRead: record.getDoubleValue('percent_read'),
-      lastPosition: record.getDoubleValue('last_position'),
-      isCompleted: record.getBoolValue('is_completed'),
-      bookmarks: bookmarks,
-      lastReadAt: _parseProgressDateTime(record.data['updated']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'user': userId,
-      'chapter': chapterId,
-      'percent_read': percentRead,
-      'last_position': lastPosition,
-      'is_completed': isCompleted,
-      'bookmarks': bookmarks.map((b) => b.toJson()).toList(),
-    };
-  }
-
-  ReadingProgress copyWith({
-    String? id,
-    String? userId,
-    String? chapterId,
-    double? percentRead,
-    double? lastPosition,
-    bool? isCompleted,
-    List<Bookmark>? bookmarks,
-    DateTime? lastReadAt,
-  }) {
-    return ReadingProgress(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
-      chapterId: chapterId ?? this.chapterId,
-      percentRead: percentRead ?? this.percentRead,
-      lastPosition: lastPosition ?? this.lastPosition,
-      isCompleted: isCompleted ?? this.isCompleted,
-      bookmarks: bookmarks ?? this.bookmarks,
-      lastReadAt: lastReadAt ?? this.lastReadAt,
-    );
-  }
-}
-
-/// Bookmark model
-class Bookmark {
-  final double position;
-  final String? note;
-  final DateTime createdAt;
-
-  Bookmark({
-    required this.position,
-    this.note,
-    DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
-
-  factory Bookmark.fromJson(Map<String, dynamic> json) {
-    return Bookmark(
-      position: (json['position'] as num?)?.toDouble() ?? 0.0,
-      note: json['note'] as String?,
-      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'position': position,
-      'note': note,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
-}
-
-DateTime? _parseProgressDateTime(dynamic value) {
-  if (value == null) return null;
-  if (value is DateTime) return value;
-  if (value is String) return DateTime.tryParse(value);
-  return null;
-}
-
-/// Repository cho reading progress operations
+/// Repository cho reading progress operations.
+/// Khi đã đăng nhập: dùng PocketBase.
+/// Khi guest: dùng LocalProgressRepository (EncryptedSharedPreferences).
 @injectable
 class ProgressRepository {
-  ProgressRepository(this._pbService);
+  ProgressRepository(this._pbService, this._localRepo);
   final PocketbaseService _pbService;
+  final LocalProgressRepository _localRepo;
 
   PocketBase get _pb => _pbService.pb;
 
+  bool get _useLocal => !_pbService.isAuthenticated;
+
   /// Lấy progress của user cho chapter cụ thể
   Future<ReadingProgress?> getProgress(String chapterId) async {
-    try {
-      if (!_pbService.isAuthenticated) return null;
+    if (_useLocal) return _localRepo.getProgress(chapterId);
 
+    try {
       final userId = _pbService.currentUser?.id;
       if (userId == null) return null;
 
@@ -149,9 +45,9 @@ class ProgressRepository {
 
   /// Lấy tất cả progress của user
   Future<List<ReadingProgress>> getAllProgress() async {
-    try {
-      if (!_pbService.isAuthenticated) return [];
+    if (_useLocal) return _localRepo.getAllProgress();
 
+    try {
       final userId = _pbService.currentUser?.id;
       if (userId == null) return [];
 
@@ -174,9 +70,16 @@ class ProgressRepository {
     double? lastPosition,
     bool? isCompleted,
   }) async {
-    try {
-      if (!_pbService.isAuthenticated) return null;
+    if (_useLocal) {
+      return _localRepo.saveProgress(
+        chapterId: chapterId,
+        percentRead: percentRead,
+        lastPosition: lastPosition,
+        isCompleted: isCompleted,
+      );
+    }
 
+    try {
       final userId = _pbService.currentUser?.id;
       if (userId == null) return null;
 
@@ -226,6 +129,10 @@ class ProgressRepository {
     required double position,
     String? note,
   }) async {
+    if (_useLocal) {
+      return _localRepo.addBookmark(chapterId: chapterId, position: position, note: note);
+    }
+
     try {
       final existing = await getProgress(chapterId);
 
@@ -272,6 +179,10 @@ class ProgressRepository {
     required String chapterId,
     required double position,
   }) async {
+    if (_useLocal) {
+      return _localRepo.removeBookmark(chapterId: chapterId, position: position);
+    }
+
     try {
       final existing = await getProgress(chapterId);
       if (existing == null) return null;
@@ -304,6 +215,8 @@ class ProgressRepository {
 
   /// Xóa progress
   Future<bool> deleteProgress(String progressId) async {
+    if (_useLocal) return _localRepo.deleteProgress(progressId);
+
     try {
       await _pb.collection('reading_progress').delete(progressId);
       return true;

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/review.dart';
-import '../../../cubits/auth_cubit/auth_cubit.dart';
 import '../../../cubits/review_cubit/review_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'story_detail_theme.dart';
@@ -26,11 +25,8 @@ class StoryDetailReviewSection extends StatefulWidget {
 }
 
 class _StoryDetailReviewSectionState extends State<StoryDetailReviewSection> {
-  bool _showEditForm = false;
-
   @override
   Widget build(BuildContext context) {
-    final isAuthenticated = context.read<AuthCubit>().state is Authenticated;
     final theme = StoryDetailTheme.of(context, widget.category);
 
     return BlocBuilder<ReviewCubit, ReviewState>(
@@ -60,33 +56,9 @@ class _StoryDetailReviewSectionState extends State<StoryDetailReviewSection> {
 
         final loaded = state as ReviewLoaded;
         final reviews = loaded.allReviews;
-        final hasMyReview = loaded.myReview != null;
 
-        Widget authContent;
-        if (!isAuthenticated) {
-          authContent = _LoginPrompt(accentColor: theme.color);
-        } else if (hasMyReview && !_showEditForm) {
-          authContent = _MyReviewSummary(
-            review: loaded.myReview!,
-            accentColor: theme.color,
-            onEdit: () => setState(() => _showEditForm = true),
-            onDelete: () => _handleDelete(context),
-          );
-        } else {
-          authContent = _ReviewForm(
-            storyId: widget.storyId,
-            initialRating: loaded.myReview?.rating ?? 0,
-            initialComment: loaded.myReview?.comment ?? '',
-            isEditing: hasMyReview,
-            accentColor: theme.color,
-            onSubmitted: () {
-              setState(() => _showEditForm = false);
-              widget.onReviewChanged?.call();
-            },
-            onCancel:
-                hasMyReview ? () => setState(() => _showEditForm = false) : null,
-          );
-        }
+        // Guest-only: show read-only reviews, prompt for Parent Zone to add
+        final authContent = _LoginPrompt(accentColor: theme.color);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,6 +87,8 @@ class _StoryDetailReviewSectionState extends State<StoryDetailReviewSection> {
     );
   }
 
+  // Kept for when Parent Zone enables reviews
+  // ignore: unused_element
   Future<void> _handleDelete(BuildContext context) async {
     final cubit = context.read<ReviewCubit>();
     final confirm = await showDialog<bool>(
@@ -139,13 +113,12 @@ class _StoryDetailReviewSectionState extends State<StoryDetailReviewSection> {
     );
     if (confirm != true || !mounted) return;
     await cubit.deleteReview();
-    if (mounted) {
-      setState(() => _showEditForm = false);
-      widget.onReviewChanged?.call();
-    }
+    if (mounted) widget.onReviewChanged?.call();
   }
 }
 
+// Kept for when Parent Zone enables reviews
+// ignore: unused_element
 class _MyReviewSummary extends StatelessWidget {
   final Review review;
   final Color accentColor;

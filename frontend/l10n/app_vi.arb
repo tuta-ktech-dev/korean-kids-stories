@@ -23,6 +23,7 @@
   "settingsLanguageTitle": "Cài đặt ngôn ngữ",
   "landingTitle": "Truyện cổ tích Hàn Quốc",
   "landingSubtitle": "Từ truyền thống đến lịch sử, câu chuyện cho bé",
+  "landingStartButton": "Bắt đầu",
   "browse": "Khám phá",
   "browseWithoutLogin": "Khám phá ngay (không cần đăng nhập)",
   "signUp": "Đăng ký",
@@ -233,5 +234,19 @@
   "reportContent": "Nội dung báo cáo",
   "reportSubmit": "Gửi báo cáo",
   "reportTarget": "Đối tượng: {title}",
-  "@reportTarget": {"placeholders": {"title": {}}}
+  "@reportTarget": {"placeholders": {"title": {}}},
+  "parentZone": "Khu vực phụ huynh",
+  "parentZoneSubtitle": "Xem hoạt động & quản lý premium",
+  "parentZoneEnterPin": "Nhập mã PIN",
+  "parentZonePinHint": "Nhập mã PIN 4 số",
+  "parentZoneWrongPin": "Sai mã PIN. Thử lại.",
+  "parentZoneSetPin": "Đặt mã PIN",
+  "parentZoneSetPinHint": "Tạo mã PIN 4 số để bảo vệ khu vực phụ huynh",
+  "parentZoneChildActivity": "Hoạt động của bé",
+  "parentZonePremium": "Premium",
+  "parentZoneComingSoon": "Sắp ra mắt",
+  "parentZoneAuthReason": "Xác thực để truy cập khu vực phụ huynh",
+  "parentZoneAuthenticate": "Xác thực",
+  "parentZoneNotSupported": "Thiết bị không hỗ trợ xác thực vân tay hoặc mã PIN.",
+  "parentZoneAuthFailed": "Xác thực thất bại. Thử lại."
 }

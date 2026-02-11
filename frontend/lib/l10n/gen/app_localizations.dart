@@ -154,6 +154,12 @@ abstract class AppLocalizations {
   /// **'From tradition to history, Korean stories for kids'**
   String get landingSubtitle;
 
+  /// No description provided for @landingStartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get landingStartButton;
+
   /// No description provided for @browse.
   ///
   /// In en, this message translates to:
@@ -1431,6 +1437,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target: {title}'**
   String reportTarget(Object title);
+
+  /// No description provided for @parentZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Zone'**
+  String get parentZone;
+
+  /// No description provided for @parentZoneSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View activity & manage premium'**
+  String get parentZoneSubtitle;
+
+  /// No description provided for @parentZoneEnterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get parentZoneEnterPin;
+
+  /// No description provided for @parentZonePinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 4-digit parent PIN'**
+  String get parentZonePinHint;
+
+  /// No description provided for @parentZoneWrongPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong PIN. Try again.'**
+  String get parentZoneWrongPin;
+
+  /// No description provided for @parentZoneSetPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Parent PIN'**
+  String get parentZoneSetPin;
+
+  /// No description provided for @parentZoneSetPinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a 4-digit PIN to protect Parent Zone'**
+  String get parentZoneSetPinHint;
+
+  /// No description provided for @parentZoneChildActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Child\'s Activity'**
+  String get parentZoneChildActivity;
+
+  /// No description provided for @parentZonePremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get parentZonePremium;
+
+  /// No description provided for @parentZoneComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get parentZoneComingSoon;
+
+  /// No description provided for @parentZoneAuthReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to access Parent Zone'**
+  String get parentZoneAuthReason;
+
+  /// No description provided for @parentZoneAuthenticate.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate'**
+  String get parentZoneAuthenticate;
+
+  /// No description provided for @parentZoneNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This device does not support biometric or PIN authentication.'**
+  String get parentZoneNotSupported;
+
+  /// No description provided for @parentZoneAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Try again.'**
+  String get parentZoneAuthFailed;
 }
 
 class _AppLocalizationsDelegate

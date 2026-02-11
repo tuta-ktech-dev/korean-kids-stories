@@ -13,6 +13,7 @@
   
   "landingTitle": "Korean Kids Tales",
   "landingSubtitle": "From tradition to history, Korean stories for kids",
+  "landingStartButton": "Start",
   "browse": "Browse",
   "browseWithoutLogin": "Browse without login",
   "login": "Login",
@@ -240,5 +241,19 @@
   "reportContent": "Report content",
   "reportSubmit": "Submit report",
   "reportTarget": "Target: {title}",
-  "@reportTarget": {"placeholders": {"title": {}}}
+  "@reportTarget": {"placeholders": {"title": {}}},
+  "parentZone": "Parent Zone",
+  "parentZoneSubtitle": "View activity & manage premium",
+  "parentZoneEnterPin": "Enter PIN",
+  "parentZonePinHint": "Enter 4-digit parent PIN",
+  "parentZoneWrongPin": "Wrong PIN. Try again.",
+  "parentZoneSetPin": "Set Parent PIN",
+  "parentZoneSetPinHint": "Create a 4-digit PIN to protect Parent Zone",
+  "parentZoneChildActivity": "Child's Activity",
+  "parentZonePremium": "Premium",
+  "parentZoneComingSoon": "Coming soon",
+  "parentZoneAuthReason": "Authenticate to access Parent Zone",
+  "parentZoneAuthenticate": "Authenticate",
+  "parentZoneNotSupported": "This device does not support biometric or PIN authentication.",
+  "parentZoneAuthFailed": "Authentication failed. Try again."
 }

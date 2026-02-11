@@ -6,7 +6,6 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/chapter.dart';
 import '../../../../data/models/story.dart';
 import '../../../components/buttons/bookmark_buttons.dart' show showNoteSheet;
-import '../../../cubits/auth_cubit/auth_cubit.dart';
 import '../../../cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../../cubits/favorite_cubit/favorite_cubit.dart';
 import '../../../cubits/note_cubit/note_cubit.dart';
@@ -99,57 +98,17 @@ class StoryDetailBottomBar extends StatelessWidget {
   }
 
   void _openReader(BuildContext context, int chapterIndex) {
-    if (story.requiredLogin) {
-      final authState = context.read<AuthCubit>().state;
-      if (authState is! Authenticated) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.loginRequired),
-            action: SnackBarAction(
-              label: context.l10n.login,
-              onPressed: () => context.router.pushNamed('/login'),
-            ),
-          ),
-        );
-        return;
-      }
-    }
     context.router.root.pushNamed(
       '/reader/${story.id}/${chapters[chapterIndex].id}',
     );
   }
 
   void _onFavoriteTap(BuildContext context, bool isFavorite) {
-    final authState = context.read<AuthCubit>().state;
-    if (authState is! Authenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.loginRequired),
-          action: SnackBarAction(
-            label: context.l10n.login,
-            onPressed: () => context.router.pushNamed('/login'),
-          ),
-        ),
-      );
-      return;
-    }
+    // Favorite requires backend - no-op for guest (UI could hide these later)
     context.read<FavoriteCubit>().toggleFavorite(story.id);
   }
 
   void _onBookmarkTap(BuildContext context, bool isBookmarked) {
-    final authState = context.read<AuthCubit>().state;
-    if (authState is! Authenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.loginRequired),
-          action: SnackBarAction(
-            label: context.l10n.login,
-            onPressed: () => context.router.pushNamed('/login'),
-          ),
-        ),
-      );
-      return;
-    }
     if (isBookmarked) {
       context.read<BookmarkCubit>().toggleBookmark(story.id);
       ScaffoldMessenger.of(

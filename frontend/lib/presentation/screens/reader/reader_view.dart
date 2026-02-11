@@ -11,6 +11,7 @@ import '../../cubits/reader_cubit/reader_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../components/buttons/bookmark_buttons.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../widgets/responsive_padding.dart';
 import '../../cubits/note_cubit/note_cubit.dart';
 import 'widgets/reader_bottom_bar.dart';
 
@@ -356,8 +357,11 @@ class _ReaderViewState extends State<ReaderView> {
                     ],
                   )
                 : null,
-            body: GestureDetector(
-              onTap: _toggleControls,
+            body: ResponsivePadding(
+              maxWidth: 640,
+              horizontalPadding: 24,
+              child: GestureDetector(
+                onTap: _toggleControls,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 switchInCurve: Curves.easeOut,
@@ -411,6 +415,7 @@ class _ReaderViewState extends State<ReaderView> {
                     ),
                   ),
               ),
+            ),
             ),
           );
         }

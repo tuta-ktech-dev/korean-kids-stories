@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../widgets/responsive_padding.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../cubits/search_cubit/search_cubit.dart';
 import '../../widgets/story_card.dart';
@@ -78,8 +79,9 @@ class _SearchViewState extends State<SearchView> {
           ),
         ],
       ),
-      body: BlocBuilder<SearchCubit, SearchState>(
-        builder: (context, state) {
+      body: ResponsivePadding(
+        child: BlocBuilder<SearchCubit, SearchState>(
+          builder: (context, state) {
           if (state is SearchLoading) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -104,6 +106,7 @@ class _SearchViewState extends State<SearchView> {
           // Initial state or history loaded
           return _buildSearchSuggestions();
         },
+        ),
       ),
     );
   }

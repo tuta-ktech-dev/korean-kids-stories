@@ -1,5 +1,5 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+# Set minimum iOS version
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,5 +39,26 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    
+    target.build_configurations.each do |config|
+      # Fix for unsupported platform error
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      
+      # Exclude only legacy 32-bit simulator (i386) - keep arm64/x86_64 for iPad simulator
+      if config.name == 'Release' || config.name == 'Profile'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386'
+      end
+      
+      # Fix framework validation issues
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
+      # SKIP_INSTALL=YES prevents pods from being installed as separate products in archive.
+      # Archive must contain only Runner.app for IPA export (App Store/Ad Hoc) to work.
+      config.build_settings['SKIP_INSTALL'] = 'YES'
+      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+      
+      # Strip simulator architectures for App Store
+      config.build_settings['STRIP_STYLE'] = 'all'
+      config.build_settings['DEPLOYMENT_POSTPROCESSING'] = 'YES'
+    end
   end
 end

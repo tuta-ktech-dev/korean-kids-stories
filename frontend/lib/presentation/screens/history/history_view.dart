@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../components/cards/history_card.dart';
-import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/history_cubit/history_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
@@ -41,14 +40,7 @@ class _HistoryViewState extends State<HistoryView> {
           ),
         ],
       ),
-      body: BlocBuilder<AuthCubit, AuthState>(
-        builder: (context, authState) {
-          if (authState is Unauthenticated || authState is AuthInitial) {
-            return _buildGuestPrompt(context);
-          }
-
-          // Show history tabs for authenticated users
-          return DefaultTabController(
+      body: DefaultTabController(
             length: 2,
             child: Column(
               children: [
@@ -109,74 +101,7 @@ class _HistoryViewState extends State<HistoryView> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildGuestPrompt(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppTheme.textMutedColor(context).withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.lock_outline,
-                size: 48,
-                color: AppTheme.textMutedColor(context),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              context.l10n.loginRequired,
-              style: AppTheme.headingMedium(context),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              context.l10n.historyLoginPrompt,
-              style: AppTheme.bodyLarge(context),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  context.router.pushNamed('/login');
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Text(context.l10n.loginAction),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                context.router.pushNamed('/register');
-              },
-              child: Text(
-                context.l10n.signUp,
-                style: AppTheme.bodyLarge(
-                  context,
-                ).copyWith(color: AppTheme.primaryColor(context)),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }

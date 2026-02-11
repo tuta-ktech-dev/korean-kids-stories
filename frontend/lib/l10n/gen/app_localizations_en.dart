@@ -37,6 +37,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'From tradition to history, Korean stories for kids';
 
   @override
+  String get landingStartButton => 'Start';
+
+  @override
   String get browse => 'Browse';
 
   @override
@@ -708,4 +711,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportTarget(Object title) {
     return 'Target: $title';
   }
+
+  @override
+  String get parentZone => 'Parent Zone';
+
+  @override
+  String get parentZoneSubtitle => 'View activity & manage premium';
+
+  @override
+  String get parentZoneEnterPin => 'Enter PIN';
+
+  @override
+  String get parentZonePinHint => 'Enter 4-digit parent PIN';
+
+  @override
+  String get parentZoneWrongPin => 'Wrong PIN. Try again.';
+
+  @override
+  String get parentZoneSetPin => 'Set Parent PIN';
+
+  @override
+  String get parentZoneSetPinHint =>
+      'Create a 4-digit PIN to protect Parent Zone';
+
+  @override
+  String get parentZoneChildActivity => 'Child\'s Activity';
+
+  @override
+  String get parentZonePremium => 'Premium';
+
+  @override
+  String get parentZoneComingSoon => 'Coming soon';
+
+  @override
+  String get parentZoneAuthReason => 'Authenticate to access Parent Zone';
+
+  @override
+  String get parentZoneAuthenticate => 'Authenticate';
+
+  @override
+  String get parentZoneNotSupported =>
+      'This device does not support biometric or PIN authentication.';
+
+  @override
+  String get parentZoneAuthFailed => 'Authentication failed. Try again.';
 }

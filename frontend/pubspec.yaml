@@ -70,6 +70,10 @@ dependencies:
   http: ^1.2.0
   equatable: ^2.0.8
   shared_preferences: ^2.5.4
+  encrypted_shared_preferences: ^3.0.1
+
+  # Parent Zone - biometric / device auth
+  local_auth: ^3.0.0
 
   flutter_localizations:
     sdk: flutter

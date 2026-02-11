@@ -180,6 +180,22 @@ class OtpVerificationRouteArgs {
 }
 
 /// generated route for
+/// [ParentZoneScreen]
+class ParentZoneRoute extends PageRouteInfo<void> {
+  const ParentZoneRoute({List<PageRouteInfo>? children})
+    : super(ParentZoneRoute.name, initialChildren: children);
+
+  static const String name = 'ParentZoneRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ParentZoneScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [ProfileScreen]
 class ProfileRoute extends PageRouteInfo<void> {
   const ProfileRoute({List<PageRouteInfo>? children})

@@ -111,80 +111,24 @@ class LandingView extends StatelessWidget {
                 ),
               ),
 
-              // Bottom buttons
+              // Single Start button - Guest-only flow (no login required)
               Padding(
                 padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    // Guest access button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthCubit>().loginAsGuest();
-                          context.router.replaceNamed('/main');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(context.l10n.browseWithoutLogin),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<AuthCubit>().loginAsGuest();
+                      context.router.replaceNamed('/main');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    const SizedBox(height: 12),
-
-                    // Login button
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          context.router.pushNamed('/login');
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          side: BorderSide(
-                            color: AppTheme.primaryColor(context),
-                          ),
-                        ),
-                        child: Text(
-                          context.l10n.login,
-                          style: AppTheme.bodyLarge(context).copyWith(
-                            color: AppTheme.primaryColor(context),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Register link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${context.l10n.dontHaveAccount} ',
-                          style: AppTheme.bodyMedium(context),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.router.pushNamed('/register');
-                          },
-                          child: Text(
-                            context.l10n.signUp,
-                            style: AppTheme.bodyMedium(context).copyWith(
-                              color: AppTheme.primaryColor(context),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    child: Text(context.l10n.landingStartButton),
+                  ),
                 ),
               ),
             ],

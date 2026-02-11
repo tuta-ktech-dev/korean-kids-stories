@@ -1,11 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/chapter.dart';
 import '../../../../data/models/story.dart';
-import '../../../cubits/auth_cubit/auth_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'story_detail_theme.dart';
 
@@ -39,21 +37,6 @@ class StoryDetailChapterList extends StatelessWidget {
   }
 
   void _openReader(BuildContext context, Chapter chapter) {
-    if (story.requiredLogin) {
-      final authState = context.read<AuthCubit>().state;
-      if (authState is! Authenticated) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.loginRequired),
-            action: SnackBarAction(
-              label: context.l10n.login,
-              onPressed: () => context.router.pushNamed('/login'),
-            ),
-          ),
-        );
-        return;
-      }
-    }
     context.router.root.pushNamed('/reader/${story.id}/${chapter.id}');
   }
 }

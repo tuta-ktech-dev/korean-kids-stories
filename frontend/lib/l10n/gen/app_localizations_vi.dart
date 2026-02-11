@@ -37,6 +37,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Từ truyền thống đến lịch sử, câu chuyện cho bé';
 
   @override
+  String get landingStartButton => 'Bắt đầu';
+
+  @override
   String get browse => 'Khám phá';
 
   @override
@@ -705,4 +708,48 @@ class AppLocalizationsVi extends AppLocalizations {
   String reportTarget(Object title) {
     return 'Đối tượng: $title';
   }
+
+  @override
+  String get parentZone => 'Khu vực phụ huynh';
+
+  @override
+  String get parentZoneSubtitle => 'Xem hoạt động & quản lý premium';
+
+  @override
+  String get parentZoneEnterPin => 'Nhập mã PIN';
+
+  @override
+  String get parentZonePinHint => 'Nhập mã PIN 4 số';
+
+  @override
+  String get parentZoneWrongPin => 'Sai mã PIN. Thử lại.';
+
+  @override
+  String get parentZoneSetPin => 'Đặt mã PIN';
+
+  @override
+  String get parentZoneSetPinHint =>
+      'Tạo mã PIN 4 số để bảo vệ khu vực phụ huynh';
+
+  @override
+  String get parentZoneChildActivity => 'Hoạt động của bé';
+
+  @override
+  String get parentZonePremium => 'Premium';
+
+  @override
+  String get parentZoneComingSoon => 'Sắp ra mắt';
+
+  @override
+  String get parentZoneAuthReason => 'Xác thực để truy cập khu vực phụ huynh';
+
+  @override
+  String get parentZoneAuthenticate => 'Xác thực';
+
+  @override
+  String get parentZoneNotSupported =>
+      'Thiết bị không hỗ trợ xác thực vân tay hoặc mã PIN.';
+
+  @override
+  String get parentZoneAuthFailed => 'Xác thực thất bại. Thử lại.';
 }

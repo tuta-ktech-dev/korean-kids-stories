@@ -5,31 +5,22 @@ import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 class AppBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
-  final bool isAuthenticated;
 
   const AppBottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    this.isAuthenticated = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final items = isAuthenticated
-        ? [
-            _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
-            _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
-            _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
-            _NavItemData(icon: Icons.library_books_rounded, label: l10n.libraryTab),
-            _NavItemData(icon: Icons.person_rounded, label: l10n.profileTab),
-          ]
-        : [
-            _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
-            _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
-            _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
-          ];
+    final items = [
+      _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
+      _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
+      _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
+      _NavItemData(icon: Icons.settings_rounded, label: l10n.settingsTab),
+    ];
 
     return Container(
       margin: const EdgeInsets.all(16),

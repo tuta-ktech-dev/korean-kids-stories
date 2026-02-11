@@ -17,6 +17,7 @@ import 'data/repositories/auth_repository.dart' as _i593;
 import 'data/repositories/bookmark_repository.dart' as _i318;
 import 'data/repositories/content_page_repository.dart' as _i96;
 import 'data/repositories/favorite_repository.dart' as _i266;
+import 'data/repositories/local_progress_repository.dart' as _i825;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
 import 'data/repositories/reading_history_repository.dart' as _i821;
@@ -27,6 +28,7 @@ import 'data/repositories/story_repository.dart' as _i691;
 import 'data/repositories/user_preferences_repository.dart' as _i195;
 import 'data/repositories/user_stats_repository.dart' as _i1058;
 import 'data/services/pocketbase_service.dart' as _i700;
+import 'data/services/premium_service.dart' as _i526;
 import 'data/services/tracking_service.dart' as _i194;
 import 'injection_module.dart' as _i212;
 import 'presentation/cubits/auth_cubit/auth_cubit.dart' as _i519;
@@ -49,6 +51,9 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final injectionModule = _$InjectionModule();
+    gh.factory<_i825.LocalProgressRepository>(
+      () => _i825.LocalProgressRepository(),
+    );
     gh.lazySingleton<_i700.PocketbaseService>(
       () => injectionModule.pocketbaseService,
     );
@@ -73,9 +78,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i369.ProgressRepository>(
-      () => _i369.ProgressRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i318.BookmarkRepository>(
       () => _i318.BookmarkRepository(gh<_i700.PocketbaseService>()),
@@ -103,6 +105,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i266.FavoriteRepository>(
       () => _i266.FavoriteRepository(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i526.PremiumService>(
+      () => _i526.PremiumService(gh<_i700.PocketbaseService>()),
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),
@@ -135,6 +140,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i739.FavoriteCubit(
         favoriteRepository: gh<_i266.FavoriteRepository>(),
         pocketbaseService: gh<_i700.PocketbaseService>(),
+      ),
+    );
+    gh.factory<_i369.ProgressRepository>(
+      () => _i369.ProgressRepository(
+        gh<_i700.PocketbaseService>(),
+        gh<_i825.LocalProgressRepository>(),
       ),
     );
     gh.factory<_i433.ReaderCubit>(

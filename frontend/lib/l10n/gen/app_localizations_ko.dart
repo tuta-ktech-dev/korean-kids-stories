@@ -36,6 +36,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get landingSubtitle => '전통부터 역사까지, 아이들을 위한 한국 이야기';
 
   @override
+  String get landingStartButton => '시작하기';
+
+  @override
   String get browse => '둘러보기';
 
   @override
@@ -700,4 +703,46 @@ class AppLocalizationsKo extends AppLocalizations {
   String reportTarget(Object title) {
     return '대상: $title';
   }
+
+  @override
+  String get parentZone => '부모 전용';
+
+  @override
+  String get parentZoneSubtitle => '활동 보기 & 프리미엄 관리';
+
+  @override
+  String get parentZoneEnterPin => 'PIN 입력';
+
+  @override
+  String get parentZonePinHint => '4자리 부모 PIN 입력';
+
+  @override
+  String get parentZoneWrongPin => '잘못된 PIN입니다. 다시 시도하세요.';
+
+  @override
+  String get parentZoneSetPin => '부모 PIN 설정';
+
+  @override
+  String get parentZoneSetPinHint => '부모 전용을 보호할 4자리 PIN을 만드세요';
+
+  @override
+  String get parentZoneChildActivity => '아이 활동';
+
+  @override
+  String get parentZonePremium => '프리미엄';
+
+  @override
+  String get parentZoneComingSoon => '준비 중';
+
+  @override
+  String get parentZoneAuthReason => '부모 전용에 접근하려면 인증하세요';
+
+  @override
+  String get parentZoneAuthenticate => '인증';
+
+  @override
+  String get parentZoneNotSupported => '이 기기는 생체 인식 또는 PIN 인증을 지원하지 않습니다.';
+
+  @override
+  String get parentZoneAuthFailed => '인증에 실패했습니다. 다시 시도하세요.';
 }
