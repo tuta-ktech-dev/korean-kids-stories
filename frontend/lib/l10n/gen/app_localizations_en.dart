@@ -208,6 +208,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioStories => '🎧 Audio';
 
   @override
+  String get listenNow => 'Listen Now';
+
+  @override
   String get mostReviewedStories => '⭐ Most Reviewed';
 
   @override

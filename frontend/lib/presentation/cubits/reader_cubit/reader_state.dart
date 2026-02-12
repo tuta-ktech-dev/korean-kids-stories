@@ -31,7 +31,6 @@ class ReaderLoaded extends ReaderState {
   /// Selected voice for playback. First item if audios not empty.
   final ChapterAudio? selectedAudio;
   final double fontSize;
-  final bool isDarkMode;
   /// Reading scroll progress (0-1). Used when no audio or for scroll restore.
   final double progress;
   final bool isPlaying;
@@ -54,7 +53,6 @@ class ReaderLoaded extends ReaderState {
     this.audios = const [],
     this.selectedAudio,
     this.fontSize = 22,
-    this.isDarkMode = false,
     this.progress = 0.0,
     this.isPlaying = false,
     this.audioPosition,
@@ -86,7 +84,6 @@ class ReaderLoaded extends ReaderState {
     List<ChapterAudio>? audios,
     ChapterAudio? selectedAudio,
     double? fontSize,
-    bool? isDarkMode,
     double? progress,
     bool? isPlaying,
     double? audioPosition,
@@ -106,7 +103,6 @@ class ReaderLoaded extends ReaderState {
       audios: audios ?? this.audios,
       selectedAudio: selectedAudio ?? this.selectedAudio,
       fontSize: fontSize ?? this.fontSize,
-      isDarkMode: isDarkMode ?? this.isDarkMode,
       progress: progress ?? this.progress,
       isPlaying: isPlaying ?? this.isPlaying,
       audioPosition: clearAudioPosition ? null : (audioPosition ?? this.audioPosition),
@@ -118,7 +114,7 @@ class ReaderLoaded extends ReaderState {
   }
 
   @override
-  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec];
+  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec];
 }
 
 class ReaderError extends ReaderState {

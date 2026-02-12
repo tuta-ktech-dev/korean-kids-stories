@@ -120,12 +120,11 @@ class ReaderCubit extends Cubit<ReaderState> {
     emit(s.copyWith(selectedAudio: audio, isPlaying: false, clearAudioPosition: true));
   }
 
-  void updateSettings({double? fontSize, bool? isDarkMode, double? playbackSpeed}) {
+  void updateSettings({double? fontSize, double? playbackSpeed}) {
     if (state is ReaderLoaded) {
       final currentState = state as ReaderLoaded;
       emit(currentState.copyWith(
         fontSize: fontSize,
-        isDarkMode: isDarkMode,
         playbackSpeed: playbackSpeed,
       ));
       if (playbackSpeed != null && currentState.isPlaying) {
@@ -206,16 +205,24 @@ class ReaderCubit extends Cubit<ReaderState> {
       if (state is! ReaderLoaded) return;
       final s = state as ReaderLoaded;
       if (s.chapter.id != chapterId) return;
-      if (playerState.processingState == ProcessingState.completed &&
-          s.nextChapter != null &&
-          s.hasAudio) {
-        final nextId = s.nextChapter!.id;
-        loadChapter(nextId, skipLoading: true).then((_) {
-          final st = state;
-          if (st is ReaderLoaded && st.chapter.id == nextId) {
-            togglePlaying();
-          }
-        });
+      if (playerState.processingState == ProcessingState.completed && s.hasAudio) {
+        // Lưu 100% cho chapter vừa nghe xong
+        final durSec = s.audioDurationSeconds ?? s.selectedAudio?.audioDuration ?? 1.0;
+        _progressRepository.saveProgress(
+          chapterId: s.chapter.id,
+          percentRead: 100.0,
+          lastPosition: durSec * 1000,
+          isCompleted: true,
+        );
+        if (s.nextChapter != null) {
+          final nextId = s.nextChapter!.id;
+          loadChapter(nextId, skipLoading: true).then((_) {
+            final st = state;
+            if (st is ReaderLoaded && st.chapter.id == nextId) {
+              togglePlaying();
+            }
+          });
+        }
         return;
       }
       final isPlaying = playerState.playing;

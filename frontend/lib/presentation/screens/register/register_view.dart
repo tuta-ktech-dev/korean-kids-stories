@@ -270,7 +270,7 @@ class _RegisterViewState extends State<RegisterView> {
                           icon: Icons.apple,
                           label: context.l10n.apple,
                           onTap: _registerWithApple,
-                          color: Colors.black,
+                          color: AppTheme.textColor(context),
                         ),
                       ),
                     ],

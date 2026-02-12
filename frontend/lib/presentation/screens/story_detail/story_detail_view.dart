@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/reader_auto_play.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/chapter.dart';
 import '../../../data/models/story.dart';
@@ -11,6 +13,22 @@ import 'widgets/story_detail_bottom_bar.dart';
 import 'widgets/story_detail_chapter_list.dart';
 import 'widgets/story_detail_header.dart';
 import 'widgets/story_detail_info.dart';
+
+void _listenNow(
+  BuildContext context,
+  Story story,
+  List<Chapter> chapters,
+) {
+  final firstFree = chapters.where((c) => c.isFree).toList();
+  final firstChapter = firstFree.isNotEmpty
+      ? firstFree.first
+      : (chapters.isNotEmpty ? chapters.first : null);
+  if (firstChapter == null) return;
+  ReaderAutoPlay.request();
+  context.router.root.pushNamed(
+    '/reader/${story.id}/${firstChapter.id}',
+  );
+}
 
 class StoryDetailView extends StatelessWidget {
   final String storyId;
@@ -144,7 +162,13 @@ class _ContentView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        StoryDetailInfo(story: story),
+                        StoryDetailInfo(
+                          story: story,
+                          chapters: chapters,
+                          onListenNow: story.hasAudio
+                              ? () => _listenNow(context, story, chapters)
+                              : null,
+                        ),
                         const SizedBox(height: 24),
                         Text(
                           context.l10n.tableOfContents,

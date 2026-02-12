@@ -490,6 +490,12 @@ abstract class AppLocalizations {
   /// **'🎧 Audio'**
   String get audioStories;
 
+  /// No description provided for @listenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen Now'**
+  String get listenNow;
+
   /// No description provided for @mostReviewedStories.
   ///
   /// In en, this message translates to:

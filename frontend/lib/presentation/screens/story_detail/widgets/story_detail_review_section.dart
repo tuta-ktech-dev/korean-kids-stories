@@ -464,12 +464,12 @@ class _ReviewFormState extends State<_ReviewForm> {
                     minimumSize: const Size(0, 48),
                   ),
                   child: _isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 22,
                           width: 22,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         )
                       : Text(context.l10n.submitReview),

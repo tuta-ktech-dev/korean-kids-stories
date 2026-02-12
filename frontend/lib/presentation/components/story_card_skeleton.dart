@@ -8,8 +8,8 @@ class StoryCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[200]!;
+    final baseColor = isDark ? AppTheme.darkSurface : AppTheme.textLight;
+    final highlightColor = isDark ? AppTheme.darkCard : AppTheme.backgroundSoft;
 
     return Container(
       width: 160,

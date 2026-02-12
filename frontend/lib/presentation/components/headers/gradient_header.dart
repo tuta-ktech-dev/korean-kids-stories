@@ -46,12 +46,15 @@ class GradientHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.25),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.25),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.waving_hand_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 28,
                 ),
               ),
@@ -63,7 +66,7 @@ class GradientHeader extends StatelessWidget {
                     Text(
                       title,
                       style: AppTheme.headingMedium(context).copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 18,
                       ),
                     ),
@@ -72,7 +75,10 @@ class GradientHeader extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: AppTheme.bodyLarge(context).copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withValues(alpha: 0.9),
                           fontSize: 14,
                         ),
                       ),

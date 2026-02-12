@@ -4,6 +4,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/reader_auto_play.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/chapter.dart';
 import '../../cubits/progress_cubit/progress_cubit.dart';
@@ -85,9 +87,13 @@ class _ReaderViewState extends State<ReaderView> {
       }
     }
     // Save audio progress (local)
-    if (_chapterId != null && _lastAudioPositionSec != null && _lastAudioPositionSec! > 0) {
+    if (_chapterId != null &&
+        _lastAudioPositionSec != null &&
+        _lastAudioPositionSec! > 0) {
       final dur = _lastAudioDurationSec ?? 1.0;
-      final pct = dur > 0 ? (_lastAudioPositionSec! / dur * 100).clamp(0.0, 100.0) : 0.0;
+      final pct = dur > 0
+          ? (_lastAudioPositionSec! / dur * 100).clamp(0.0, 100.0)
+          : 0.0;
       _progressCubit?.saveProgress(
         chapterId: _chapterId!,
         percentRead: pct,
@@ -225,7 +231,6 @@ class _ReaderViewState extends State<ReaderView> {
   Widget _buildContent(
     BuildContext context,
     Chapter chapter,
-    bool isDarkMode,
     double fontSize, {
     void Function(double progress)? onScrollProgress,
     Chapter? prevChapter,
@@ -253,95 +258,99 @@ class _ReaderViewState extends State<ReaderView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            if (!_showControls) const SizedBox(height: 16),
-            Text(
-              context.l10n.chapterTitleFormatted(
-                chapter.chapterNumber,
+              if (!_showControls) const SizedBox(height: 16),
+              Text(
+                context.l10n.chapterTitleFormatted(chapter.chapterNumber),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: AppTheme.textMutedColor(context),
+                ),
               ),
-              style: TextStyle(
-                fontSize: 18,
-                color: isDarkMode ? Colors.grey : Colors.grey[600],
+              const SizedBox(height: 8),
+              Text(
+                chapter.title,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textColor(context),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              chapter.title,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              chapter.content,
-              style: TextStyle(
-                fontSize: fontSize,
-                height: 1.8,
-                color: isDarkMode
-                    ? Colors.white.withValues(alpha: 0.9)
-                    : Colors.black87,
-              ),
-            ),
-            if (prevChapter != null || nextChapter != null || nextChapterLocked != null || isLastChapter) ...[
               const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (prevChapter != null && onPrevChapter != null)
-                    IconButton.filled(
-                      onPressed: onPrevChapter,
-                      icon: const Icon(Icons.arrow_back_rounded, size: 28),
-                      iconSize: 32,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor(context),
-                        foregroundColor: Colors.white,
-                      ),
-                      tooltip: context.l10n.previousChapter,
-                    ),
-                  if (prevChapter != null && (nextChapter != null || nextChapterLocked != null || isLastChapter))
-                    const SizedBox(width: 16),
-                  if (nextChapter != null && onNextChapter != null)
-                    IconButton.filled(
-                      onPressed: onNextChapter,
-                      icon: const Icon(Icons.arrow_forward_rounded, size: 28),
-                      iconSize: 32,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor(context),
-                        foregroundColor: Colors.white,
-                      ),
-                      tooltip: context.l10n.nextChapter,
-                    )
-                  else if (nextChapterLocked != null)
-                    IconButton.filled(
-                      onPressed: () => _showChapterLockedDialog(context),
-                      icon: Icon(
-                        Icons.lock_outline_rounded,
-                        size: 28,
-                        color: AppTheme.textMutedColor(context),
-                      ),
-                      iconSize: 32,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.textMutedColor(context).withValues(alpha: 0.2),
-                        foregroundColor: AppTheme.textMutedColor(context),
-                      ),
-                      tooltip: context.l10n.nextChapterLocked,
-                    )
-                  else if (isLastChapter)
-                    IconButton.filled(
-                      onPressed: () => _onMarkComplete(context),
-                      icon: const Icon(Icons.check_circle_rounded, size: 28),
-                      iconSize: 32,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor(context),
-                        foregroundColor: Colors.white,
-                      ),
-                      tooltip: context.l10n.markComplete,
-                    ),
-                ],
+              Text(
+                chapter.content,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  height: 1.8,
+                  color: AppTheme.textColor(context),
+                ),
               ),
-            ],
-            const SizedBox(height: 24),
+              if (prevChapter != null ||
+                  nextChapter != null ||
+                  nextChapterLocked != null ||
+                  isLastChapter) ...[
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (prevChapter != null && onPrevChapter != null)
+                      IconButton.filled(
+                        onPressed: onPrevChapter,
+                        icon: const Icon(Icons.arrow_back_rounded, size: 28),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor(context),
+                          foregroundColor: Colors.white,
+                        ),
+                        tooltip: context.l10n.previousChapter,
+                      ),
+                    if (prevChapter != null &&
+                        (nextChapter != null ||
+                            nextChapterLocked != null ||
+                            isLastChapter))
+                      const SizedBox(width: 16),
+                    if (nextChapter != null && onNextChapter != null)
+                      IconButton.filled(
+                        onPressed: onNextChapter,
+                        icon: const Icon(Icons.arrow_forward_rounded, size: 28),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor(context),
+                          foregroundColor: Colors.white,
+                        ),
+                        tooltip: context.l10n.nextChapter,
+                      )
+                    else if (nextChapterLocked != null)
+                      IconButton.filled(
+                        onPressed: () => _showChapterLockedDialog(context),
+                        icon: Icon(
+                          Icons.lock_outline_rounded,
+                          size: 28,
+                          color: AppTheme.textMutedColor(context),
+                        ),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppTheme.textMutedColor(
+                            context,
+                          ).withValues(alpha: 0.2),
+                          foregroundColor: AppTheme.textMutedColor(context),
+                        ),
+                        tooltip: context.l10n.nextChapterLocked,
+                      )
+                    else if (isLastChapter)
+                      IconButton.filled(
+                        onPressed: () => _onMarkComplete(context),
+                        icon: const Icon(Icons.check_circle_rounded, size: 28),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor(context),
+                          foregroundColor: Colors.white,
+                        ),
+                        tooltip: context.l10n.markComplete,
+                      ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -379,9 +388,17 @@ class _ReaderViewState extends State<ReaderView> {
       listeners: [
         BlocListener<ReaderCubit, ReaderState>(
           listenWhen: (prev, curr) =>
+              curr is ReaderLoaded && curr.hasAudio && ReaderAutoPlay.consume(),
+          listener: (context, state) {
+            context.read<ReaderCubit>().togglePlaying();
+          },
+        ),
+        BlocListener<ReaderCubit, ReaderState>(
+          listenWhen: (prev, curr) =>
               curr is ReaderLoaded &&
               curr.playbackError != null &&
-              curr.playbackError != (prev is ReaderLoaded ? prev.playbackError : null),
+              curr.playbackError !=
+                  (prev is ReaderLoaded ? prev.playbackError : null),
           listener: (context, state) {
             if (state is ReaderLoaded && state.playbackError != null) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -408,15 +425,31 @@ class _ReaderViewState extends State<ReaderView> {
             return false;
           },
           listener: (context, state) {
-            if (state is! ReaderLoaded || !state.hasAudio || state.audioPosition == null) return;
+            if (state is! ReaderLoaded ||
+                !state.hasAudio ||
+                state.audioPosition == null) {
+              return;
+            }
             _lastAudioPositionSec = state.audioPosition;
-            _lastAudioDurationSec = state.audioDurationSeconds ??
+            _lastAudioDurationSec =
+                state.audioDurationSeconds ??
                 state.selectedAudio?.audioDuration ??
                 1.0;
             final pos = state.audioPosition!;
             final dur = _lastAudioDurationSec ?? 1.0;
             final pct = dur > 0 ? (pos / dur * 100).clamp(0.0, 100.0) : 0.0;
             if (!state.isPlaying) {
+              _audioSaveDebounce?.cancel();
+              _progressCubit?.saveProgress(
+                chapterId: state.chapter.id,
+                percentRead: pct,
+                lastPosition: pos * 1000,
+                isCompleted: pct >= 99,
+                storyId: widget.storyId,
+                durationSeconds: _getDurationSeconds(),
+              );
+            } else if (pct >= 95) {
+              // Gần hết thì lưu ngay, không debounce
               _audioSaveDebounce?.cancel();
               _progressCubit?.saveProgress(
                 chapterId: state.chapter.id,
@@ -434,167 +467,189 @@ class _ReaderViewState extends State<ReaderView> {
       ],
       child: BlocBuilder<ReaderCubit, ReaderState>(
         builder: (context, state) {
-        if (state is ReaderLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (state is ReaderError) {
-          final msg = state.message == 'chapterNotFound'
-              ? context.l10n.chapterNotFound
-              : state.message == 'chapterLoadError'
-                  ? context.l10n.chapterLoadError
-                  : state.message == 'chapterLocked'
-                      ? context.l10n.chapterLocked
-                      : state.message;
-          return Scaffold(
-            appBar: AppBar(title: Text(context.l10n.error)),
-            body: Center(child: Text(msg)),
-          );
-        }
-
-        if (state is ReaderLoaded) {
-          final chapter = state.chapter;
-          final isDarkMode = state.isDarkMode;
-          final fontSize = state.fontSize;
-          if (_chapterId != chapter.id) {
-            _sessionStartTime = DateTime.now();
+          if (state is ReaderLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
-          _chapterId = chapter.id;
-          _lastProgress = state.progress;
-          _restoreScrollPosition(state.progress);
 
-          return Scaffold(
-            backgroundColor: isDarkMode
-                ? const Color(0xFF1A1A1A)
-                : const Color(0xFFF5F0E8),
-            appBar: _showControls
-                ? AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    leading: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: isDarkMode ? Colors.white : Colors.black87,
-                      ),
-                      onPressed: () => context.router.maybePop(),
-                    ),
-                    title: Text(
-                      chapter.title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: isDarkMode ? Colors.white : Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    centerTitle: true,
-                    actions: [
-                      BlocBuilder<AuthCubit, AuthState>(
-                        buildWhen: (p, c) => c is Authenticated,
-                        builder: (context, authState) {
-                          if (authState is! Authenticated) return const SizedBox.shrink();
-                          return IconButton(
-                            icon: Icon(
-                              Icons.note_add_outlined,
-                              color: isDarkMode ? Colors.white : Colors.black87,
-                            ),
-                            onPressed: () => _addNote(context, state),
-                          );
-                        },
-                      ),
-                      IconButton(
+          if (state is ReaderError) {
+            final msg = state.message == 'chapterNotFound'
+                ? context.l10n.chapterNotFound
+                : state.message == 'chapterLoadError'
+                ? context.l10n.chapterLoadError
+                : state.message == 'chapterLocked'
+                ? context.l10n.chapterLocked
+                : state.message;
+            return Scaffold(
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(child: Text(msg)),
+            );
+          }
+
+          if (state is ReaderLoaded) {
+            final chapter = state.chapter;
+            final fontSize = state.fontSize;
+            if (_chapterId != chapter.id) {
+              _sessionStartTime = DateTime.now();
+            }
+            _chapterId = chapter.id;
+            _lastProgress = state.progress;
+            _restoreScrollPosition(state.progress);
+
+            return Scaffold(
+              backgroundColor: AppTheme.backgroundColor(context),
+              appBar: _showControls
+                  ? AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: IconButton(
                         icon: Icon(
-                          Icons.settings_rounded,
-                          color: isDarkMode ? Colors.white : Colors.black87,
+                          Icons.arrow_back_rounded,
+                          color: AppTheme.textColor(context),
                         ),
-                        onPressed: () => _showSettings(context, state),
+                        onPressed: () => context.router.maybePop(),
                       ),
-                    ],
-                  )
-                : null,
-            body: ResponsivePadding(
-              maxWidth: 640,
-              horizontalPadding: 24,
-              child: GestureDetector(
-                onTap: _toggleControls,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: state.hasAudio
-                    ? Column(
-                        key: ValueKey(chapter.id),
-                        children: [
-                          Expanded(
-                            child: _buildContent(
-                            context,
-                            chapter,
-                            isDarkMode,
-                            fontSize,
-                            onScrollProgress: (p) => _onScrollProgress(context, p),
-                            prevChapter: state.prevChapter,
-                            onPrevChapter: state.prevChapter != null
-                                ? () => _switchChapter(context, state.prevChapter!.id)
-                                : null,
-                            nextChapter: state.nextChapter,
-                            onNextChapter: state.nextChapter != null
-                                ? () => _switchChapter(context, state.nextChapter!.id)
-                                : null,
-                            nextChapterLocked: state.nextChapterLocked,
-                            isLastChapter: state.nextChapter == null && state.nextChapterLocked == null,
-                          ),
+                      title: Text(
+                        chapter.title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textColor(context),
                         ),
-                        ReaderBottomBar(
-                          isDarkMode: isDarkMode,
-                          progress: state.displayProgress,
-                          isPlaying: state.isPlaying,
-                          onPlayPause: () =>
-                              context.read<ReaderCubit>().togglePlaying(),
-                          onPrevChapter: state.prevChapter != null
-                              ? () => _switchChapter(context, state.prevChapter!.id)
-                              : null,
-                          onNextChapter: state.nextChapter != null
-                              ? () => _switchChapter(context, state.nextChapter!.id)
-                              : null,
-                          audios: state.audios,
-                          selectedAudio: state.selectedAudio,
-                          onSelectAudio: state.audios.length > 1
-                              ? (a) => context.read<ReaderCubit>().selectAudio(a)
-                              : null,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      centerTitle: true,
+                      actions: [
+                        BlocBuilder<AuthCubit, AuthState>(
+                          buildWhen: (p, c) => c is Authenticated,
+                          builder: (context, authState) {
+                            if (authState is! Authenticated) {
+                              return const SizedBox.shrink();
+                            }
+                            return IconButton(
+                              icon: Icon(
+                                Icons.note_add_outlined,
+                                color: AppTheme.textColor(context),
+                              ),
+                              onPressed: () => _addNote(context, state),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.settings_rounded,
+                            color: AppTheme.textColor(context),
+                          ),
+                          onPressed: () => _showSettings(context, state),
                         ),
                       ],
                     )
-                  : KeyedSubtree(
-                      key: ValueKey(chapter.id),
-                      child: _buildContent(
-                      context,
-                      chapter,
-                      isDarkMode,
-                      fontSize,
-                      onScrollProgress: (p) => _onScrollProgress(context, p),
-                      prevChapter: state.prevChapter,
-                      onPrevChapter: state.prevChapter != null
-                          ? () => _switchChapter(context, state.prevChapter!.id)
-                          : null,
-                      nextChapter: state.nextChapter,
-                      onNextChapter: state.nextChapter != null
-                          ? () => _switchChapter(context, state.nextChapter!.id)
-                          : null,
-                      nextChapterLocked: state.nextChapterLocked,
-                      isLastChapter: state.nextChapter == null && state.nextChapterLocked == null,
-                    ),
+                  : null,
+              body: ResponsivePadding(
+                maxWidth: 640,
+                horizontalPadding: 24,
+                child: GestureDetector(
+                  onTap: _toggleControls,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: state.hasAudio
+                        ? Column(
+                            key: ValueKey(chapter.id),
+                            children: [
+                              Expanded(
+                                child: _buildContent(
+                                  context,
+                                  chapter,
+                                  fontSize,
+                                  onScrollProgress: (p) =>
+                                      _onScrollProgress(context, p),
+                                  prevChapter: state.prevChapter,
+                                  onPrevChapter: state.prevChapter != null
+                                      ? () => _switchChapter(
+                                          context,
+                                          state.prevChapter!.id,
+                                        )
+                                      : null,
+                                  nextChapter: state.nextChapter,
+                                  onNextChapter: state.nextChapter != null
+                                      ? () => _switchChapter(
+                                          context,
+                                          state.nextChapter!.id,
+                                        )
+                                      : null,
+                                  nextChapterLocked: state.nextChapterLocked,
+                                  isLastChapter:
+                                      state.nextChapter == null &&
+                                      state.nextChapterLocked == null,
+                                ),
+                              ),
+                              ReaderBottomBar(
+                                progress: state.displayProgress,
+                                isPlaying: state.isPlaying,
+                                onPlayPause: () =>
+                                    context.read<ReaderCubit>().togglePlaying(),
+                                onPrevChapter: state.prevChapter != null
+                                    ? () => _switchChapter(
+                                        context,
+                                        state.prevChapter!.id,
+                                      )
+                                    : null,
+                                onNextChapter: state.nextChapter != null
+                                    ? () => _switchChapter(
+                                        context,
+                                        state.nextChapter!.id,
+                                      )
+                                    : null,
+                                audios: state.audios,
+                                selectedAudio: state.selectedAudio,
+                                onSelectAudio: state.audios.length > 1
+                                    ? (a) => context
+                                          .read<ReaderCubit>()
+                                          .selectAudio(a)
+                                    : null,
+                              ),
+                            ],
+                          )
+                        : KeyedSubtree(
+                            key: ValueKey(chapter.id),
+                            child: _buildContent(
+                              context,
+                              chapter,
+                              fontSize,
+                              onScrollProgress: (p) =>
+                                  _onScrollProgress(context, p),
+                              prevChapter: state.prevChapter,
+                              onPrevChapter: state.prevChapter != null
+                                  ? () => _switchChapter(
+                                      context,
+                                      state.prevChapter!.id,
+                                    )
+                                  : null,
+                              nextChapter: state.nextChapter,
+                              onNextChapter: state.nextChapter != null
+                                  ? () => _switchChapter(
+                                      context,
+                                      state.nextChapter!.id,
+                                    )
+                                  : null,
+                              nextChapterLocked: state.nextChapterLocked,
+                              isLastChapter:
+                                  state.nextChapter == null &&
+                                  state.nextChapterLocked == null,
+                            ),
+                          ),
                   ),
+                ),
               ),
-            ),
-            ),
-          );
-        }
+            );
+          }
 
-        return const SizedBox.shrink();
-      },
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -616,9 +671,9 @@ class _ReaderViewState extends State<ReaderView> {
           position: state.progress * 100,
         );
         if (context.mounted && added != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.bookmarkAdded)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.bookmarkAdded)));
         }
       },
     );
@@ -638,73 +693,101 @@ class _ReaderViewState extends State<ReaderView> {
             if (state is! ReaderLoaded) return const SizedBox.shrink();
             return Container(
               decoration: BoxDecoration(
-                color: state.isDarkMode
-                    ? const Color(0xFF2A2A2A)
-                    : Colors.white,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
+                color: AppTheme.surfaceColor(ctx),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    context.l10n.settingsTitle,
-                    style: AppTheme.headingMedium(context),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Text(context.l10n.fontSize),
-                      Expanded(
-                        child: Slider(
-                          value: state.fontSize,
-                          min: 18,
-                          max: 36,
-                          divisions: 9,
-                          label: state.fontSize.round().toString(),
-                          onChanged: (value) {
-                            context.read<ReaderCubit>().updateSettings(
-                              fontSize: value,
-                            );
-                          },
-                        ),
+              child: DefaultTextStyle(
+                style: GoogleFonts.notoSansKr(
+                  fontSize: 18,
+                  color: AppTheme.textColor(ctx),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.l10n.settingsTitle,
+                      style: GoogleFonts.notoSansKr(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textColor(ctx),
+                        height: 1.3,
                       ),
-                      Text('${state.fontSize.round()}'),
-                    ],
-                  ),
-                  if (state.hasAudio) ...[
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
-                        Text(context.l10n.playbackSpeed),
+                        Text(context.l10n.fontSize),
                         Expanded(
-                          child: Slider(
-                            value: state.playbackSpeed,
-                            min: 0.75,
-                            max: 1.0,
-                            divisions: 5,
-                            label: '${(state.playbackSpeed * 100).round()}%',
-                            onChanged: (value) {
-                              context.read<ReaderCubit>().updateSettings(
-                                playbackSpeed: value,
-                              );
-                            },
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: AppTheme.primaryColor(ctx),
+                              inactiveTrackColor:
+                                  AppTheme.textMutedColor(ctx),
+                              thumbColor: AppTheme.primaryColor(ctx),
+                            ),
+                            child: Slider(
+                              value: state.fontSize,
+                              min: 18,
+                              max: 36,
+                              divisions: 9,
+                              label: state.fontSize.round().toString(),
+                              onChanged: (value) {
+                                context.read<ReaderCubit>().updateSettings(
+                                  fontSize: value,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                        Text('${(state.playbackSpeed * 100).round()}%'),
+                        Text(
+                          '${state.fontSize.round()}',
+                          style: TextStyle(
+                            color: AppTheme.textMutedColor(ctx),
+                          ),
+                        ),
                       ],
                     ),
+                    if (state.hasAudio) ...[
+                      Row(
+                        children: [
+                          Text(context.l10n.playbackSpeed),
+                          Expanded(
+                            child: SliderTheme(
+                              data: SliderThemeData(
+                                activeTrackColor: AppTheme.primaryColor(ctx),
+                                inactiveTrackColor:
+                                    AppTheme.textMutedColor(ctx),
+                                thumbColor: AppTheme.primaryColor(ctx),
+                              ),
+                              child: Slider(
+                                value: state.playbackSpeed,
+                                min: 0.75,
+                                max: 1.0,
+                                divisions: 5,
+                                label:
+                                    '${(state.playbackSpeed * 100).round()}%',
+                                onChanged: (value) {
+                                  context.read<ReaderCubit>().updateSettings(
+                                    playbackSpeed: value,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${(state.playbackSpeed * 100).round()}%',
+                            style: TextStyle(
+                              color: AppTheme.textMutedColor(ctx),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                  SwitchListTile(
-                    title: Text(context.l10n.darkMode),
-                    value: state.isDarkMode,
-                    onChanged: (value) {
-                      context.read<ReaderCubit>().updateSettings(
-                        isDarkMode: value,
-                      );
-                    },
-                  ),
-                ],
+                ),
               ),
             );
           },

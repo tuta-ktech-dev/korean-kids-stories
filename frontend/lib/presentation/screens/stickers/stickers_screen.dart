@@ -350,7 +350,8 @@ class _StatsHeader extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 8,
-                backgroundColor: Colors.white38,
+                backgroundColor: AppTheme.textMutedColor(context)
+                    .withValues(alpha: 0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   AppTheme.primaryColor(context),
                 ),
@@ -438,7 +439,10 @@ class _LevelStickerCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: (Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black)
+                    .withValues(alpha: 0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -578,7 +582,10 @@ class _StickerCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: (Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black)
+                    .withValues(alpha: 0.06),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

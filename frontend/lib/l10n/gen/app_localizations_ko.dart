@@ -205,6 +205,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audioStories => '🎧 오디오';
 
   @override
+  String get listenNow => '바로 듣기';
+
+  @override
   String get mostReviewedStories => '⭐ 리뷰 많은';
 
   @override

@@ -47,7 +47,7 @@ class _BookmarkButtonState extends State<BookmarkButton> {
         decoration: BoxDecoration(
           color: _isBookmarked
               ? AppTheme.primaryColor(context).withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.9),
+              : AppTheme.surfaceColor(context),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -106,7 +106,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           decoration: BoxDecoration(
             color: _isFavorite
                 ? Colors.red.withValues(alpha: 0.15)
-                : Colors.white.withValues(alpha: 0.9),
+                : AppTheme.surfaceColor(context),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -139,7 +139,7 @@ class NoteButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: hasNote
               ? Colors.amber.withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.9),
+              : AppTheme.surfaceColor(context),
           shape: BoxShape.circle,
         ),
         child: Icon(

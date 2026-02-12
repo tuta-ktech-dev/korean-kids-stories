@@ -88,10 +88,10 @@ class _LandingViewState extends State<LandingView> {
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.auto_stories,
                             size: 60,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                         const SizedBox(height: 32),

@@ -315,7 +315,7 @@ class _ProfileViewState extends State<ProfileView> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor(context),
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
             child: Text(context.l10n.saveNote),
           ),
@@ -365,12 +365,12 @@ class _ProfileViewState extends State<ProfileView> {
                               : null,
                           child: _avatarUrl() == null
                               ? (_isUploadingAvatar
-                                    ? const SizedBox(
+                                    ? SizedBox(
                                         width: 48,
                                         height: 48,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Colors.white,
+                                          color: Theme.of(context).colorScheme.onPrimary,
                                         ),
                                       )
                                     : Icon(
@@ -380,14 +380,15 @@ class _ProfileViewState extends State<ProfileView> {
                                       ))
                               : _isUploadingAvatar
                               ? Container(
-                                  color: Colors.black45,
-                                  child: const Center(
+                                  color: AppTheme.textColor(context)
+                                      .withValues(alpha: 0.5),
+                                  child: Center(
                                     child: SizedBox(
                                       width: 32,
                                       height: 32,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.white,
+                                        color: Theme.of(context).colorScheme.onPrimary,
                                       ),
                                     ),
                                   ),
@@ -403,10 +404,10 @@ class _ProfileViewState extends State<ProfileView> {
                               color: AppTheme.primaryColor(context),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.camera_alt,
                               size: 18,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                         ),
@@ -458,7 +459,8 @@ class _ProfileViewState extends State<ProfileView> {
                             Container(
                               width: 1,
                               height: 40,
-                              color: Colors.white54,
+                              color: AppTheme.textMutedColor(context)
+                                  .withValues(alpha: 0.8),
                             ),
                             _StatItem(
                               label: context.l10n.xp,
@@ -467,7 +469,8 @@ class _ProfileViewState extends State<ProfileView> {
                             Container(
                               width: 1,
                               height: 40,
-                              color: Colors.white54,
+                              color: AppTheme.textMutedColor(context)
+                                  .withValues(alpha: 0.8),
                             ),
                             _StatItem(
                               label: context.l10n.currentStreak,
@@ -540,12 +543,12 @@ class _ProfileViewState extends State<ProfileView> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: _isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           )
                         : Text(context.l10n.saveNote),

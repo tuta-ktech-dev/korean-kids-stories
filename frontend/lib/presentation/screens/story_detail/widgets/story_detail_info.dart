@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../data/models/chapter.dart';
 import '../../../../data/models/story.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'story_detail_theme.dart';
 
 class StoryDetailInfo extends StatelessWidget {
   final Story story;
+  final List<Chapter> chapters;
+  final VoidCallback? onListenNow;
 
-  const StoryDetailInfo({super.key, required this.story});
+  const StoryDetailInfo({
+    super.key,
+    required this.story,
+    required this.chapters,
+    this.onListenNow,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,22 @@ class StoryDetailInfo extends StatelessWidget {
           const SizedBox(height: 16),
           if (story.summary.isNotEmpty)
             Text(story.summary, style: AppTheme.bodyMedium(context)),
+          if (story.hasAudio && onListenNow != null) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onListenNow,
+                icon: const Icon(Icons.play_circle_filled_rounded, size: 24),
+                label: Text(context.l10n.listenNow),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor(context),
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
         ],
       ),

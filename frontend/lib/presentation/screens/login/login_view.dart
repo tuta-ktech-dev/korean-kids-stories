@@ -82,10 +82,10 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         borderRadius: BorderRadius.circular(28),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.auto_stories,
                         size: 50,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),
@@ -207,7 +207,7 @@ class _LoginViewState extends State<LoginView> {
                           icon: Icons.apple,
                           label: context.l10n.apple,
                           onTap: _loginWithApple,
-                          color: Colors.black,
+                          color: AppTheme.textColor(context),
                         ),
                       ),
                     ],

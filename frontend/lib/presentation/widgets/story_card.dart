@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_theme.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../components/image_placeholder.dart';
@@ -66,27 +68,29 @@ class StoryCard extends StatelessWidget {
     return 3;
   }
 
-  Widget _buildFeatureBadges() {
+  Widget _buildFeatureBadges(BuildContext context) {
     return Wrap(
       spacing: 4,
       children: [
-        if (isFeatured) _buildBadge(Icons.star_rounded, Colors.amber),
-        if (hasAudio) _buildBadge(Icons.headphones_rounded, Colors.orange),
-        if (hasQuiz) _buildBadge(Icons.quiz_rounded, Colors.green),
-        if (hasIllustrations) _buildBadge(Icons.palette_rounded, Colors.purple),
+        if (isFeatured) _buildBadge(context, Icons.star_rounded, Colors.amber),
+        if (hasAudio) _buildBadge(context, Icons.headphones_rounded, Colors.orange),
+        if (hasQuiz) _buildBadge(context, Icons.quiz_rounded, Colors.green),
+        if (hasIllustrations) _buildBadge(context, Icons.palette_rounded, Colors.purple),
       ],
     );
   }
 
-  Widget _buildBadge(IconData icon, Color color) {
+  Widget _buildBadge(BuildContext context, IconData icon, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.9),
+        color: AppTheme.surfaceColor(context).withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: (isDark ? Colors.white : Colors.black)
+                .withValues(alpha: isDark ? 0.08 : 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -159,21 +163,25 @@ class StoryCard extends StatelessWidget {
                   children: [
                     // Image or placeholder
                     _hasValidThumbnail
-                        ? Image.network(
-                            thumbnailUrl!,
+                        ? CachedNetworkImage(
+                            imageUrl: thumbnailUrl!,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                ImagePlaceholder.story(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  backgroundColor: categoryColor.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  iconColor: categoryColor,
-                                  borderRadius: 0,
-                                ),
+                            placeholder: (_, __) => ImagePlaceholder.story(
+                              width: double.infinity,
+                              height: double.infinity,
+                              backgroundColor: categoryColor.withValues(alpha: 0.2),
+                              iconColor: categoryColor,
+                              borderRadius: 0,
+                            ),
+                            errorWidget: (_, __, ___) => ImagePlaceholder.story(
+                              width: double.infinity,
+                              height: double.infinity,
+                              backgroundColor: categoryColor.withValues(alpha: 0.2),
+                              iconColor: categoryColor,
+                              borderRadius: 0,
+                            ),
                           )
                         : ImagePlaceholder.story(
                             width: double.infinity,
@@ -185,7 +193,7 @@ class StoryCard extends StatelessWidget {
                             borderRadius: 0,
                           ),
                     // Feature badges
-                    Positioned(top: 8, right: 8, child: _buildFeatureBadges()),
+                    Positioned(top: 8, right: 8, child: _buildFeatureBadges(context)),
                   ],
                 ),
               ),

@@ -59,7 +59,7 @@ class ChapterAudio {
     if (audioFile.isNotEmpty) {
       audioUrl = '$baseUrl/api/files/${record.collectionId}/${record.id}/$audioFile';
       if (authToken != null && authToken.isNotEmpty) {
-        audioUrl = '${audioUrl}${audioUrl.contains('?') ? '&' : '?'}token=$authToken';
+        audioUrl = '$audioUrl${audioUrl.contains('?') ? '&' : '?'}token=$authToken';
       }
     }
 

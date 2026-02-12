@@ -38,9 +38,12 @@ class StoryDetailBottomBar extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
               decoration: BoxDecoration(
                 color: AppTheme.surfaceColor(context),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
+        boxShadow: [
+          BoxShadow(
+            color: (Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black)
+                .withValues(alpha: 0.06),
                     blurRadius: 12,
                     offset: const Offset(0, -4),
                   ),
@@ -51,18 +54,14 @@ class StoryDetailBottomBar extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: IconButton.filled(
+                      child: ElevatedButton(
                         onPressed: chapters.isNotEmpty
                             ? () => _openReader(context, 0)
                             : null,
-                        icon: const Icon(Icons.play_arrow_rounded, size: 36),
-                        iconSize: 40,
-                        style: IconButton.styleFrom(
-                          padding: const EdgeInsets.all(20),
-                          backgroundColor: AppTheme.primaryColor(context),
-                          foregroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Icon(Icons.play_arrow_rounded, size: 24),
                         ),
-                        tooltip: context.l10n.startReading,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -76,7 +75,9 @@ class StoryDetailBottomBar extends StatelessWidget {
                         backgroundColor: isBookmarked
                             ? AppTheme.primaryColor(context)
                             : null,
-                        foregroundColor: isBookmarked ? Colors.white : null,
+                        foregroundColor: isBookmarked
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 8),

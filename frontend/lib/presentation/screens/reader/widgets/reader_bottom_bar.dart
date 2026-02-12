@@ -5,7 +5,6 @@ import '../../../../data/models/chapter_audio.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class ReaderBottomBar extends StatelessWidget {
-  final bool isDarkMode;
   final double progress;
   final bool isPlaying;
   final VoidCallback? onPlayPause;
@@ -17,7 +16,6 @@ class ReaderBottomBar extends StatelessWidget {
 
   const ReaderBottomBar({
     super.key,
-    this.isDarkMode = false,
     this.progress = 0.0,
     this.isPlaying = false,
     this.onPlayPause,
@@ -30,6 +28,7 @@ class ReaderBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -38,12 +37,11 @@ class ReaderBottomBar extends StatelessWidget {
         MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
-        color: isDarkMode
-            ? const Color(0xFF2A2A2A)
-            : AppTheme.surfaceColor(context),
+        color: AppTheme.surfaceColor(context),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: (isDark ? Colors.white : Colors.black)
+                .withValues(alpha: isDark ? 0.08 : 0.1),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -56,7 +54,7 @@ class ReaderBottomBar extends StatelessWidget {
           children: [
             LinearProgressIndicator(
               value: progress,
-              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+              backgroundColor: AppTheme.textMutedColor(context),
               valueColor: AlwaysStoppedAnimation<Color>(
                 AppTheme.primaryColor(context),
               ),
@@ -72,7 +70,7 @@ class ReaderBottomBar extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     Icons.skip_previous_rounded,
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                    color: AppTheme.textColor(context),
                   ),
                   onPressed: onPrevChapter,
                 ),
@@ -80,13 +78,17 @@ class ReaderBottomBar extends StatelessWidget {
                   icon: Icon(
                     isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                   ),
-                  iconSize: 40,
+                  iconSize: 36,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor(context),
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: onPlayPause,
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.skip_next_rounded,
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                    color: AppTheme.textColor(context),
                   ),
                   onPressed: onNextChapter,
                 ),
@@ -99,7 +101,7 @@ class ReaderBottomBar extends StatelessWidget {
   }
 
   Widget _buildNarratorSelector(BuildContext context) {
-    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final textColor = AppTheme.textColor(context);
     final primary = AppTheme.primaryColor(context);
     return Row(
       children: [
@@ -126,9 +128,8 @@ class ReaderBottomBar extends StatelessWidget {
                         : null,
                     selectedColor: primary.withValues(alpha: 0.3),
                     checkmarkColor: primary,
-                    backgroundColor: isDarkMode
-                        ? (Colors.grey[800] ?? Colors.grey)
-                        : (Colors.grey[200] ?? Colors.grey),
+                    backgroundColor: AppTheme.textMutedColor(context)
+                        .withValues(alpha: 0.3),
                   ),
                 );
               }).toList(),

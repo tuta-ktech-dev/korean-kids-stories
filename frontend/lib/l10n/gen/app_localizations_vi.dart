@@ -208,6 +208,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get audioStories => '🎧 Truyện nói';
 
   @override
+  String get listenNow => 'Nghe ngay';
+
+  @override
   String get mostReviewedStories => '⭐ Nhiều đánh giá';
 
   @override
