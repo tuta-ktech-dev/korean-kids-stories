@@ -244,6 +244,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get previousChapter => '이전 화';
 
   @override
+  String get markComplete => '완료';
+
+  @override
+  String get chapterCompletedTitle => '축하해요! 🎉';
+
+  @override
+  String get chapterCompletedMessage => '이 화를 다 읽었어요!';
+
+  @override
   String get bookmark => '저장';
 
   @override

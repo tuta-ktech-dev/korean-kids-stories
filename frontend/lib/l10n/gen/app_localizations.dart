@@ -568,6 +568,24 @@ abstract class AppLocalizations {
   /// **'Previous chapter'**
   String get previousChapter;
 
+  /// No description provided for @markComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get markComplete;
+
+  /// No description provided for @chapterCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! 🎉'**
+  String get chapterCompletedTitle;
+
+  /// No description provided for @chapterCompletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished this chapter!'**
+  String get chapterCompletedMessage;
+
   /// No description provided for @bookmark.
   ///
   /// In en, this message translates to:

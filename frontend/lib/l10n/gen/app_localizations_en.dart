@@ -247,6 +247,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previousChapter => 'Previous chapter';
 
   @override
+  String get markComplete => 'Complete';
+
+  @override
+  String get chapterCompletedTitle => 'Congratulations! 🎉';
+
+  @override
+  String get chapterCompletedMessage => 'You finished this chapter!';
+
+  @override
   String get bookmark => 'Save';
 
   @override

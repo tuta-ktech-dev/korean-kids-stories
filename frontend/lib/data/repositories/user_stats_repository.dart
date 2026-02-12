@@ -70,8 +70,9 @@ class UserStatsRepository {
       for (final entry in storyToCompleted.entries) {
         final storyChapters = await _storyRepo.getChapters(entry.key);
         final freeChapters = storyChapters.where((c) => c.isFree).toList();
+        final completedIds = entry.value;
         if (freeChapters.isNotEmpty &&
-            entry.value.length >= freeChapters.length) {
+            freeChapters.every((c) => completedIds.contains(c.id))) {
           storiesCompleted++;
         }
       }

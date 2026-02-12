@@ -247,6 +247,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get previousChapter => 'Chương trước';
 
   @override
+  String get markComplete => 'Hoàn thành';
+
+  @override
+  String get chapterCompletedTitle => 'Chúc mừng! 🎉';
+
+  @override
+  String get chapterCompletedMessage => 'Bé đã đọc xong chương này!';
+
+  @override
   String get bookmark => 'Lưu';
 
   @override

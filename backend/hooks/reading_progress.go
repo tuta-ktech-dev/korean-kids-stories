@@ -144,7 +144,7 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 		}
 		stats.Set("last_activity_date", today)
 
-		// Check story completed: user must complete ALL chapters that exist for this story
+		// Check story completed: user must complete ALL FREE chapters of this story
 		storyCompleted := false
 		storiesCol, err := txApp.FindCollectionByNameOrId("stories")
 		if err == nil {
@@ -157,17 +157,26 @@ func processChapterCompleted(app core.App, progressRec *core.Record) error {
 					500,
 					0,
 				)
-				if len(chaptersOfStory) > 0 {
-					completedCount := 0
+				// Only count free chapters for story completion
+				freeChapters := 0
+				for _, ch := range chaptersOfStory {
+					if ch.GetBool("is_free") {
+						freeChapters++
+					}
+				}
+				if freeChapters > 0 {
+					completedFreeCount := 0
 					for _, ch := range chaptersOfStory {
+						if !ch.GetBool("is_free") {
+							continue
+						}
 						filter := `user="` + escapeFilter(userID) + `" && chapter="` + escapeFilter(ch.Id) + `" && is_completed=true`
 						progs, _ := txApp.FindRecordsByFilter(progressCol.Id, filter, "", 1, 0)
 						if len(progs) > 0 {
-							completedCount++
+							completedFreeCount++
 						}
 					}
-					// Use actual chapter count, not story.total_chapters (avoids mismatch when chapters added/removed)
-					storyCompleted = completedCount >= len(chaptersOfStory)
+					storyCompleted = completedFreeCount >= freeChapters
 				}
 			}
 		}
