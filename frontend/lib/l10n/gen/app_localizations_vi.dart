@@ -462,6 +462,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playbackSpeed => 'Tốc độ audio';
 
   @override
+  String get voice => 'Giọng đọc';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return 'Chương $number';
   }

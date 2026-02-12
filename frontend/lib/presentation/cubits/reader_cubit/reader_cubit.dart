@@ -77,6 +77,10 @@ class ReaderCubit extends Cubit<ReaderState> {
 
       final progress = await _progressRepository.getProgress(chapterId);
       final percent = progress?.percentRead ?? 0.0;
+      final lastPosMs = progress?.lastPosition ?? 0.0;
+      final initialSec = (audios.isNotEmpty && lastPosMs > 0)
+          ? (lastPosMs / 1000.0)
+          : null;
 
       await _stopPlayer();
       final prevSpeed = state is ReaderLoaded ? (state as ReaderLoaded).playbackSpeed : _defaultPlaybackSpeed;
@@ -89,10 +93,11 @@ class ReaderCubit extends Cubit<ReaderState> {
           audios: audios,
           selectedAudio: selectedAudio,
           progress: percent / 100,
-          audioPosition: null,
+          audioPosition: initialSec,
           audioDurationSeconds: null,
           playbackSpeed: prevSpeed,
           playbackError: null,
+          initialAudioPositionSec: initialSec,
         ),
       );
       _historyRepository.logAction(
@@ -163,10 +168,19 @@ class ReaderCubit extends Cubit<ReaderState> {
         await _player.setUrl(url);
         _loadedAudioUrl = url;
       }
+      final seekToSec = s.initialAudioPositionSec;
+      if (seekToSec != null && seekToSec > 0) {
+        await _player.seek(Duration(milliseconds: (seekToSec * 1000).round()));
+      }
       await _player.setSpeed(s.playbackSpeed);
       _listenToPlayerIfNeeded(s.chapter.id);
       await _player.play();
-      emit(s.copyWith(isPlaying: true, audioPosition: 0, clearPlaybackError: true));
+      emit(s.copyWith(
+        isPlaying: true,
+        audioPosition: seekToSec ?? 0,
+        clearPlaybackError: true,
+        clearInitialAudioPosition: true,
+      ));
       debugPrint('[ReaderCubit] togglePlaying: play() started');
     } catch (e, st) {
       debugPrint('[ReaderCubit] togglePlaying error: $e\n$st');
@@ -192,6 +206,18 @@ class ReaderCubit extends Cubit<ReaderState> {
       if (state is! ReaderLoaded) return;
       final s = state as ReaderLoaded;
       if (s.chapter.id != chapterId) return;
+      if (playerState.processingState == ProcessingState.completed &&
+          s.nextChapter != null &&
+          s.hasAudio) {
+        final nextId = s.nextChapter!.id;
+        loadChapter(nextId, skipLoading: true).then((_) {
+          final st = state;
+          if (st is ReaderLoaded && st.chapter.id == nextId) {
+            togglePlaying();
+          }
+        });
+        return;
+      }
       final isPlaying = playerState.playing;
       final processing = playerState.processingState == ProcessingState.loading ||
           playerState.processingState == ProcessingState.buffering;

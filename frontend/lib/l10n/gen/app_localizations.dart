@@ -982,6 +982,12 @@ abstract class AppLocalizations {
   /// **'Audio Speed'**
   String get playbackSpeed;
 
+  /// No description provided for @voice.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice'**
+  String get voice;
+
   /// No description provided for @chapterTitleFormatted.
   ///
   /// In en, this message translates to:

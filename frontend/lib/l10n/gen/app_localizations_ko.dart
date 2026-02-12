@@ -456,6 +456,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playbackSpeed => '오디오 속도';
 
   @override
+  String get voice => '음성';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return '제 $number 화';
   }

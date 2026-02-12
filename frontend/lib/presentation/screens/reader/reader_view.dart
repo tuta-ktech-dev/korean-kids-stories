@@ -29,7 +29,10 @@ class _ReaderViewState extends State<ReaderView> {
   double _lastProgress = 0.0;
   String? _chapterId;
   Timer? _saveDebounce;
+  Timer? _audioSaveDebounce;
   ProgressCubit? _progressCubit;
+  double? _lastAudioPositionSec;
+  double? _lastAudioDurationSec;
   final ScrollController _scrollController = ScrollController();
   bool _hasRestoredScroll = false;
   DateTime? _sessionStartTime;
@@ -64,7 +67,8 @@ class _ReaderViewState extends State<ReaderView> {
   void dispose() {
     _scrollController.dispose();
     _saveDebounce?.cancel();
-    // Only save on dispose if user actually read (progress > 0) - avoid creating empty records
+    _audioSaveDebounce?.cancel();
+    // Save scroll progress
     if (_chapterId != null && _lastProgress > 0) {
       final pct = _lastProgress * 100;
       if (!pct.isNaN && !pct.isInfinite) {
@@ -79,6 +83,19 @@ class _ReaderViewState extends State<ReaderView> {
           durationSeconds: duration,
         );
       }
+    }
+    // Save audio progress (local)
+    if (_chapterId != null && _lastAudioPositionSec != null && _lastAudioPositionSec! > 0) {
+      final dur = _lastAudioDurationSec ?? 1.0;
+      final pct = dur > 0 ? (_lastAudioPositionSec! / dur * 100).clamp(0.0, 100.0) : 0.0;
+      _progressCubit?.saveProgress(
+        chapterId: _chapterId!,
+        percentRead: pct,
+        lastPosition: _lastAudioPositionSec! * 1000,
+        isCompleted: pct >= 99,
+        storyId: widget.storyId,
+        durationSeconds: _getDurationSeconds(),
+      );
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
@@ -332,27 +349,89 @@ class _ReaderViewState extends State<ReaderView> {
     );
   }
 
+  void _scheduleAudioProgressSave(ReaderLoaded state) {
+    final pos = state.audioPosition;
+    if (pos == null || pos < 0) return;
+    _lastAudioPositionSec = pos;
+    _lastAudioDurationSec =
+        state.audioDurationSeconds ?? state.selectedAudio?.audioDuration ?? 1.0;
+    _audioSaveDebounce?.cancel();
+    final chapterId = state.chapter.id;
+    final storyId = widget.storyId;
+    final duration = _lastAudioDurationSec ?? 1.0;
+    final pct = duration > 0 ? (pos / duration * 100).clamp(0.0, 100.0) : 0.0;
+    _audioSaveDebounce = Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      _progressCubit?.saveProgress(
+        chapterId: chapterId,
+        percentRead: pct,
+        lastPosition: pos * 1000,
+        isCompleted: pct >= 99,
+        storyId: storyId,
+        durationSeconds: _getDurationSeconds(),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ReaderCubit, ReaderState>(
-      listenWhen: (prev, curr) =>
-          curr is ReaderLoaded &&
-          curr.playbackError != null &&
-          curr.playbackError != (prev is ReaderLoaded ? prev.playbackError : null),
-      listener: (context, state) {
-        if (state is ReaderLoaded && state.playbackError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.playbackError!),
-              action: SnackBarAction(
-                label: 'OK',
-                onPressed: () =>
-                    context.read<ReaderCubit>().clearPlaybackError(),
-              ),
-            ),
-          );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ReaderCubit, ReaderState>(
+          listenWhen: (prev, curr) =>
+              curr is ReaderLoaded &&
+              curr.playbackError != null &&
+              curr.playbackError != (prev is ReaderLoaded ? prev.playbackError : null),
+          listener: (context, state) {
+            if (state is ReaderLoaded && state.playbackError != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.playbackError!),
+                  action: SnackBarAction(
+                    label: 'OK',
+                    onPressed: () =>
+                        context.read<ReaderCubit>().clearPlaybackError(),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+        BlocListener<ReaderCubit, ReaderState>(
+          listenWhen: (prev, curr) {
+            if (curr is! ReaderLoaded || !curr.hasAudio) return false;
+            final pos = curr.audioPosition;
+            if (pos == null) return false;
+            if (prev is! ReaderLoaded) return true;
+            if (prev.audioPosition != pos) return true;
+            if (prev.isPlaying && !curr.isPlaying) return true;
+            return false;
+          },
+          listener: (context, state) {
+            if (state is! ReaderLoaded || !state.hasAudio || state.audioPosition == null) return;
+            _lastAudioPositionSec = state.audioPosition;
+            _lastAudioDurationSec = state.audioDurationSeconds ??
+                state.selectedAudio?.audioDuration ??
+                1.0;
+            final pos = state.audioPosition!;
+            final dur = _lastAudioDurationSec ?? 1.0;
+            final pct = dur > 0 ? (pos / dur * 100).clamp(0.0, 100.0) : 0.0;
+            if (!state.isPlaying) {
+              _audioSaveDebounce?.cancel();
+              _progressCubit?.saveProgress(
+                chapterId: state.chapter.id,
+                percentRead: pct,
+                lastPosition: pos * 1000,
+                isCompleted: pct >= 99,
+                storyId: widget.storyId,
+                durationSeconds: _getDurationSeconds(),
+              );
+            } else {
+              _scheduleAudioProgressSave(state);
+            }
+          },
+        ),
+      ],
       child: BlocBuilder<ReaderCubit, ReaderState>(
         builder: (context, state) {
         if (state is ReaderLoading) {
@@ -479,6 +558,11 @@ class _ReaderViewState extends State<ReaderView> {
                               : null,
                           onNextChapter: state.nextChapter != null
                               ? () => _switchChapter(context, state.nextChapter!.id)
+                              : null,
+                          audios: state.audios,
+                          selectedAudio: state.selectedAudio,
+                          onSelectAudio: state.audios.length > 1
+                              ? (a) => context.read<ReaderCubit>().selectAudio(a)
                               : null,
                         ),
                       ],

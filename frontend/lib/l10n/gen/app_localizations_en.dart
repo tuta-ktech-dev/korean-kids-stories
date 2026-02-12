@@ -463,6 +463,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playbackSpeed => 'Audio Speed';
 
   @override
+  String get voice => 'Voice';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return 'Chapter $number';
   }

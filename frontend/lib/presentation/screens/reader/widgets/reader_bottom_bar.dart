@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../data/models/chapter_audio.dart';
+import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class ReaderBottomBar extends StatelessWidget {
   final bool isDarkMode;
@@ -9,6 +11,9 @@ class ReaderBottomBar extends StatelessWidget {
   final VoidCallback? onPlayPause;
   final VoidCallback? onPrevChapter;
   final VoidCallback? onNextChapter;
+  final List<ChapterAudio> audios;
+  final ChapterAudio? selectedAudio;
+  final void Function(ChapterAudio)? onSelectAudio;
 
   const ReaderBottomBar({
     super.key,
@@ -18,6 +23,9 @@ class ReaderBottomBar extends StatelessWidget {
     this.onPlayPause,
     this.onPrevChapter,
     this.onNextChapter,
+    this.audios = const [],
+    this.selectedAudio,
+    this.onSelectAudio,
   });
 
   @override
@@ -53,6 +61,10 @@ class ReaderBottomBar extends StatelessWidget {
                 AppTheme.primaryColor(context),
               ),
             ),
+            if (audios.length > 1) ...[
+              const SizedBox(height: 12),
+              _buildNarratorSelector(context),
+            ],
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -83,6 +95,47 @@ class ReaderBottomBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNarratorSelector(BuildContext context) {
+    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final primary = AppTheme.primaryColor(context);
+    return Row(
+      children: [
+        Text(
+          '${context.l10n.voice}: ',
+          style: TextStyle(fontSize: 13, color: textColor),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: audios.map((audio) {
+                final isSelected = selectedAudio?.id == audio.id;
+                final label = audio.narrator ?? '${context.l10n.voice} ${audios.indexOf(audio) + 1}';
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(label, style: TextStyle(fontSize: 12)),
+                    selected: isSelected,
+                    onSelected: onSelectAudio != null
+                        ? (_) => onSelectAudio!(audio)
+                        : null,
+                    selectedColor: primary.withValues(alpha: 0.3),
+                    checkmarkColor: primary,
+                    backgroundColor: isDarkMode
+                        ? (Colors.grey[800] ?? Colors.grey)
+                        : (Colors.grey[200] ?? Colors.grey),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

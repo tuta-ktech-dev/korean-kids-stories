@@ -152,6 +152,7 @@
   "fontSize": "글자 크기",
   "darkMode": "어두운 모드",
   "playbackSpeed": "오디오 속도",
+  "voice": "음성",
   "chapterTitleFormatted": "제 {number} 화",
   "otpTitle": "이메일을 확인해주세요",
   "otpSentMessage": "아래 이메일로 인증 링크를 보냈습니다\n",

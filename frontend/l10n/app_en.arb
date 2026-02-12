@@ -155,6 +155,7 @@
   "fontSize": "Font Size",
   "darkMode": "Dark Mode",
   "playbackSpeed": "Audio Speed",
+  "voice": "Voice",
   "chapterTitleFormatted": "Chapter {number}",
   "otpTitle": "Check your email",
   "otpSentMessage": "We sent a verification link to\n",

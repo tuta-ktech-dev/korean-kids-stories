@@ -43,6 +43,8 @@ class ReaderLoaded extends ReaderState {
   final double playbackSpeed;
   /// Error message when playback fails (show SnackBar, then clear).
   final String? playbackError;
+  /// Seek to this position (seconds) when user hits play (from saved progress).
+  final double? initialAudioPositionSec;
 
   const ReaderLoaded({
     required this.chapter,
@@ -59,6 +61,7 @@ class ReaderLoaded extends ReaderState {
     this.audioDurationSeconds,
     this.playbackSpeed = 0.85,
     this.playbackError,
+    this.initialAudioPositionSec,
   });
 
   bool get hasAudio => audios.isNotEmpty;
@@ -67,7 +70,7 @@ class ReaderLoaded extends ReaderState {
   /// When hasAudio, never show scroll - use 0 if not yet played.
   double get displayProgress {
     if (hasAudio) {
-      final pos = audioPosition ?? 0.0;
+      final pos = audioPosition ?? initialAudioPositionSec ?? 0.0;
       final dur = audioDurationSeconds ?? selectedAudio?.audioDuration ?? 1.0;
       if (dur > 0) return (pos / dur).clamp(0.0, 1.0);
       return 0.0;
@@ -92,6 +95,8 @@ class ReaderLoaded extends ReaderState {
     double? playbackSpeed,
     String? playbackError,
     bool clearPlaybackError = false,
+    double? initialAudioPositionSec,
+    bool clearInitialAudioPosition = false,
   }) {
     return ReaderLoaded(
       chapter: chapter ?? this.chapter,
@@ -108,11 +113,12 @@ class ReaderLoaded extends ReaderState {
       audioDurationSeconds: audioDurationSeconds ?? this.audioDurationSeconds,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       playbackError: clearPlaybackError ? null : (playbackError ?? this.playbackError),
+      initialAudioPositionSec: clearInitialAudioPosition ? null : (initialAudioPositionSec ?? this.initialAudioPositionSec),
     );
   }
 
   @override
-  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError];
+  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec];
 }
 
 class ReaderError extends ReaderState {

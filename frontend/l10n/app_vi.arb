@@ -148,6 +148,7 @@
   "fontSize": "Cỡ chữ",
   "darkMode": "Chế độ tối",
   "playbackSpeed": "Tốc độ audio",
+  "voice": "Giọng đọc",
   "chapterTitleFormatted": "Chương {number}",
   "otpTitle": "Kiểm tra email của bạn",
   "otpSentMessage": "Chúng tôi đã gửi liên kết xác minh đến\n",
