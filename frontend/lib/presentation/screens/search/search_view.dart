@@ -48,10 +48,12 @@ class _SearchViewState extends State<SearchView> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
-        leading: null,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
+          onPressed: () => context.router.maybePop(),
+        ),
         title: TextField(
           controller: _searchController,
           focusNode: _focusNode,
@@ -60,6 +62,12 @@ class _SearchViewState extends State<SearchView> {
             hintText: context.l10n.searchHint,
             hintStyle: TextStyle(color: AppTheme.textMutedColor(context)),
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 8),
+            isDense: true,
             suffixIcon: IconButton(
               icon: Icon(Icons.clear, color: AppTheme.textMutedColor(context)),
               onPressed: () {

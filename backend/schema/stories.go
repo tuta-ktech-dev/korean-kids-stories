@@ -19,7 +19,7 @@ func EnsureStoriesCollection(app core.App) {
 	if AddTextField(collection, "title", true) {
 		changes = true
 	}
-	if AddSelectField(collection, "category", true, []string{"folktale", "history", "legend"}, 1) {
+	if AddSelectField(collection, "category", true, []string{"folktale", "history", "legend", "edu"}, 1) {
 		changes = true
 	}
 	if AddNumberField(collection, "age_min", true, Ptr(1.0), Ptr(15.0)) {
