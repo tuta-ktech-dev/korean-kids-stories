@@ -453,6 +453,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get darkMode => '어두운 모드';
 
   @override
+  String get playbackSpeed => '오디오 속도';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return '제 $number 화';
   }

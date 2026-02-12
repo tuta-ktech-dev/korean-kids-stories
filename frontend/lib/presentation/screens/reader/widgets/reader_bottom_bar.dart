@@ -7,6 +7,8 @@ class ReaderBottomBar extends StatelessWidget {
   final double progress;
   final bool isPlaying;
   final VoidCallback? onPlayPause;
+  final VoidCallback? onPrevChapter;
+  final VoidCallback? onNextChapter;
 
   const ReaderBottomBar({
     super.key,
@@ -14,6 +16,8 @@ class ReaderBottomBar extends StatelessWidget {
     this.progress = 0.0,
     this.isPlaying = false,
     this.onPlayPause,
+    this.onPrevChapter,
+    this.onNextChapter,
   });
 
   @override
@@ -58,7 +62,7 @@ class ReaderBottomBar extends StatelessWidget {
                     Icons.skip_previous_rounded,
                     color: isDarkMode ? Colors.white70 : Colors.black87,
                   ),
-                  onPressed: () {}, // TODO: prev chapter
+                  onPressed: onPrevChapter,
                 ),
                 IconButton.filled(
                   icon: Icon(
@@ -72,7 +76,7 @@ class ReaderBottomBar extends StatelessWidget {
                     Icons.skip_next_rounded,
                     color: isDarkMode ? Colors.white70 : Colors.black87,
                   ),
-                  onPressed: () {}, // TODO: next chapter
+                  onPressed: onNextChapter,
                 ),
               ],
             ),

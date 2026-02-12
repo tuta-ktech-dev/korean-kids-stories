@@ -976,6 +976,12 @@ abstract class AppLocalizations {
   /// **'Dark Mode'**
   String get darkMode;
 
+  /// No description provided for @playbackSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Speed'**
+  String get playbackSpeed;
+
   /// No description provided for @chapterTitleFormatted.
   ///
   /// In en, this message translates to:

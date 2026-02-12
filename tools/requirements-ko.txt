@@ -1,0 +1,6 @@
+# Cho TTS tiếng Hàn với VITS KSS (thay thế requirements.txt)
+coqui-tts-pygoruut>=0.27.4
+torch
+torchaudio
+ttkbootstrap>=1.10
+sounddevice>=0.4.0

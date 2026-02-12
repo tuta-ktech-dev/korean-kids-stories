@@ -460,6 +460,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkMode => 'Dark Mode';
 
   @override
+  String get playbackSpeed => 'Audio Speed';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return 'Chapter $number';
   }

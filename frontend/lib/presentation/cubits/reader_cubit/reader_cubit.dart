@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../../data/models/chapter.dart';
 import '../../../data/models/chapter_audio.dart';
@@ -10,6 +14,9 @@ import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import 'reader_state.dart';
 export 'reader_state.dart';
+
+/// Default playback speed for kids (slower = easier to follow)
+const double _defaultPlaybackSpeed = 0.85;
 
 @injectable
 class ReaderCubit extends Cubit<ReaderState> {
@@ -26,6 +33,11 @@ class ReaderCubit extends Cubit<ReaderState> {
   final StoryRepository _storyRepository;
   final ProgressRepository _progressRepository;
   final ReadingHistoryRepository _historyRepository;
+  final AudioPlayer _player = AudioPlayer();
+  StreamSubscription<PlayerState>? _stateSub;
+  StreamSubscription<Duration>? _positionSub;
+  StreamSubscription<Duration?>? _durationSub;
+  String? _loadedAudioUrl;
 
   /// Load a chapter. Set [skipLoading] true to avoid showing loading spinner
   /// when switching between chapters (smoother UX).
@@ -66,6 +78,8 @@ class ReaderCubit extends Cubit<ReaderState> {
       final progress = await _progressRepository.getProgress(chapterId);
       final percent = progress?.percentRead ?? 0.0;
 
+      await _stopPlayer();
+      final prevSpeed = state is ReaderLoaded ? (state as ReaderLoaded).playbackSpeed : _defaultPlaybackSpeed;
       emit(
         ReaderLoaded(
           chapter: chapter,
@@ -75,6 +89,10 @@ class ReaderCubit extends Cubit<ReaderState> {
           audios: audios,
           selectedAudio: selectedAudio,
           progress: percent / 100,
+          audioPosition: null,
+          audioDurationSeconds: null,
+          playbackSpeed: prevSpeed,
+          playbackError: null,
         ),
       );
       _historyRepository.logAction(
@@ -90,17 +108,30 @@ class ReaderCubit extends Cubit<ReaderState> {
   }
 
   /// Switch to a different narrator/voice
-  void selectAudio(ChapterAudio audio) {
+  Future<void> selectAudio(ChapterAudio audio) async {
+    if (state is! ReaderLoaded) return;
+    final s = state as ReaderLoaded;
+    if (s.isPlaying) await _player.pause();
+    emit(s.copyWith(selectedAudio: audio, isPlaying: false, clearAudioPosition: true));
+  }
+
+  void updateSettings({double? fontSize, bool? isDarkMode, double? playbackSpeed}) {
     if (state is ReaderLoaded) {
-      final s = state as ReaderLoaded;
-      emit(s.copyWith(selectedAudio: audio));
+      final currentState = state as ReaderLoaded;
+      emit(currentState.copyWith(
+        fontSize: fontSize,
+        isDarkMode: isDarkMode,
+        playbackSpeed: playbackSpeed,
+      ));
+      if (playbackSpeed != null && currentState.isPlaying) {
+        _player.setSpeed(playbackSpeed);
+      }
     }
   }
 
-  void updateSettings({double? fontSize, bool? isDarkMode}) {
+  void clearPlaybackError() {
     if (state is ReaderLoaded) {
-      final currentState = state as ReaderLoaded;
-      emit(currentState.copyWith(fontSize: fontSize, isDarkMode: isDarkMode));
+      emit((state as ReaderLoaded).copyWith(clearPlaybackError: true));
     }
   }
 
@@ -111,11 +142,85 @@ class ReaderCubit extends Cubit<ReaderState> {
     }
   }
 
-  void togglePlaying() {
-    if (state is ReaderLoaded) {
-      final currentState = state as ReaderLoaded;
-      emit(currentState.copyWith(isPlaying: !currentState.isPlaying));
+  Future<void> togglePlaying() async {
+    if (state is! ReaderLoaded) return;
+    final s = state as ReaderLoaded;
+    if (!s.hasAudio || s.selectedAudio?.audioUrl == null) {
+      debugPrint('[ReaderCubit] togglePlaying: no audio or url. hasAudio=${s.hasAudio} url=${s.selectedAudio?.audioUrl}');
+      return;
     }
+
+    if (s.isPlaying) {
+      await _player.pause();
+      return;
+    }
+
+    final url = s.selectedAudio!.audioUrl!;
+    debugPrint('[ReaderCubit] togglePlaying: loading url=$url');
+
+    try {
+      if (_loadedAudioUrl != url) {
+        await _player.setUrl(url);
+        _loadedAudioUrl = url;
+      }
+      await _player.setSpeed(s.playbackSpeed);
+      _listenToPlayerIfNeeded(s.chapter.id);
+      await _player.play();
+      emit(s.copyWith(isPlaying: true, audioPosition: 0, clearPlaybackError: true));
+      debugPrint('[ReaderCubit] togglePlaying: play() started');
+    } catch (e, st) {
+      debugPrint('[ReaderCubit] togglePlaying error: $e\n$st');
+      emit(s.copyWith(isPlaying: false, playbackError: e.toString(), clearPlaybackError: false));
+    }
+  }
+
+  Future<void> _stopPlayer() async {
+    await _player.stop();
+    _loadedAudioUrl = null;
+    _stateSub?.cancel();
+    _positionSub?.cancel();
+    _durationSub?.cancel();
+    _stateSub = null;
+    _positionSub = null;
+    _durationSub = null;
+  }
+
+  void _listenToPlayerIfNeeded(String chapterId) {
+    if (_stateSub != null) return;
+
+    _stateSub = _player.playerStateStream.listen((playerState) {
+      if (state is! ReaderLoaded) return;
+      final s = state as ReaderLoaded;
+      if (s.chapter.id != chapterId) return;
+      final isPlaying = playerState.playing;
+      final processing = playerState.processingState == ProcessingState.loading ||
+          playerState.processingState == ProcessingState.buffering;
+      emit(s.copyWith(isPlaying: isPlaying && !processing));
+    });
+
+    _positionSub = _player.positionStream.listen((position) {
+      if (state is! ReaderLoaded) return;
+      final s = state as ReaderLoaded;
+      if (s.chapter.id != chapterId) return;
+      emit(s.copyWith(audioPosition: position.inMilliseconds / 1000.0));
+    });
+
+    _durationSub = _player.durationStream.listen((duration) {
+      if (state is! ReaderLoaded) return;
+      final s = state as ReaderLoaded;
+      if (s.chapter.id != chapterId) return;
+      if (duration != null) {
+        emit(s.copyWith(
+            audioDurationSeconds: duration.inMilliseconds / 1000.0));
+      }
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await _stopPlayer();
+    await _player.dispose();
+    return super.close();
   }
 
   /// Add bookmark at current progress with optional note

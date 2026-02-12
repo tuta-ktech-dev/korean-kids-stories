@@ -154,6 +154,7 @@
   "noNotesYet": "No notes yet",
   "fontSize": "Font Size",
   "darkMode": "Dark Mode",
+  "playbackSpeed": "Audio Speed",
   "chapterTitleFormatted": "Chapter {number}",
   "otpTitle": "Check your email",
   "otpSentMessage": "We sent a verification link to\n",

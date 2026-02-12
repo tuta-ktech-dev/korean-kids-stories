@@ -334,8 +334,27 @@ class _ReaderViewState extends State<ReaderView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ReaderCubit, ReaderState>(
-      builder: (context, state) {
+    return BlocListener<ReaderCubit, ReaderState>(
+      listenWhen: (prev, curr) =>
+          curr is ReaderLoaded &&
+          curr.playbackError != null &&
+          curr.playbackError != (prev is ReaderLoaded ? prev.playbackError : null),
+      listener: (context, state) {
+        if (state is ReaderLoaded && state.playbackError != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.playbackError!),
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () =>
+                    context.read<ReaderCubit>().clearPlaybackError(),
+              ),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<ReaderCubit, ReaderState>(
+        builder: (context, state) {
         if (state is ReaderLoading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -451,10 +470,16 @@ class _ReaderViewState extends State<ReaderView> {
                         ),
                         ReaderBottomBar(
                           isDarkMode: isDarkMode,
-                          progress: state.progress,
+                          progress: state.displayProgress,
                           isPlaying: state.isPlaying,
                           onPlayPause: () =>
                               context.read<ReaderCubit>().togglePlaying(),
+                          onPrevChapter: state.prevChapter != null
+                              ? () => _switchChapter(context, state.prevChapter!.id)
+                              : null,
+                          onNextChapter: state.nextChapter != null
+                              ? () => _switchChapter(context, state.nextChapter!.id)
+                              : null,
                         ),
                       ],
                     )
@@ -486,6 +511,7 @@ class _ReaderViewState extends State<ReaderView> {
 
         return const SizedBox.shrink();
       },
+      ),
     );
   }
 
@@ -563,6 +589,28 @@ class _ReaderViewState extends State<ReaderView> {
                       Text('${state.fontSize.round()}'),
                     ],
                   ),
+                  if (state.hasAudio) ...[
+                    Row(
+                      children: [
+                        Text(context.l10n.playbackSpeed),
+                        Expanded(
+                          child: Slider(
+                            value: state.playbackSpeed,
+                            min: 0.75,
+                            max: 1.0,
+                            divisions: 5,
+                            label: '${(state.playbackSpeed * 100).round()}%',
+                            onChanged: (value) {
+                              context.read<ReaderCubit>().updateSettings(
+                                playbackSpeed: value,
+                              );
+                            },
+                          ),
+                        ),
+                        Text('${(state.playbackSpeed * 100).round()}%'),
+                      ],
+                    ),
+                  ],
                   SwitchListTile(
                     title: Text(context.l10n.darkMode),
                     value: state.isDarkMode,

@@ -459,6 +459,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get darkMode => 'Chế độ tối';
 
   @override
+  String get playbackSpeed => 'Tốc độ audio';
+
+  @override
   String chapterTitleFormatted(Object number) {
     return 'Chương $number';
   }

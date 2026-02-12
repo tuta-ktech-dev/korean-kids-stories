@@ -215,9 +215,9 @@ class StoryCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            // Age (icons) + chapters (icons)
+            // Age (icons) + chapters (icons) + audio badge
             Semantics(
-              label: '${context.l10n.ageYearsFormat(ageMin, ageMax)}, ${context.l10n.episodesFormat(totalChapters)}',
+              label: '${context.l10n.ageYearsFormat(ageMin, ageMax)}, ${context.l10n.episodesFormat(totalChapters)}${hasAudio ? ', ${context.l10n.audioStories}' : ''}',
               child: Row(
                 children: [
                   ...List.generate(_ageIconCount, (_) => Padding(
@@ -229,6 +229,10 @@ class StoryCard extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 2),
                     child: Icon(Icons.menu_book_rounded, size: 18, color: AppTheme.textMutedColor(context)),
                   )),
+                  if (hasAudio) ...[
+                    const SizedBox(width: 12),
+                    Icon(Icons.headphones_rounded, size: 18, color: Colors.orange.shade700),
+                  ],
                 ],
               ),
             ),

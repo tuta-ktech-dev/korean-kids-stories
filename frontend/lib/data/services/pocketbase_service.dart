@@ -341,8 +341,10 @@ class PocketbaseService {
             filter: 'chapter="${chapterId.replaceAll('"', '\\"')}"',
           );
 
+      final token = pb.authStore.token;
       return result.items
-          .map((r) => ChapterAudio.fromRecord(r, baseUrl: baseUrl))
+          .map((r) => ChapterAudio.fromRecord(r,
+              baseUrl: baseUrl, authToken: token))
           .toList();
     } on ClientException catch (e) {
       throw PocketbaseException(

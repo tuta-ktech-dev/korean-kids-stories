@@ -91,7 +91,7 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: '${story.ageMin}-${story.ageMax}세, ${story.totalChapters}화',
+      label: '${story.ageMin}-${story.ageMax}세, ${story.totalChapters}화${story.hasAudio ? ', ${context.l10n.audioStories}' : ''}',
       child: Row(
         children: [
           ...List.generate(
@@ -107,6 +107,10 @@ class _StatsRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           _ChapterIcons(count: story.totalChapters),
+          if (story.hasAudio) ...[
+            const SizedBox(width: 12),
+            Icon(Icons.headphones_rounded, size: 22, color: Colors.orange.shade700),
+          ],
         ],
       ),
     );

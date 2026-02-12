@@ -43,7 +43,8 @@ class ChapterAudio {
     required this.updated,
   });
 
-  factory ChapterAudio.fromRecord(RecordModel record, {String baseUrl = ''}) {
+  factory ChapterAudio.fromRecord(RecordModel record,
+      {String baseUrl = '', String? authToken}) {
     final audioFile = record.getStringValue('audio_file');
     List<WordTiming> timings = [];
     final wordTimingsData = record.data['word_timings'];
@@ -54,15 +55,21 @@ class ChapterAudio {
           .toList();
     }
 
+    String? audioUrl;
+    if (audioFile.isNotEmpty) {
+      audioUrl = '$baseUrl/api/files/${record.collectionId}/${record.id}/$audioFile';
+      if (authToken != null && authToken.isNotEmpty) {
+        audioUrl = '${audioUrl}${audioUrl.contains('?') ? '&' : '?'}token=$authToken';
+      }
+    }
+
     return ChapterAudio(
       id: record.id,
       chapterId: record.getStringValue('chapter'),
       narrator: record.getStringValue('narrator').isNotEmpty
           ? record.getStringValue('narrator')
           : null,
-      audioUrl: audioFile.isNotEmpty
-          ? '$baseUrl/api/files/${record.collectionId}/${record.id}/$audioFile'
-          : null,
+      audioUrl: audioUrl,
       audioDuration: record.getDoubleValue('audio_duration'),
       wordTimings: timings,
       created:
