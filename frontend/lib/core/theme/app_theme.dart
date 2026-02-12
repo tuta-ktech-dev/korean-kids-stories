@@ -74,7 +74,7 @@ class AppTheme {
         centerTitle: true,
         backgroundColor: backgroundCream,
         titleTextStyle: GoogleFonts.notoSansKr(
-          fontSize: 20,
+          fontSize: 24,
           fontWeight: FontWeight.w700,
           color: textDark,
         ),
@@ -135,7 +135,7 @@ class AppTheme {
         centerTitle: true,
         backgroundColor: darkBackground,
         titleTextStyle: GoogleFonts.notoSansKr(
-          fontSize: 20,
+          fontSize: 24,
           fontWeight: FontWeight.w700,
           color: darkTextLight,
         ),
@@ -160,9 +160,9 @@ class AppTheme {
     );
   }
 
-  // Text styles with Korean fonts (adapt to theme)
+  // Text styles with Korean fonts (adapt to theme) - Kids-friendly larger sizes
   static TextStyle headingLarge(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextLight
@@ -171,7 +171,7 @@ class AppTheme {
       );
 
   static TextStyle headingMedium(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 22,
+        fontSize: 26,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextLight
@@ -180,7 +180,7 @@ class AppTheme {
       );
 
   static TextStyle bodyLarge(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: FontWeight.w400,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextLight
@@ -189,7 +189,7 @@ class AppTheme {
       );
 
   static TextStyle bodyMedium(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: FontWeight.w400,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextMedium
@@ -198,7 +198,7 @@ class AppTheme {
       );
 
   static TextStyle caption(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: FontWeight.w500,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextMuted
@@ -206,7 +206,7 @@ class AppTheme {
       );
 
   static TextStyle storyTitle(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextLight
@@ -215,7 +215,7 @@ class AppTheme {
       );
 
   static TextStyle storyContent(BuildContext context) => GoogleFonts.notoSansKr(
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: FontWeight.w400,
         color: Theme.of(context).brightness == Brightness.dark
             ? darkTextLight

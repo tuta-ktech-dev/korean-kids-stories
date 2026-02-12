@@ -81,42 +81,64 @@ class _StatsRow extends StatelessWidget {
 
   const _StatsRow({required this.story});
 
+  /// Age group as icon count: 1 = 5-6, 2 = 7-8, 3 = 9-10
+  int get _ageIconCount {
+    if (story.ageMax <= 6) return 1;
+    if (story.ageMax <= 8) return 2;
+    return 3;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: '${story.ageMin}-${story.ageMax}세, ${story.totalChapters}화',
+      child: Row(
+        children: [
+          ...List.generate(
+            _ageIconCount,
+            (_) => Padding(
+              padding: const EdgeInsets.only(right: 2),
+              child: Icon(
+                Icons.child_care_rounded,
+                size: 22,
+                color: AppTheme.textMutedColor(context),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          _ChapterIcons(count: story.totalChapters),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChapterIcons extends StatelessWidget {
+  final int count;
+
+  const _ChapterIcons({required this.count});
+
+  /// 1 icon = few (≤5), 2 = medium (6-15), 3 = many (16+)
+  int get _iconCount {
+    if (count <= 5) return 1;
+    if (count <= 15) return 2;
+    return 3;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
-        if (story.averageRating != null) ...[
-          Icon(Icons.star_rounded, size: 18, color: Colors.amber),
-          const SizedBox(width: 4),
-          Text(
-            story.averageRating!.toStringAsFixed(1),
-            style: AppTheme.bodyMedium(context).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+      children: List.generate(
+        _iconCount,
+        (_) => Padding(
+          padding: const EdgeInsets.only(right: 2),
+          child: Icon(
+            Icons.menu_book_rounded,
+            size: 22,
+            color: AppTheme.textMutedColor(context),
           ),
-          const SizedBox(width: 4),
-          Text('(${story.reviewCount})', style: AppTheme.caption(context)),
-          const SizedBox(width: 16),
-        ],
-        Icon(
-          Icons.visibility_rounded,
-          size: 16,
-          color: AppTheme.textMutedColor(context),
         ),
-        const SizedBox(width: 4),
-        Text('${story.viewCount}', style: AppTheme.caption(context)),
-        const SizedBox(width: 16),
-        Icon(
-          Icons.child_care_rounded,
-          size: 16,
-          color: AppTheme.textMutedColor(context),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          '${story.ageMin}-${story.ageMax}세',
-          style: AppTheme.caption(context),
-        ),
-      ],
+      ),
     );
   }
 }

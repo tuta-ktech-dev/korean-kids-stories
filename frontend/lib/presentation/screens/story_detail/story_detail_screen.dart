@@ -5,9 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../cubits/favorite_cubit/favorite_cubit.dart';
-import '../../cubits/review_cubit/review_cubit.dart';
 import '../../cubits/story_detail_cubit/story_detail_cubit.dart';
-import '../../../data/repositories/review_repository.dart';
 import '../../../data/repositories/story_repository.dart';
 import '../../../injection.dart';
 import 'story_detail_view.dart';
@@ -44,12 +42,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           create: (_) => StoryDetailCubit(
             storyId: widget.storyId,
             storyRepository: getIt<StoryRepository>(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => ReviewCubit(
-            storyId: widget.storyId,
-            reviewRepository: getIt<ReviewRepository>(),
           ),
         ),
       ],

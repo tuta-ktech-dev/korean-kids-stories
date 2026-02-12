@@ -52,13 +52,18 @@ class StoryCard extends StatelessWidget {
     return true;
   }
 
-  String _formatViewCount(int count) {
-    if (count >= 1000000) {
-      return '${(count / 1000000).toStringAsFixed(1)}M';
-    } else if (count >= 1000) {
-      return '${(count / 1000).toStringAsFixed(1)}K';
-    }
-    return count.toString();
+  /// Age icons: 1 = 5-6, 2 = 7-8, 3 = 9-10
+  int get _ageIconCount {
+    if (ageMax <= 6) return 1;
+    if (ageMax <= 8) return 2;
+    return 3;
+  }
+
+  /// Chapter icons: 1 = few (≤5), 2 = medium (6-15), 3 = many (16+)
+  int get _chapterIconCount {
+    if (totalChapters <= 5) return 1;
+    if (totalChapters <= 15) return 2;
+    return 3;
   }
 
   Widget _buildFeatureBadges() {
@@ -88,34 +93,6 @@ class StoryCard extends StatelessWidget {
         ],
       ),
       child: Icon(icon, size: 14, color: color),
-    );
-  }
-
-  Widget _buildRatingStars(BuildContext context) {
-    final fullStars = averageRating!.floor();
-    final hasHalfStar = (averageRating! - fullStars) >= 0.5;
-
-    return Row(
-      children: [
-        ...List.generate(5, (index) {
-          if (index < fullStars) {
-            return Icon(Icons.star_rounded, size: 14, color: Colors.amber);
-          } else if (index == fullStars && hasHalfStar) {
-            return Icon(Icons.star_half_rounded, size: 14, color: Colors.amber);
-          } else {
-            return Icon(
-              Icons.star_outline_rounded,
-              size: 14,
-              color: Colors.amber.withValues(alpha: 0.3),
-            );
-          }
-        }),
-        const SizedBox(width: 4),
-        Text(
-          '($reviewCount)',
-          style: AppTheme.caption(context).copyWith(fontSize: 11),
-        ),
-      ],
     );
   }
 
@@ -238,47 +215,23 @@ class StoryCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            // Age range + chapters + rating
-            Row(
-              children: [
-                Icon(
-                  Icons.child_care_rounded,
-                  size: 14,
-                  color: AppTheme.textMutedColor(context),
-                ),
-                const SizedBox(width: 4),
-                Text(context.l10n.ageYearsFormat(ageMin, ageMax), style: AppTheme.caption(context)),
-                const SizedBox(width: 12),
-                Icon(
-                  Icons.menu_book_rounded,
-                  size: 14,
-                  color: AppTheme.textMutedColor(context),
-                ),
-                const SizedBox(width: 4),
-                Text(context.l10n.episodesFormat(totalChapters), style: AppTheme.caption(context)),
-              ],
-            ),
-            if (averageRating != null) ...[
-              const SizedBox(height: 4),
-              _buildRatingStars(context),
-            ],
-            if (viewCount > 0) ...[
-              const SizedBox(height: 4),
-              Row(
+            // Age (icons) + chapters (icons)
+            Semantics(
+              label: '${context.l10n.ageYearsFormat(ageMin, ageMax)}, ${context.l10n.episodesFormat(totalChapters)}',
+              child: Row(
                 children: [
-                  Icon(
-                    Icons.visibility_rounded,
-                    size: 12,
-                    color: AppTheme.textMutedColor(context),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatViewCount(viewCount),
-                    style: AppTheme.caption(context).copyWith(fontSize: 11),
-                  ),
+                  ...List.generate(_ageIconCount, (_) => Padding(
+                    padding: const EdgeInsets.only(right: 2),
+                    child: Icon(Icons.child_care_rounded, size: 18, color: AppTheme.textMutedColor(context)),
+                  )),
+                  const SizedBox(width: 12),
+                  ...List.generate(_chapterIconCount, (_) => Padding(
+                    padding: const EdgeInsets.only(right: 2),
+                    child: Icon(Icons.menu_book_rounded, size: 18, color: AppTheme.textMutedColor(context)),
+                  )),
                 ],
               ),
-            ],
+            ),
           ],
         ),
       ),

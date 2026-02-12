@@ -42,7 +42,7 @@ class ReaderLoaded extends ReaderState {
     this.nextChapterLocked,
     this.audios = const [],
     this.selectedAudio,
-    this.fontSize = 18,
+    this.fontSize = 22,
     this.isDarkMode = false,
     this.progress = 0.0,
     this.isPlaying = false,

@@ -16,10 +16,10 @@ class AppBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final items = [
-      _NavItemData(icon: Icons.home_rounded, label: l10n.homeTab),
-      _NavItemData(icon: Icons.emoji_events_rounded, label: l10n.stickerAlbum),
-      _NavItemData(icon: Icons.history_rounded, label: l10n.historyTab),
-      _NavItemData(icon: Icons.settings_rounded, label: l10n.settingsTab),
+      _NavItemData(icon: Icons.home_rounded, semanticLabel: l10n.homeTab),
+      _NavItemData(icon: Icons.emoji_events_rounded, semanticLabel: l10n.stickerAlbum),
+      _NavItemData(icon: Icons.history_rounded, semanticLabel: l10n.historyTab),
+      _NavItemData(icon: Icons.settings_rounded, semanticLabel: l10n.settingsTab),
     ];
 
     return Container(
@@ -42,7 +42,7 @@ class AppBottomNav extends StatelessWidget {
           items.length,
           (index) => _NavItem(
             icon: items[index].icon,
-            label: items[index].label,
+            semanticLabel: items[index].semanticLabel,
             isActive: currentIndex == index,
             onTap: () => onTap(index),
           ),
@@ -54,20 +54,20 @@ class AppBottomNav extends StatelessWidget {
 
 class _NavItemData {
   final IconData icon;
-  final String label;
+  final String semanticLabel;
 
-  _NavItemData({required this.icon, required this.label});
+  _NavItemData({required this.icon, required this.semanticLabel});
 }
 
 class _NavItem extends StatelessWidget {
   final IconData icon;
-  final String label;
+  final String semanticLabel;
   final bool isActive;
   final VoidCallback onTap;
 
   const _NavItem({
     required this.icon,
-    required this.label,
+    required this.semanticLabel,
     required this.isActive,
     required this.onTap,
   });
@@ -76,33 +76,24 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryColor = AppTheme.primaryColor(context);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: isActive
-            ? BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
-              )
-            : null,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? primaryColor : AppTheme.textMutedColor(context),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTheme.caption(context).copyWith(
-                color: isActive ? primaryColor : AppTheme.textMutedColor(context),
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
+    return Semantics(
+      label: semanticLabel,
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: isActive
+              ? BoxDecoration(
+                  color: primaryColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                )
+              : null,
+          child: Icon(
+            icon,
+            color: isActive ? primaryColor : AppTheme.textMutedColor(context),
+            size: 28,
+          ),
         ),
       ),
     );

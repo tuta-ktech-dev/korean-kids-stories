@@ -200,7 +200,7 @@ class _ReaderViewState extends State<ReaderView> {
                 chapter.chapterNumber,
               ),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 18,
                 color: isDarkMode ? Colors.grey : Colors.grey[600],
               ),
             ),
@@ -208,7 +208,7 @@ class _ReaderViewState extends State<ReaderView> {
             Text(
               chapter.title,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black87,
               ),
@@ -227,81 +227,46 @@ class _ReaderViewState extends State<ReaderView> {
             if (prevChapter != null || nextChapter != null || nextChapterLocked != null) ...[
               const SizedBox(height: 32),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (prevChapter != null && onPrevChapter != null)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: onPrevChapter,
-                        icon: Icon(
-                          Icons.arrow_back_rounded,
-                          size: 20,
-                          color: AppTheme.primaryColor(context),
-                        ),
-                        label: Text(
-                          context.l10n.previousChapter,
-                          style: TextStyle(
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors.black87,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(
-                            color: AppTheme.primaryColor(context),
-                          ),
-                        ),
+                    IconButton.filled(
+                      onPressed: onPrevChapter,
+                      icon: const Icon(Icons.arrow_back_rounded, size: 28),
+                      iconSize: 32,
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor(context),
+                        foregroundColor: Colors.white,
                       ),
+                      tooltip: context.l10n.previousChapter,
                     ),
                   if (prevChapter != null && (nextChapter != null || nextChapterLocked != null))
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                   if (nextChapter != null && onNextChapter != null)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: onNextChapter,
-                        icon: Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 20,
-                          color: AppTheme.primaryColor(context),
-                        ),
-                        label: Text(
-                          context.l10n.nextChapter,
-                          style: TextStyle(
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors.black87,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(
-                            color: AppTheme.primaryColor(context),
-                          ),
-                        ),
+                    IconButton.filled(
+                      onPressed: onNextChapter,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 28),
+                      iconSize: 32,
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor(context),
+                        foregroundColor: Colors.white,
                       ),
+                      tooltip: context.l10n.nextChapter,
                     )
                   else if (nextChapterLocked != null)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _showChapterLockedDialog(context),
-                        icon: Icon(
-                          Icons.lock_outline_rounded,
-                          size: 20,
-                          color: AppTheme.textMutedColor(context),
-                        ),
-                        label: Text(
-                          context.l10n.nextChapterLocked,
-                          style: TextStyle(
-                            color: AppTheme.textMutedColor(context),
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(
-                            color: AppTheme.textMutedColor(context),
-                          ),
-                        ),
+                    IconButton.filled(
+                      onPressed: () => _showChapterLockedDialog(context),
+                      icon: Icon(
+                        Icons.lock_outline_rounded,
+                        size: 28,
+                        color: AppTheme.textMutedColor(context),
                       ),
+                      iconSize: 32,
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppTheme.textMutedColor(context).withValues(alpha: 0.2),
+                        foregroundColor: AppTheme.textMutedColor(context),
+                      ),
+                      tooltip: context.l10n.nextChapterLocked,
                     ),
                 ],
               ),
@@ -367,7 +332,7 @@ class _ReaderViewState extends State<ReaderView> {
                     title: Text(
                       chapter.title,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: isDarkMode ? Colors.white : Colors.black87,
                       ),
@@ -529,8 +494,8 @@ class _ReaderViewState extends State<ReaderView> {
                       Expanded(
                         child: Slider(
                           value: state.fontSize,
-                          min: 14,
-                          max: 32,
+                          min: 18,
+                          max: 36,
                           divisions: 9,
                           label: state.fontSize.round().toString(),
                           onChanged: (value) {

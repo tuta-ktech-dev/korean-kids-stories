@@ -51,15 +51,18 @@ class StoryDetailBottomBar extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton.icon(
+                      child: IconButton.filled(
                         onPressed: chapters.isNotEmpty
                             ? () => _openReader(context, 0)
                             : null,
-                        icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                        label: Text(context.l10n.startReading),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        icon: const Icon(Icons.play_arrow_rounded, size: 36),
+                        iconSize: 40,
+                        style: IconButton.styleFrom(
+                          padding: const EdgeInsets.all(20),
+                          backgroundColor: AppTheme.primaryColor(context),
+                          foregroundColor: Colors.white,
                         ),
+                        tooltip: context.l10n.startReading,
                       ),
                     ),
                     const SizedBox(width: 12),
