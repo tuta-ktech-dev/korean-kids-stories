@@ -39,14 +39,25 @@ class ReaderCubit extends Cubit<ReaderState> {
         emit(const ReaderError('chapterNotFound'));
         return;
       }
+      // Chặn đọc chapter khóa (tránh truy cập qua URL trực tiếp)
+      if (!chapter.isFree) {
+        emit(const ReaderError('chapterLocked'));
+        return;
+      }
 
       Chapter? prevChapter;
       Chapter? nextChapter;
+      Chapter? nextChapterLocked; // Chương tiếp bị khóa (để hiển thị paywall)
       final chapters = await _storyRepository.getChapters(chapter.storyId);
       final idx = chapters.indexWhere((c) => c.id == chapterId);
       if (idx > 0) prevChapter = chapters[idx - 1];
       if (idx >= 0 && idx < chapters.length - 1) {
-        nextChapter = chapters[idx + 1];
+        final next = chapters[idx + 1];
+        if (next.isFree) {
+          nextChapter = next;
+        } else {
+          nextChapterLocked = next;
+        }
       }
 
       final audios = await _storyRepository.getChapterAudios(chapterId);
@@ -60,6 +71,7 @@ class ReaderCubit extends Cubit<ReaderState> {
           chapter: chapter,
           prevChapter: prevChapter,
           nextChapter: nextChapter,
+          nextChapterLocked: nextChapterLocked,
           audios: audios,
           selectedAudio: selectedAudio,
           progress: percent / 100,

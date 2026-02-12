@@ -126,6 +126,22 @@ class _ReaderViewState extends State<ReaderView> {
     });
   }
 
+  void _showChapterLockedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.locked),
+        content: Text(context.l10n.chapterLockedHint),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(context.l10n.continueAction),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _switchChapter(BuildContext context, String chapterId) {
     // Save current chapter before switching (jumpTo would trigger scroll→wrong save)
     _saveDebounce?.cancel();
@@ -158,6 +174,7 @@ class _ReaderViewState extends State<ReaderView> {
     VoidCallback? onPrevChapter,
     Chapter? nextChapter,
     VoidCallback? onNextChapter,
+    Chapter? nextChapterLocked,
   }) {
     return SafeArea(
       top: false,
@@ -207,7 +224,7 @@ class _ReaderViewState extends State<ReaderView> {
                     : Colors.black87,
               ),
             ),
-            if (prevChapter != null || nextChapter != null) ...[
+            if (prevChapter != null || nextChapter != null || nextChapterLocked != null) ...[
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -236,7 +253,7 @@ class _ReaderViewState extends State<ReaderView> {
                         ),
                       ),
                     ),
-                  if (prevChapter != null && nextChapter != null)
+                  if (prevChapter != null && (nextChapter != null || nextChapterLocked != null))
                     const SizedBox(width: 12),
                   if (nextChapter != null && onNextChapter != null)
                     Expanded(
@@ -259,6 +276,29 @@ class _ReaderViewState extends State<ReaderView> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           side: BorderSide(
                             color: AppTheme.primaryColor(context),
+                          ),
+                        ),
+                      ),
+                    )
+                  else if (nextChapterLocked != null)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showChapterLockedDialog(context),
+                        icon: Icon(
+                          Icons.lock_outline_rounded,
+                          size: 20,
+                          color: AppTheme.textMutedColor(context),
+                        ),
+                        label: Text(
+                          context.l10n.nextChapterLocked,
+                          style: TextStyle(
+                            color: AppTheme.textMutedColor(context),
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(
+                            color: AppTheme.textMutedColor(context),
                           ),
                         ),
                       ),
@@ -289,7 +329,9 @@ class _ReaderViewState extends State<ReaderView> {
               ? context.l10n.chapterNotFound
               : state.message == 'chapterLoadError'
                   ? context.l10n.chapterLoadError
-                  : state.message;
+                  : state.message == 'chapterLocked'
+                      ? context.l10n.chapterLocked
+                      : state.message;
           return Scaffold(
             appBar: AppBar(title: Text(context.l10n.error)),
             body: Center(child: Text(msg)),
@@ -385,6 +427,7 @@ class _ReaderViewState extends State<ReaderView> {
                             onNextChapter: state.nextChapter != null
                                 ? () => _switchChapter(context, state.nextChapter!.id)
                                 : null,
+                            nextChapterLocked: state.nextChapterLocked,
                           ),
                         ),
                         ReaderBottomBar(
@@ -412,6 +455,7 @@ class _ReaderViewState extends State<ReaderView> {
                       onNextChapter: state.nextChapter != null
                           ? () => _switchChapter(context, state.nextChapter!.id)
                           : null,
+                      nextChapterLocked: state.nextChapterLocked,
                     ),
                   ),
               ),

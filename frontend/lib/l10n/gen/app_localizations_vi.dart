@@ -234,6 +234,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get locked => 'Khóa';
 
   @override
+  String get nextChapterLocked => 'Chương tiếp (Khóa)';
+
+  @override
+  String get chapterLockedHint =>
+      'Chương này cần mở khóa để đọc. Vào Parent Zone để mở khóa.';
+
+  @override
+  String get chapterLocked => 'Chương này đã bị khóa';
+
+  @override
   String get categoryFolktale => 'Truyện cổ tích';
 
   @override

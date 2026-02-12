@@ -234,6 +234,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locked => 'Locked';
 
   @override
+  String get nextChapterLocked => 'Next chapter (Locked)';
+
+  @override
+  String get chapterLockedHint =>
+      'This chapter is locked. Go to Parent Zone to unlock.';
+
+  @override
+  String get chapterLocked => 'This chapter is locked';
+
+  @override
   String get categoryFolktale => 'Folktale';
 
   @override

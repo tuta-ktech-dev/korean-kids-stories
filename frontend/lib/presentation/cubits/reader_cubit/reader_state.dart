@@ -22,8 +22,10 @@ class ReaderLoaded extends ReaderState {
   final Chapter chapter;
   /// Previous chapter in the story, if any.
   final Chapter? prevChapter;
-  /// Next chapter in the story, if any.
+  /// Next chapter in the story (free), if any.
   final Chapter? nextChapter;
+  /// Next chapter bị khóa (để hiện nút mở khóa thay vì chuyển chapter).
+  final Chapter? nextChapterLocked;
   /// Multiple audio versions (different voices). Empty if no audio.
   final List<ChapterAudio> audios;
   /// Selected voice for playback. First item if audios not empty.
@@ -37,6 +39,7 @@ class ReaderLoaded extends ReaderState {
     required this.chapter,
     this.prevChapter,
     this.nextChapter,
+    this.nextChapterLocked,
     this.audios = const [],
     this.selectedAudio,
     this.fontSize = 18,
@@ -51,6 +54,7 @@ class ReaderLoaded extends ReaderState {
     Chapter? chapter,
     Chapter? prevChapter,
     Chapter? nextChapter,
+    Chapter? nextChapterLocked,
     List<ChapterAudio>? audios,
     ChapterAudio? selectedAudio,
     double? fontSize,
@@ -62,6 +66,7 @@ class ReaderLoaded extends ReaderState {
       chapter: chapter ?? this.chapter,
       prevChapter: prevChapter ?? this.prevChapter,
       nextChapter: nextChapter ?? this.nextChapter,
+      nextChapterLocked: nextChapterLocked ?? this.nextChapterLocked,
       audios: audios ?? this.audios,
       selectedAudio: selectedAudio ?? this.selectedAudio,
       fontSize: fontSize ?? this.fontSize,
@@ -72,7 +77,7 @@ class ReaderLoaded extends ReaderState {
   }
 
   @override
-  List<Object?> get props => [chapter, prevChapter, nextChapter, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying];
+  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, isDarkMode, progress, isPlaying];
 }
 
 class ReaderError extends ReaderState {

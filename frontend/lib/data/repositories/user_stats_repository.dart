@@ -65,11 +65,13 @@ class UserStatsRepository {
         }
       }
 
+      // Story completed = đã hoàn thành TẤT CẢ chapter MIỄN PHÍ (không tính chapter khóa)
       int storiesCompleted = 0;
       for (final entry in storyToCompleted.entries) {
         final storyChapters = await _storyRepo.getChapters(entry.key);
-        if (storyChapters.isNotEmpty &&
-            entry.value.length >= storyChapters.length) {
+        final freeChapters = storyChapters.where((c) => c.isFree).toList();
+        if (freeChapters.isNotEmpty &&
+            entry.value.length >= freeChapters.length) {
           storiesCompleted++;
         }
       }

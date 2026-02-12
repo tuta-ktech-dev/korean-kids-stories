@@ -544,6 +544,24 @@ abstract class AppLocalizations {
   /// **'Locked'**
   String get locked;
 
+  /// No description provided for @nextChapterLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Next chapter (Locked)'**
+  String get nextChapterLocked;
+
+  /// No description provided for @chapterLockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter is locked. Go to Parent Zone to unlock.'**
+  String get chapterLockedHint;
+
+  /// No description provided for @chapterLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter is locked'**
+  String get chapterLocked;
+
   /// No description provided for @categoryFolktale.
   ///
   /// In en, this message translates to:

@@ -233,6 +233,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get locked => '잠금';
 
   @override
+  String get nextChapterLocked => '다음 화 (잠금)';
+
+  @override
+  String get chapterLockedHint => '이 화는 잠금되어 있어요. 설정에서 잠금을 해제해 주세요.';
+
+  @override
+  String get chapterLocked => '이 화는 잠금되어 있어요';
+
+  @override
   String get categoryFolktale => '전통동화';
 
   @override
