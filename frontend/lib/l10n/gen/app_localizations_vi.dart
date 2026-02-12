@@ -40,6 +40,33 @@ class AppLocalizationsVi extends AppLocalizations {
   String get landingStartButton => 'Bắt đầu';
 
   @override
+  String get onboardingPage1Title => 'Truyện cổ tích Hàn Quốc';
+
+  @override
+  String get onboardingPage1Desc =>
+      'Khám phá truyện cổ tích, lịch sử và truyền thuyết Hàn Quốc dành cho bé 5-10 tuổi.';
+
+  @override
+  String get onboardingPage2Title => 'Đọc truyện & Thu thập huy hiệu';
+
+  @override
+  String get onboardingPage2Desc =>
+      'Đọc truyện, nghe audio và nhận huy hiệu khi hoàn thành. Theo dõi tiến độ trong Lịch sử.';
+
+  @override
+  String get onboardingPage3Title => 'Khu vực phụ huynh';
+
+  @override
+  String get onboardingPage3Desc =>
+      'Cài đặt ngôn ngữ, xem hoạt động của bé và báo cáo nếu cần. Bảo vệ bằng PIN hoặc vân tay.';
+
+  @override
+  String get onboardingNextButton => 'Tiếp theo';
+
+  @override
+  String get onboardingStartButton => 'Bắt đầu';
+
+  @override
   String get browse => 'Khám phá';
 
   @override

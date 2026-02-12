@@ -160,6 +160,54 @@ abstract class AppLocalizations {
   /// **'Start'**
   String get landingStartButton;
 
+  /// No description provided for @onboardingPage1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean Kids Tales'**
+  String get onboardingPage1Title;
+
+  /// No description provided for @onboardingPage1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Korean folktales, history and legends for kids ages 5-10.'**
+  String get onboardingPage1Desc;
+
+  /// No description provided for @onboardingPage2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Read Stories & Collect Badges'**
+  String get onboardingPage2Title;
+
+  /// No description provided for @onboardingPage2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Read stories, listen to audio and earn stickers when you finish. Track your progress in History.'**
+  String get onboardingPage2Desc;
+
+  /// No description provided for @onboardingPage3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Zone'**
+  String get onboardingPage3Title;
+
+  /// No description provided for @onboardingPage3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Change language, view your child\'s activity and report issues. Protected by PIN or fingerprint.'**
+  String get onboardingPage3Desc;
+
+  /// No description provided for @onboardingNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNextButton;
+
+  /// No description provided for @onboardingStartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get onboardingStartButton;
+
   /// No description provided for @browse.
   ///
   /// In en, this message translates to:

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../presentation/components/navigation/app_bottom_nav.dart';
 import '../../presentation/widgets/responsive_padding.dart';
 import '../../presentation/screens/landing/landing_screen.dart';
+import '../../presentation/screens/onboarding/onboarding_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/story_detail/story_detail_screen.dart';
 import '../../presentation/screens/reader/reader_screen.dart';
@@ -27,6 +28,7 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
     // Landing screen (initial - guest-only flow)
     AutoRoute(path: '/', page: LandingRoute.page, initial: true),
+    AutoRoute(path: '/onboarding', page: OnboardingRoute.page),
 
     // Content & Search
     AutoRoute(path: '/stickers', page: StickersRoute.page),

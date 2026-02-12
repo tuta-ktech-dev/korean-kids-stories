@@ -39,6 +39,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get landingStartButton => '시작하기';
 
   @override
+  String get onboardingPage1Title => '한국 동화';
+
+  @override
+  String get onboardingPage1Desc => '5-10세 아이들을 위한 한국 민화, 역사, 전설 이야기를 들어보세요.';
+
+  @override
+  String get onboardingPage2Title => '이야기 읽기 & 뱃지 수집';
+
+  @override
+  String get onboardingPage2Desc =>
+      '이야기를 읽고 오디오를 들으며 완료하면 스티커를 받아요. 기록에서 진행 상황을 확인하세요.';
+
+  @override
+  String get onboardingPage3Title => '부모 영역';
+
+  @override
+  String get onboardingPage3Desc => '언어 변경, 자녀 활동 보기, 문의하기. PIN 또는 지문으로 보호됩니다.';
+
+  @override
+  String get onboardingNextButton => '다음';
+
+  @override
+  String get onboardingStartButton => '시작하기';
+
+  @override
   String get browse => '둘러보기';
 
   @override

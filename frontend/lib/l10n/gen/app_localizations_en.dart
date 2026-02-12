@@ -40,6 +40,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingStartButton => 'Start';
 
   @override
+  String get onboardingPage1Title => 'Korean Kids Tales';
+
+  @override
+  String get onboardingPage1Desc =>
+      'Discover Korean folktales, history and legends for kids ages 5-10.';
+
+  @override
+  String get onboardingPage2Title => 'Read Stories & Collect Badges';
+
+  @override
+  String get onboardingPage2Desc =>
+      'Read stories, listen to audio and earn stickers when you finish. Track your progress in History.';
+
+  @override
+  String get onboardingPage3Title => 'Parent Zone';
+
+  @override
+  String get onboardingPage3Desc =>
+      'Change language, view your child\'s activity and report issues. Protected by PIN or fingerprint.';
+
+  @override
+  String get onboardingNextButton => 'Next';
+
+  @override
+  String get onboardingStartButton => 'Start';
+
+  @override
   String get browse => 'Browse';
 
   @override

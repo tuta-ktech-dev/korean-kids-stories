@@ -73,8 +73,8 @@ func EnsureStickersCollection(app core.App) {
 	}
 
 	changes := false
-	// List/view: auth required, only published
-	if SetRules(collection, "@request.auth.id != '' && is_published = true", "@request.auth.id != '' && is_published = true", "", "", "") {
+	// List/view: public read for published stickers (guest can see level stickers)
+	if SetRules(collection, "is_published = true", "is_published = true", "", "", "") {
 		changes = true
 	}
 
