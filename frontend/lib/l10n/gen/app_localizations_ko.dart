@@ -600,6 +600,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get xp => '경험치';
 
   @override
+  String get currentRank => '현재 관직';
+
+  @override
+  String get nextRank => '다음 관직';
+
+  @override
+  String get levelUpCongratsTitle => '승진을 축하합니다! 🎉';
+
+  @override
+  String levelUpCongratsMessage(Object rank) {
+    return '$rank로 승진했어요!';
+  }
+
+  @override
+  String get maxLevelTitle => '최고 관직에 도달했어요! 👑';
+
+  @override
   String get stickerAlbum => '스티커 앨범';
 
   @override

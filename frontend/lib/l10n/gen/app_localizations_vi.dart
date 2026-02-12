@@ -603,6 +603,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String get xp => 'XP';
 
   @override
+  String get currentRank => 'Chức quan hiện tại';
+
+  @override
+  String get nextRank => 'Chức quan tiếp theo';
+
+  @override
+  String get levelUpCongratsTitle => 'Chúc mừng thăng chức! 🎉';
+
+  @override
+  String levelUpCongratsMessage(Object rank) {
+    return 'Bạn đã được thăng lên $rank!';
+  }
+
+  @override
+  String get maxLevelTitle => 'Đã đạt chức quan cao nhất! 👑';
+
+  @override
   String get stickerAlbum => 'Album sticker';
 
   @override

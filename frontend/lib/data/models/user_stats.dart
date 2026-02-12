@@ -1,5 +1,7 @@
 import 'package:pocketbase/pocketbase.dart';
 
+import '../../core/constants/sticker_constants.dart';
+
 class UserStats {
   final String id;
   final String userId;
@@ -22,6 +24,29 @@ class UserStats {
     this.chaptersListened = 0,
     this.storiesCompleted = 0,
   });
+
+  /// Create from local-computed values (guest, no PocketBase)
+  factory UserStats.fromLocal({
+    required double totalXp,
+    required int chaptersRead,
+    int chaptersListened = 0,
+    int storiesCompleted = 0,
+    int streakDays = 0,
+    String? lastActivityDate,
+  }) {
+    final level = levelFromXp(totalXp).clamp(1, 18);
+    return UserStats(
+      id: 'local_guest',
+      userId: 'guest',
+      totalXp: totalXp,
+      level: level,
+      streakDays: streakDays,
+      lastActivityDate: lastActivityDate,
+      chaptersRead: chaptersRead,
+      chaptersListened: chaptersListened,
+      storiesCompleted: storiesCompleted,
+    );
+  }
 
   factory UserStats.fromRecord(RecordModel record) {
     return UserStats(

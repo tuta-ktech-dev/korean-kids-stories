@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,14 +28,59 @@ class StickersScreen extends StatelessWidget {
       ),
       body: BlocProvider(
         create: (_) => getIt<StatsCubit>()..loadStats(),
-        child: const _StickersView(),
+        child: BlocListener<StatsCubit, StatsState>(
+          listenWhen: (prev, curr) =>
+              curr.levelUpTo != null && curr.levelUpTo != prev.levelUpTo,
+          listener: (context, state) {
+            if (state.levelUpTo != null) {
+              _showLevelUpCongratsDialog(context, state.levelUpTo!);
+              context.read<StatsCubit>().clearLevelUp();
+            }
+          },
+          child: const _StickersView(),
+        ),
       ),
     );
   }
 }
 
-class _StickersView extends StatelessWidget {
+const int _stickersTabIndex = 1;
+
+class _StickersView extends StatefulWidget {
   const _StickersView();
+
+  @override
+  State<_StickersView> createState() => _StickersViewState();
+}
+
+class _StickersViewState extends State<_StickersView> {
+  TabsRouter? _tabsRouter;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final router = context.tabsRouter;
+    if (_tabsRouter != router) {
+      _tabsRouter?.removeListener(_onTabChanged);
+      _tabsRouter = router;
+      router.addListener(_onTabChanged);
+      if (router.activeIndex == _stickersTabIndex) {
+        context.read<StatsCubit>().loadStats();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabsRouter?.removeListener(_onTabChanged);
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (mounted && _tabsRouter?.activeIndex == _stickersTabIndex) {
+      context.read<StatsCubit>().loadStats();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +129,11 @@ class _StickersView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header stats + progress bar
+                  // Header stats + progress bar (level + ảnh từ server)
                   _StatsHeader(
                     level: level,
                     totalXp: totalXp,
+                    levelSticker: levelSticker,
                   ),
                   const SizedBox(height: 24),
 
@@ -114,7 +161,7 @@ class _StickersView extends StatelessWidget {
                         crossAxisCount: 3,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        childAspectRatio: 0.8,
+                        childAspectRatio: 1.0, // Square stickers
                       ),
                       itemCount: storyStickers.length,
                       itemBuilder: (context, index) {
@@ -147,13 +194,51 @@ class _StickersView extends StatelessWidget {
   }
 }
 
+void _showLevelUpCongratsDialog(BuildContext context, int newLevel) {
+  final rank = getLevelRank(newLevel);
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+      ),
+      title: Text(
+        context.l10n.levelUpCongratsTitle,
+        textAlign: TextAlign.center,
+        style: AppTheme.headingMedium(context),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            context.l10n.levelUpCongratsMessage(
+              '${rank.nameKo} (${rank.rankKo})',
+            ),
+            textAlign: TextAlign.center,
+            style: AppTheme.bodyMedium(context),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(),
+          child: Text(context.l10n.continueAction),
+        ),
+      ],
+    ),
+  );
+}
+
 class _StatsHeader extends StatelessWidget {
   final int level;
   final double totalXp;
+  final Sticker? levelSticker;
 
   const _StatsHeader({
     required this.level,
     required this.totalXp,
+    this.levelSticker,
   });
 
   @override
@@ -164,6 +249,8 @@ class _StatsHeader extends StatelessWidget {
     final nextThreshold = level < 18 && level < xpLevelThresholds.length
         ? xpLevelThresholds[level]
         : currentThreshold;
+    final currentRank = getLevelRank(level);
+    final nextRank = level < 18 ? getLevelRank(level + 1) : null;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -181,21 +268,83 @@ class _StatsHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Level + ảnh từ server
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _StatItem(
-                label: context.l10n.level,
-                value: '$level',
+              if (levelSticker?.imageUrl != null &&
+                  levelSticker!.imageUrl!.isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: levelSticker!.imageUrl!,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.primaryColor(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) => Icon(
+                      Icons.emoji_events,
+                      size: 40,
+                      color: AppTheme.primaryColor(context),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.currentRank,
+                      style: AppTheme.caption(context).copyWith(
+                        color: AppTheme.textMutedColor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${currentRank.nameKo} (${currentRank.rankKo})',
+                      style: AppTheme.headingMedium(context),
+                    ),
+                  ],
+                ),
               ),
-              _StatItem(
-                label: context.l10n.xp,
-                value: '${totalXp.toInt()}',
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor(context).withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${context.l10n.level} $level',
+                  style: AppTheme.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryColor(context),
+                  ),
+                ),
               ),
             ],
           ),
-          if (progress != null) ...[
-            const SizedBox(height: 12),
+          const SizedBox(height: 12),
+          // XP progress
+          _StatItem(
+            label: context.l10n.xp,
+            value: '${totalXp.toInt()}',
+          ),
+          if (progress != null && nextRank != null) ...[
+            const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
@@ -207,11 +356,30 @@ class _StatsHeader extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${totalXp.toInt()} / ${nextThreshold.toInt()} XP',
+                  style: AppTheme.caption(context).copyWith(
+                    color: AppTheme.textMutedColor(context),
+                  ),
+                ),
+                Text(
+                  '${context.l10n.nextRank}: ${nextRank.nameKo}',
+                  style: AppTheme.caption(context).copyWith(
+                    color: AppTheme.textMutedColor(context),
+                  ),
+                ),
+              ],
+            ),
+          ] else if (level >= 18) ...[
+            const SizedBox(height: 8),
             Text(
-              '${totalXp.toInt()} / ${nextThreshold.toInt()} XP',
-              style: AppTheme.caption(context).copyWith(
-                color: AppTheme.textMutedColor(context),
+              context.l10n.maxLevelTitle,
+              style: AppTheme.bodyMedium(context).copyWith(
+                color: AppTheme.primaryColor(context),
               ),
             ),
           ],
@@ -278,16 +446,47 @@ class _LevelStickerCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SizedBox(
-                height: 120,
+              // Level badge
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor(context).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${context.l10n.level} ${(sticker.level ?? 0).toInt()}',
+                    style: AppTheme.caption(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.primaryColor(context),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Ảnh từ server
+              AspectRatio(
+                aspectRatio: 1,
                 child: sticker.imageUrl != null && sticker.imageUrl!.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          sticker.imageUrl!,
+                        child: CachedNetworkImage(
+                          imageUrl: sticker.imageUrl!,
                           fit: BoxFit.contain,
                           width: double.infinity,
-                          errorBuilder: (context, error, stackTrace) => Icon(
+                          height: double.infinity,
+                          placeholder: (_, __) => Center(
+                            child: SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.primaryColor(context),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Icon(
                             Icons.emoji_events,
                             size: 80,
                             color: AppTheme.primaryColor(context),
@@ -335,10 +534,15 @@ class _LevelStickerPlaceholder extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.emoji_events_outlined,
-            size: 80,
-            color: AppTheme.textMutedColor(context),
+          AspectRatio(
+            aspectRatio: 1,
+            child: Center(
+              child: Icon(
+                Icons.emoji_events_outlined,
+                size: 80,
+                color: AppTheme.textMutedColor(context),
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -387,11 +591,22 @@ class _StickerCard extends StatelessWidget {
                 child: sticker.imageUrl != null && sticker.imageUrl!.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          sticker.imageUrl!,
-                          fit: BoxFit.cover,
+                        child: CachedNetworkImage(
+                          imageUrl: sticker.imageUrl!,
+                          fit: BoxFit.contain,
                           width: double.infinity,
-                          errorBuilder: (context, error, stackTrace) => Icon(
+                          height: double.infinity,
+                          placeholder: (_, __) => Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.primaryColor(context),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Icon(
                             Icons.emoji_events,
                             size: 48,
                             color: AppTheme.primaryColor(context),
@@ -475,15 +690,28 @@ class _StickerDetailDialog extends StatelessWidget {
             if (sticker.imageUrl != null && sticker.imageUrl!.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  sticker.imageUrl!,
-                  height: 160,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.emoji_events,
-                    size: 80,
-                    color: AppTheme.primaryColor(context),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: CachedNetworkImage(
+                    imageUrl: sticker.imageUrl!,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                    height: double.infinity,
+                    placeholder: (_, __) => Center(
+                      child: SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppTheme.primaryColor(context),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) => Icon(
+                      Icons.emoji_events,
+                      size: 80,
+                      color: AppTheme.primaryColor(context),
+                    ),
                   ),
                 ),
               )

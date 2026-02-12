@@ -73,9 +73,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i96.ContentPageRepository>(
       () => _i96.ContentPageRepository(gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i1058.UserStatsRepository>(
-      () => _i1058.UserStatsRepository(gh<_i700.PocketbaseService>()),
-    );
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
@@ -163,6 +160,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i519.AuthCubit>(
       () => _i519.AuthCubit(authRepository: gh<_i593.AuthRepository>()),
+    );
+    gh.factory<_i1058.UserStatsRepository>(
+      () => _i1058.UserStatsRepository(
+        gh<_i700.PocketbaseService>(),
+        gh<_i369.ProgressRepository>(),
+        gh<_i691.StoryRepository>(),
+      ),
     );
     return this;
   }

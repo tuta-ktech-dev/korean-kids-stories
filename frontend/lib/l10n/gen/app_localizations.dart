@@ -1240,6 +1240,36 @@ abstract class AppLocalizations {
   /// **'XP'**
   String get xp;
 
+  /// No description provided for @currentRank.
+  ///
+  /// In en, this message translates to:
+  /// **'Current rank'**
+  String get currentRank;
+
+  /// No description provided for @nextRank.
+  ///
+  /// In en, this message translates to:
+  /// **'Next rank'**
+  String get nextRank;
+
+  /// No description provided for @levelUpCongratsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations on your promotion! 🎉'**
+  String get levelUpCongratsTitle;
+
+  /// No description provided for @levelUpCongratsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been promoted to {rank}!'**
+  String levelUpCongratsMessage(Object rank);
+
+  /// No description provided for @maxLevelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum rank reached! 👑'**
+  String get maxLevelTitle;
+
   /// No description provided for @stickerAlbum.
   ///
   /// In en, this message translates to:

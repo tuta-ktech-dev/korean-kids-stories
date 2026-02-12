@@ -10,6 +10,8 @@ class StatsState extends Equatable {
   final List<Sticker> levelStickers;
   final bool isLoading;
   final String? error;
+  /// Level vừa thăng (để hiển thị dialog chúc mừng)
+  final int? levelUpTo;
 
   const StatsState({
     this.stats,
@@ -17,6 +19,7 @@ class StatsState extends Equatable {
     this.levelStickers = const [],
     this.isLoading = false,
     this.error,
+    this.levelUpTo,
   });
 
   StatsState copyWith({
@@ -25,6 +28,7 @@ class StatsState extends Equatable {
     List<Sticker>? levelStickers,
     bool? isLoading,
     String? error,
+    int? levelUpTo,
   }) {
     return StatsState(
       stats: stats ?? this.stats,
@@ -32,9 +36,11 @@ class StatsState extends Equatable {
       levelStickers: levelStickers ?? this.levelStickers,
       isLoading: isLoading ?? this.isLoading,
       error: error,
+      levelUpTo: levelUpTo,
     );
   }
 
   @override
-  List<Object?> get props => [stats, unlockedStickers, levelStickers, isLoading, error];
+  List<Object?> get props =>
+      [stats, unlockedStickers, levelStickers, isLoading, error, levelUpTo];
 }

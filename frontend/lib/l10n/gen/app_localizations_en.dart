@@ -606,6 +606,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get xp => 'XP';
 
   @override
+  String get currentRank => 'Current rank';
+
+  @override
+  String get nextRank => 'Next rank';
+
+  @override
+  String get levelUpCongratsTitle => 'Congratulations on your promotion! 🎉';
+
+  @override
+  String levelUpCongratsMessage(Object rank) {
+    return 'You\'ve been promoted to $rank!';
+  }
+
+  @override
+  String get maxLevelTitle => 'Maximum rank reached! 👑';
+
+  @override
   String get stickerAlbum => 'Sticker Album';
 
   @override
