@@ -39,16 +39,25 @@ class _StoryThumbnail extends StatelessWidget {
     return true;
   }
 
+  /// Get optimized thumbnail URL for detail view
+  /// Uses 600x600 for larger display while keeping size reasonable
+  String? get _optimizedThumbnailUrl {
+    if (!_hasValidThumbnail) return null;
+    final separator = story.thumbnailUrl!.contains('?') ? '&' : '?';
+    return '${story.thumbnailUrl}${separator}thumb=600x600';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: categoryColor.withValues(alpha: 0.2),
       child: _hasValidThumbnail
           ? CachedNetworkImage(
-              imageUrl: story.thumbnailUrl!,
+              imageUrl: _optimizedThumbnailUrl!,
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,
+              memCacheWidth: 600, // Optimize memory cache
               placeholder: (context, url) => _buildPlaceholder(),
               errorWidget: (context, url, error) => _buildPlaceholder(),
             )

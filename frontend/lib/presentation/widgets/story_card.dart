@@ -54,6 +54,16 @@ class StoryCard extends StatelessWidget {
     return true;
   }
 
+  /// Get optimized thumbnail URL with size parameter
+  /// Card size ~160px, so 300x300 thumb is sufficient (~50-100KB instead of 1MB+)
+  String? get _optimizedThumbnailUrl {
+    if (!_hasValidThumbnail) return null;
+    
+    // Add thumb=300x300 for optimized size
+    final separator = thumbnailUrl!.contains('?') ? '&' : '?';
+    return '$thumbnailUrl${separator}thumb=300x300';
+  }
+
   /// Age icons: 1 = 5-6, 2 = 7-8, 3 = 9-10
   int get _ageIconCount {
     if (ageMax <= 6) return 1;
@@ -167,10 +177,11 @@ class StoryCard extends StatelessWidget {
                     // Image or placeholder
                     _hasValidThumbnail
                         ? CachedNetworkImage(
-                            imageUrl: thumbnailUrl!,
+                            imageUrl: _optimizedThumbnailUrl!,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
+                            memCacheWidth: 300, // Optimize memory cache
                             placeholder: (_, _) => ImagePlaceholder.story(
                               width: double.infinity,
                               height: double.infinity,
