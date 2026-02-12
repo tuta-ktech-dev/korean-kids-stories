@@ -12,7 +12,6 @@ import '../../cubits/progress_cubit/progress_cubit.dart';
 import '../../cubits/reader_cubit/reader_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../components/buttons/bookmark_buttons.dart';
-import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../widgets/responsive_padding.dart';
 import '../../cubits/note_cubit/note_cubit.dart';
 import 'widgets/reader_bottom_bar.dart';
@@ -199,6 +198,7 @@ class _ReaderViewState extends State<ReaderView> {
       durationSeconds: _getDurationSeconds(),
     );
     if (!mounted) return;
+    if (!context.mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -522,20 +522,12 @@ class _ReaderViewState extends State<ReaderView> {
                       ),
                       centerTitle: true,
                       actions: [
-                        BlocBuilder<AuthCubit, AuthState>(
-                          buildWhen: (p, c) => c is Authenticated,
-                          builder: (context, authState) {
-                            if (authState is! Authenticated) {
-                              return const SizedBox.shrink();
-                            }
-                            return IconButton(
-                              icon: Icon(
-                                Icons.note_add_outlined,
-                                color: AppTheme.textColor(context),
-                              ),
-                              onPressed: () => _addNote(context, state),
-                            );
-                          },
+                        IconButton(
+                          icon: Icon(
+                            Icons.note_add_outlined,
+                            color: AppTheme.textColor(context),
+                          ),
+                          onPressed: () => _addNote(context, state),
                         ),
                         IconButton(
                           icon: Icon(
@@ -724,8 +716,7 @@ class _ReaderViewState extends State<ReaderView> {
                           child: SliderTheme(
                             data: SliderThemeData(
                               activeTrackColor: AppTheme.primaryColor(ctx),
-                              inactiveTrackColor:
-                                  AppTheme.textMutedColor(ctx),
+                              inactiveTrackColor: AppTheme.textMutedColor(ctx),
                               thumbColor: AppTheme.primaryColor(ctx),
                             ),
                             child: Slider(
@@ -744,9 +735,7 @@ class _ReaderViewState extends State<ReaderView> {
                         ),
                         Text(
                           '${state.fontSize.round()}',
-                          style: TextStyle(
-                            color: AppTheme.textMutedColor(ctx),
-                          ),
+                          style: TextStyle(color: AppTheme.textMutedColor(ctx)),
                         ),
                       ],
                     ),
@@ -758,8 +747,9 @@ class _ReaderViewState extends State<ReaderView> {
                             child: SliderTheme(
                               data: SliderThemeData(
                                 activeTrackColor: AppTheme.primaryColor(ctx),
-                                inactiveTrackColor:
-                                    AppTheme.textMutedColor(ctx),
+                                inactiveTrackColor: AppTheme.textMutedColor(
+                                  ctx,
+                                ),
                                 thumbColor: AppTheme.primaryColor(ctx),
                               ),
                               child: Slider(

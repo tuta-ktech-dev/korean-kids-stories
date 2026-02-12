@@ -18,6 +18,7 @@ class AppBottomNav extends StatelessWidget {
     final items = [
       _NavItemData(icon: Icons.home_rounded, semanticLabel: l10n.homeTab),
       _NavItemData(icon: Icons.emoji_events_rounded, semanticLabel: l10n.stickerAlbum),
+      _NavItemData(icon: Icons.library_books_rounded, semanticLabel: l10n.libraryTab),
       _NavItemData(icon: Icons.history_rounded, semanticLabel: l10n.historyTab),
       _NavItemData(icon: Icons.settings_rounded, semanticLabel: l10n.settingsTab),
     ];

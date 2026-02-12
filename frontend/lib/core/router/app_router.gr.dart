@@ -112,22 +112,6 @@ class LibraryRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [LoginScreen]
-class LoginRoute extends PageRouteInfo<void> {
-  const LoginRoute({List<PageRouteInfo>? children})
-    : super(LoginRoute.name, initialChildren: children);
-
-  static const String name = 'LoginRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const LoginScreen();
-    },
-  );
-}
-
-/// generated route for
 /// [MainScreen]
 class MainRoute extends PageRouteInfo<void> {
   const MainRoute({List<PageRouteInfo>? children})
@@ -157,42 +141,6 @@ class OnboardingRoute extends PageRouteInfo<void> {
       return const OnboardingScreen();
     },
   );
-}
-
-/// generated route for
-/// [OtpVerificationScreen]
-class OtpVerificationRoute extends PageRouteInfo<OtpVerificationRouteArgs> {
-  OtpVerificationRoute({Key? key, String? email, List<PageRouteInfo>? children})
-    : super(
-        OtpVerificationRoute.name,
-        args: OtpVerificationRouteArgs(key: key, email: email),
-        initialChildren: children,
-      );
-
-  static const String name = 'OtpVerificationRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<OtpVerificationRouteArgs>(
-        orElse: () => const OtpVerificationRouteArgs(),
-      );
-      return OtpVerificationScreen(key: args.key, email: args.email);
-    },
-  );
-}
-
-class OtpVerificationRouteArgs {
-  const OtpVerificationRouteArgs({this.key, this.email});
-
-  final Key? key;
-
-  final String? email;
-
-  @override
-  String toString() {
-    return 'OtpVerificationRouteArgs{key: $key, email: $email}';
-  }
 }
 
 /// generated route for
@@ -284,22 +232,6 @@ class ReaderRouteArgs {
   String toString() {
     return 'ReaderRouteArgs{key: $key, storyId: $storyId, chapterId: $chapterId}';
   }
-}
-
-/// generated route for
-/// [RegisterScreen]
-class RegisterRoute extends PageRouteInfo<void> {
-  const RegisterRoute({List<PageRouteInfo>? children})
-    : super(RegisterRoute.name, initialChildren: children);
-
-  static const String name = 'RegisterRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const RegisterScreen();
-    },
-  );
 }
 
 /// generated route for

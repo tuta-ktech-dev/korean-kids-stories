@@ -12,10 +12,7 @@ import '../../presentation/screens/history/history_screen.dart';
 import '../../presentation/screens/settings/settings_screen.dart';
 import '../../presentation/screens/content_page/content_page_screen.dart';
 import '../../presentation/screens/library/library_screen.dart';
-import '../../presentation/screens/login/login_screen.dart';
 import '../../presentation/screens/profile/profile_screen.dart';
-import '../../presentation/screens/register/register_screen.dart';
-import '../../presentation/screens/otp_verification/otp_verification_screen.dart';
 import '../../presentation/screens/search/search_screen.dart';
 import '../../presentation/screens/stickers/stickers_screen.dart';
 import '../../presentation/screens/parent_zone/parent_zone_screen.dart';
@@ -33,18 +30,19 @@ class AppRouter extends RootStackRouter {
     // Content & Search
     AutoRoute(path: '/stickers', page: StickersRoute.page),
     AutoRoute(path: '/content/:slug', page: ContentRouteRoute.page),
-    AutoRoute(path: '/verify-otp', page: OtpVerificationRoute.page),
+    AutoRoute(path: '/library', page: LibraryRoute.page),
     AutoRoute(path: '/search', page: SearchRoute.page),
     AutoRoute(path: '/story/:id', page: StoryDetailRoute.page),
     AutoRoute(path: '/reader/:storyId/:chapterId', page: ReaderRoute.page),
 
-    // Main app - Guest-only, no login
+    // Main app - Kids app, no login
     AutoRoute(
       path: '/main',
       page: MainRoute.page,
       children: [
         AutoRoute(path: 'home', page: HomeRoute.page),
         AutoRoute(path: 'stickers', page: StickersRoute.page),
+        AutoRoute(path: 'library', page: LibraryRoute.page),
         AutoRoute(path: 'history', page: HistoryRoute.page),
         AutoRoute(path: 'settings', page: ParentZoneRoute.page),
       ],
@@ -62,6 +60,7 @@ class MainScreen extends StatelessWidget {
       routes: const [
         HomeRoute(),
         StickersRoute(),
+        LibraryRoute(),
         HistoryRoute(),
         ParentZoneRoute(),
       ],

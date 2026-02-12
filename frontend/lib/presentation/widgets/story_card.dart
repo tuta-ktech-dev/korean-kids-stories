@@ -73,9 +73,11 @@ class StoryCard extends StatelessWidget {
       spacing: 4,
       children: [
         if (isFeatured) _buildBadge(context, Icons.star_rounded, Colors.amber),
-        if (hasAudio) _buildBadge(context, Icons.headphones_rounded, Colors.orange),
+        if (hasAudio)
+          _buildBadge(context, Icons.headphones_rounded, Colors.orange),
         if (hasQuiz) _buildBadge(context, Icons.quiz_rounded, Colors.green),
-        if (hasIllustrations) _buildBadge(context, Icons.palette_rounded, Colors.purple),
+        if (hasIllustrations)
+          _buildBadge(context, Icons.palette_rounded, Colors.purple),
       ],
     );
   }
@@ -89,8 +91,9 @@ class StoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: (isDark ? Colors.white : Colors.black)
-                .withValues(alpha: isDark ? 0.08 : 0.1),
+            color: (isDark ? Colors.white : Colors.black).withValues(
+              alpha: isDark ? 0.08 : 0.1,
+            ),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -168,17 +171,21 @@ class StoryCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
-                            placeholder: (_, __) => ImagePlaceholder.story(
+                            placeholder: (_, _) => ImagePlaceholder.story(
                               width: double.infinity,
                               height: double.infinity,
-                              backgroundColor: categoryColor.withValues(alpha: 0.2),
+                              backgroundColor: categoryColor.withValues(
+                                alpha: 0.2,
+                              ),
                               iconColor: categoryColor,
                               borderRadius: 0,
                             ),
-                            errorWidget: (_, __, ___) => ImagePlaceholder.story(
+                            errorWidget: (_, _, _) => ImagePlaceholder.story(
                               width: double.infinity,
                               height: double.infinity,
-                              backgroundColor: categoryColor.withValues(alpha: 0.2),
+                              backgroundColor: categoryColor.withValues(
+                                alpha: 0.2,
+                              ),
                               iconColor: categoryColor,
                               borderRadius: 0,
                             ),
@@ -193,7 +200,11 @@ class StoryCard extends StatelessWidget {
                             borderRadius: 0,
                           ),
                     // Feature badges
-                    Positioned(top: 8, right: 8, child: _buildFeatureBadges(context)),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _buildFeatureBadges(context),
+                    ),
                   ],
                 ),
               ),
@@ -225,21 +236,40 @@ class StoryCard extends StatelessWidget {
             const SizedBox(height: 4),
             // Age (icons) + chapters (icons) + audio badge
             Semantics(
-              label: '${context.l10n.ageYearsFormat(ageMin, ageMax)}, ${context.l10n.episodesFormat(totalChapters)}${hasAudio ? ', ${context.l10n.audioStories}' : ''}',
+              label:
+                  '${context.l10n.ageYearsFormat(ageMin, ageMax)}, ${context.l10n.episodesFormat(totalChapters)}${hasAudio ? ', ${context.l10n.audioStories}' : ''}',
               child: Row(
                 children: [
-                  ...List.generate(_ageIconCount, (_) => Padding(
-                    padding: const EdgeInsets.only(right: 2),
-                    child: Icon(Icons.child_care_rounded, size: 18, color: AppTheme.textMutedColor(context)),
-                  )),
+                  ...List.generate(
+                    _ageIconCount,
+                    (_) => Padding(
+                      padding: const EdgeInsets.only(right: 2),
+                      child: Icon(
+                        Icons.child_care_rounded,
+                        size: 18,
+                        color: AppTheme.textMutedColor(context),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  ...List.generate(_chapterIconCount, (_) => Padding(
-                    padding: const EdgeInsets.only(right: 2),
-                    child: Icon(Icons.menu_book_rounded, size: 18, color: AppTheme.textMutedColor(context)),
-                  )),
+                  ...List.generate(
+                    _chapterIconCount,
+                    (_) => Padding(
+                      padding: const EdgeInsets.only(right: 2),
+                      child: Icon(
+                        Icons.menu_book_rounded,
+                        size: 18,
+                        color: AppTheme.textMutedColor(context),
+                      ),
+                    ),
+                  ),
                   if (hasAudio) ...[
                     const SizedBox(width: 12),
-                    Icon(Icons.headphones_rounded, size: 18, color: Colors.orange.shade700),
+                    Icon(
+                      Icons.headphones_rounded,
+                      size: 18,
+                      color: Colors.orange.shade700,
+                    ),
                   ],
                 ],
               ),

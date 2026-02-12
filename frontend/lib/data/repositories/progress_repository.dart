@@ -19,7 +19,8 @@ class ProgressRepository {
 
   PocketBase get _pb => _pbService.pb;
 
-  bool get _useLocal => !_pbService.isAuthenticated;
+  /// Kids app: always use local storage (no login)
+  bool get _useLocal => true;
 
   /// Lấy progress của user cho chapter cụ thể
   Future<ReadingProgress?> getProgress(String chapterId) async {
@@ -100,8 +101,12 @@ class ProgressRepository {
       if (lastPosition != null) {
         data['last_position'] = lastPosition;
       }
-      if (isCompleted != null) {
-        data['is_completed'] = isCompleted;
+      // Never overwrite is_completed from true → false: once completed, stays completed.
+      // This avoids "double XP" when user replays a completed chapter.
+      if (isCompleted == true) {
+        data['is_completed'] = true;
+      } else if (isCompleted == false && (existing?.isCompleted != true)) {
+        data['is_completed'] = false;
       }
 
       RecordModel record;

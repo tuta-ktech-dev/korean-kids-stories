@@ -17,6 +17,9 @@ import 'data/repositories/auth_repository.dart' as _i593;
 import 'data/repositories/bookmark_repository.dart' as _i318;
 import 'data/repositories/content_page_repository.dart' as _i96;
 import 'data/repositories/favorite_repository.dart' as _i266;
+import 'data/repositories/local_bookmark_repository.dart' as _i504;
+import 'data/repositories/local_favorite_repository.dart' as _i252;
+import 'data/repositories/local_note_repository.dart' as _i657;
 import 'data/repositories/local_progress_repository.dart' as _i825;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
@@ -61,10 +64,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => injectionModule.trackingService,
     );
     gh.lazySingleton<_i1055.SettingsCubit>(() => _i1055.SettingsCubit());
-    gh.lazySingleton<_i686.BookmarkCubit>(
-      () => _i686.BookmarkCubit(
-        bookmarkRepository: gh<_i318.BookmarkRepository>(),
-        pocketbaseService: gh<_i700.PocketbaseService>(),
+    gh.lazySingleton<_i657.LocalNoteRepository>(
+      () => _i657.LocalNoteRepository(),
+    );
+    gh.lazySingleton<_i252.LocalFavoriteRepository>(
+      () => _i252.LocalFavoriteRepository(),
+    );
+    gh.lazySingleton<_i504.LocalBookmarkRepository>(
+      () => _i504.LocalBookmarkRepository(),
+    );
+    gh.lazySingleton<_i739.FavoriteCubit>(
+      () => _i739.FavoriteCubit(
+        favoriteRepository: gh<_i266.FavoriteRepository>(),
       ),
     );
     gh.factory<_i593.AuthRepository>(
@@ -76,9 +87,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1049.ReviewRepository>(
       () => _i1049.ReviewRepository(gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i318.BookmarkRepository>(
-      () => _i318.BookmarkRepository(gh<_i700.PocketbaseService>()),
-    );
     gh.factory<_i726.ReportRepository>(
       () => _i726.ReportRepository(gh<_i700.PocketbaseService>()),
     );
@@ -87,9 +95,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i577.StickerRepository>(
       () => _i577.StickerRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i627.NoteRepository>(
-      () => _i627.NoteRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i691.StoryRepository>(
       () => _i691.StoryRepository(gh<_i700.PocketbaseService>()),
@@ -100,11 +105,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i83.AppConfigRepository>(
       () => _i83.AppConfigRepository(gh<_i700.PocketbaseService>()),
     );
-    gh.factory<_i266.FavoriteRepository>(
-      () => _i266.FavoriteRepository(gh<_i700.PocketbaseService>()),
-    );
     gh.factory<_i526.PremiumService>(
       () => _i526.PremiumService(gh<_i700.PocketbaseService>()),
+    );
+    gh.factory<_i266.FavoriteRepository>(
+      () => _i266.FavoriteRepository(
+        gh<_i252.LocalFavoriteRepository>(),
+        gh<_i691.StoryRepository>(),
+      ),
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),
@@ -127,16 +135,12 @@ extension GetItInjectableX on _i174.GetIt {
         storyRepository: gh<_i691.StoryRepository>(),
       ),
     );
-    gh.lazySingleton<_i764.NoteCubit>(
-      () => _i764.NoteCubit(
-        noteRepository: gh<_i627.NoteRepository>(),
-        pocketbaseService: gh<_i700.PocketbaseService>(),
-      ),
+    gh.factory<_i627.NoteRepository>(
+      () => _i627.NoteRepository(gh<_i657.LocalNoteRepository>()),
     );
-    gh.lazySingleton<_i739.FavoriteCubit>(
-      () => _i739.FavoriteCubit(
-        favoriteRepository: gh<_i266.FavoriteRepository>(),
-        pocketbaseService: gh<_i700.PocketbaseService>(),
+    gh.lazySingleton<_i686.BookmarkCubit>(
+      () => _i686.BookmarkCubit(
+        bookmarkRepository: gh<_i318.BookmarkRepository>(),
       ),
     );
     gh.factory<_i369.ProgressRepository>(
@@ -151,6 +155,15 @@ extension GetItInjectableX on _i174.GetIt {
         progressRepository: gh<_i369.ProgressRepository>(),
         readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
       ),
+    );
+    gh.factory<_i318.BookmarkRepository>(
+      () => _i318.BookmarkRepository(
+        gh<_i504.LocalBookmarkRepository>(),
+        gh<_i691.StoryRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i764.NoteCubit>(
+      () => _i764.NoteCubit(noteRepository: gh<_i627.NoteRepository>()),
     );
     gh.lazySingleton<_i349.SearchCubit>(
       () => _i349.SearchCubit(

@@ -77,8 +77,11 @@ class LocalProgressRepository {
       if (lastPosition != null) {
         data['last_position'] = lastPosition;
       }
-      if (isCompleted != null) {
-        data['is_completed'] = isCompleted;
+      // Never overwrite is_completed from true → false: once completed, stays completed.
+      if (isCompleted == true) {
+        data['is_completed'] = true;
+      } else if (isCompleted == false && data['is_completed'] != true) {
+        data['is_completed'] = false;
       }
 
       all[chapterId] = data;
@@ -181,7 +184,7 @@ class LocalProgressRepository {
 
   Future<Map<String, dynamic>> _getAllMap() async {
     final raw = await _prefs.getString(_storageKey);
-    if (raw == null || raw.isEmpty) return {};
+    if (raw.isEmpty) return {};
     try {
       final decoded = jsonDecode(raw);
       return decoded is Map ? Map<String, dynamic>.from(decoded) : {};

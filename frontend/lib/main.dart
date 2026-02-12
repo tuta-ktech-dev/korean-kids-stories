@@ -8,12 +8,11 @@ import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
 import 'injection.dart';
 import 'l10n/gen/app_localizations.dart';
-import 'presentation/cubits/auth_cubit/auth_cubit.dart';
 import 'presentation/cubits/bookmark_cubit/bookmark_cubit.dart';
 import 'presentation/cubits/favorite_cubit/favorite_cubit.dart';
 import 'presentation/cubits/history_cubit/history_cubit.dart';
-import 'presentation/cubits/note_cubit/note_cubit.dart';
 import 'presentation/cubits/home_cubit/home_cubit.dart';
+import 'presentation/cubits/note_cubit/note_cubit.dart';
 import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
 import 'presentation/cubits/settings_cubit/settings_cubit.dart';
@@ -41,57 +40,52 @@ class KoreanKidsStoriesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
+        BlocProvider(
+          create: (_) =>
+              getIt<FavoriteCubit>()
+                ..loadFavorites(),
+        ),
+        BlocProvider(
+          create: (_) =>
+              getIt<BookmarkCubit>()
+                ..loadBookmarks(),
+        ),
+        BlocProvider(
+          create: (_) =>
+              getIt<NoteCubit>()
+                ..loadNotes(),
+        ),
         BlocProvider(create: (_) => getIt<HomeCubit>()),
-        BlocProvider(create: (_) => getIt<FavoriteCubit>()),
-        BlocProvider(create: (_) => getIt<BookmarkCubit>()),
-        BlocProvider(create: (_) => getIt<NoteCubit>()),
         BlocProvider(create: (_) => getIt<ProgressCubit>()),
         BlocProvider(create: (_) => getIt<HistoryCubit>()),
         BlocProvider(create: (_) => getIt<SearchCubit>()),
         BlocProvider(create: (_) => getIt<SettingsCubit>()..loadSettings()),
         BlocProvider(create: (_) => getIt<StatsCubit>()),
       ],
-      child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (p, c) => p.runtimeType != c.runtimeType,
-        listener: (context, state) {
-          if (state is Authenticated) {
-            context.read<FavoriteCubit>().loadFavorites();
-            context.read<BookmarkCubit>().loadBookmarks();
-            context.read<NoteCubit>().loadNotes();
-            context.read<StatsCubit>().loadStats();
-          } else if (state is Unauthenticated) {
-            context.read<FavoriteCubit>().clearFavorites();
-            context.read<BookmarkCubit>().clearBookmarks();
-            context.read<NoteCubit>().clearNotes();
-          }
-          // Don't clear on AuthLoading/AuthInitial - only on explicit logout
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            onGenerateTitle: (context) =>
+                AppLocalizations.of(context).appTitle,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
+            routerConfig: _appRouter.config(),
+            locale: state is SettingsLoaded ? state.locale : null,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('vi'),
+              Locale('ko'),
+            ],
+          );
         },
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
-            return MaterialApp.router(
-              onGenerateTitle: (context) =>
-                  AppLocalizations.of(context).appTitle,
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
-              routerConfig: _appRouter.config(),
-              locale: state is SettingsLoaded ? state.locale : null,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en'), // English
-                Locale('vi'), // Vietnamese
-                Locale('ko'), // Korean
-              ],
-            );
-          },
-        ),
       ),
     );
   }

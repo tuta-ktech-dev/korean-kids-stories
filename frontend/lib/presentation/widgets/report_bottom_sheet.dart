@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../data/repositories/report_repository.dart';
-import '../../data/services/pocketbase_service.dart';
 import '../../injection.dart';
 
 enum ReportType { story, chapter, app, question, other }
@@ -70,17 +69,6 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
     }
 
     final repo = getIt<ReportRepository>();
-    // Require login to report
-    if (!getIt<PocketbaseService>().isAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.reportLoginRequired, style: AppTheme.bodyMedium(context)),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
     setState(() => _isSubmitting = true);
 
     final success = await repo.submitReport(

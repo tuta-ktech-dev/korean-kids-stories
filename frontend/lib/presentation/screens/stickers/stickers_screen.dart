@@ -85,104 +85,104 @@ class _StickersViewState extends State<_StickersView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StatsCubit, StatsState>(
-        builder: (context, state) {
-          if (state.isLoading && state.unlockedStickers.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      builder: (context, state) {
+        if (state.isLoading && state.unlockedStickers.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (state.error != null && state.unlockedStickers.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.error!,
-                    style: AppTheme.bodyMedium(context),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.read<StatsCubit>().loadStats(),
-                    child: Text(context.l10n.retry),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final stats = state.stats;
-          final level = stats?.level ?? 1;
-          final totalXp = stats?.totalXp ?? 0.0;
-          final levelMatches = state.levelStickers
-              .where((s) => (s.level ?? 0).toInt() == level);
-          final levelSticker =
-              levelMatches.isEmpty ? null : levelMatches.first;
-          final storyStickers = state.unlockedStickers
-              .where((us) => us.sticker != null && us.sticker!.type == 'story')
-              .toList();
-
-          return RefreshIndicator(
-            onRefresh: () => context.read<StatsCubit>().loadStats(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Header stats + progress bar (level + ảnh từ server)
-                  _StatsHeader(
-                    level: level,
-                    totalXp: totalXp,
-                    levelSticker: levelSticker,
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Big level sticker
-                  if (levelSticker != null)
-                    _LevelStickerCard(
-                      sticker: levelSticker,
-                      onTap: () => _showStickerDialog(context, levelSticker),
-                    )
-                  else
-                    _LevelStickerPlaceholder(level: level),
-                  const SizedBox(height: 32),
-
-                  // Story stickers section
-                  if (storyStickers.isNotEmpty) ...[
-                    Text(
-                      context.l10n.storyStickers,
-                      style: AppTheme.headingMedium(context),
-                    ),
-                    const SizedBox(height: 16),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.0, // Square stickers
-                      ),
-                      itemCount: storyStickers.length,
-                      itemBuilder: (context, index) {
-                        final us = storyStickers[index];
-                        final sticker = us.sticker!;
-                        return _StickerCard(
-                          sticker: sticker,
-                          onTap: () =>
-                              _showStickerDialog(context, sticker),
-                        );
-                      },
-                    ),
-                  ] else
-                    _EmptyStoryStickers(
-                      readStoriesHint: context.l10n.readStoriesToUnlockStickers,
-                    ),
-                ],
-              ),
+        if (state.error != null && state.unlockedStickers.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  state.error!,
+                  style: AppTheme.bodyMedium(context),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => context.read<StatsCubit>().loadStats(),
+                  child: Text(context.l10n.retry),
+                ),
+              ],
             ),
           );
-        },
+        }
+
+        final stats = state.stats;
+        final level = stats?.level ?? 1;
+        final totalXp = stats?.totalXp ?? 0.0;
+        final levelMatches = state.levelStickers.where(
+          (s) => (s.level ?? 0).toInt() == level,
+        );
+        final levelSticker = levelMatches.isEmpty ? null : levelMatches.first;
+        final storyStickers = state.unlockedStickers
+            .where((us) => us.sticker != null && us.sticker!.type == 'story')
+            .toList();
+
+        return RefreshIndicator(
+          onRefresh: () => context.read<StatsCubit>().loadStats(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header stats + progress bar (level + ảnh từ server)
+                _StatsHeader(
+                  level: level,
+                  totalXp: totalXp,
+                  levelSticker: levelSticker,
+                ),
+                const SizedBox(height: 24),
+
+                // Big level sticker
+                if (levelSticker != null)
+                  _LevelStickerCard(
+                    sticker: levelSticker,
+                    onTap: () => _showStickerDialog(context, levelSticker),
+                  )
+                else
+                  _LevelStickerPlaceholder(level: level),
+                const SizedBox(height: 32),
+
+                // Story stickers section
+                if (storyStickers.isNotEmpty) ...[
+                  Text(
+                    context.l10n.storyStickers,
+                    style: AppTheme.headingMedium(context),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.0, // Square stickers
+                        ),
+                    itemCount: storyStickers.length,
+                    itemBuilder: (context, index) {
+                      final us = storyStickers[index];
+                      final sticker = us.sticker!;
+                      return _StickerCard(
+                        sticker: sticker,
+                        onTap: () => _showStickerDialog(context, sticker),
+                      );
+                    },
+                  ),
+                ] else
+                  _EmptyStoryStickers(
+                    readStoriesHint: context.l10n.readStoriesToUnlockStickers,
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -244,8 +244,9 @@ class _StatsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = progressToNextLevel(totalXp);
-    final currentThreshold =
-        level <= xpLevelThresholds.length ? xpLevelThresholds[level - 1] : 0.0;
+    final currentThreshold = level <= xpLevelThresholds.length
+        ? xpLevelThresholds[level - 1]
+        : 0.0;
     final nextThreshold = level < 18 && level < xpLevelThresholds.length
         ? xpLevelThresholds[level]
         : currentThreshold;
@@ -280,7 +281,7 @@ class _StatsHeader extends StatelessWidget {
                     width: 56,
                     height: 56,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => SizedBox(
+                    placeholder: (_, _) => SizedBox(
                       width: 56,
                       height: 56,
                       child: Center(
@@ -294,7 +295,7 @@ class _StatsHeader extends StatelessWidget {
                         ),
                       ),
                     ),
-                    errorWidget: (_, __, ___) => Icon(
+                    errorWidget: (_, _, _) => Icon(
                       Icons.emoji_events,
                       size: 40,
                       color: AppTheme.primaryColor(context),
@@ -309,9 +310,9 @@ class _StatsHeader extends StatelessWidget {
                   children: [
                     Text(
                       context.l10n.currentRank,
-                      style: AppTheme.caption(context).copyWith(
-                        color: AppTheme.textMutedColor(context),
-                      ),
+                      style: AppTheme.caption(
+                        context,
+                      ).copyWith(color: AppTheme.textMutedColor(context)),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -322,7 +323,10 @@ class _StatsHeader extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor(context).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -339,10 +343,7 @@ class _StatsHeader extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           // XP progress
-          _StatItem(
-            label: context.l10n.xp,
-            value: '${totalXp.toInt()}',
-          ),
+          _StatItem(label: context.l10n.xp, value: '${totalXp.toInt()}'),
           if (progress != null && nextRank != null) ...[
             const SizedBox(height: 8),
             ClipRRect(
@@ -350,8 +351,9 @@ class _StatsHeader extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 8,
-                backgroundColor: AppTheme.textMutedColor(context)
-                    .withValues(alpha: 0.3),
+                backgroundColor: AppTheme.textMutedColor(
+                  context,
+                ).withValues(alpha: 0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   AppTheme.primaryColor(context),
                 ),
@@ -363,15 +365,15 @@ class _StatsHeader extends StatelessWidget {
               children: [
                 Text(
                   '${totalXp.toInt()} / ${nextThreshold.toInt()} XP',
-                  style: AppTheme.caption(context).copyWith(
-                    color: AppTheme.textMutedColor(context),
-                  ),
+                  style: AppTheme.caption(
+                    context,
+                  ).copyWith(color: AppTheme.textMutedColor(context)),
                 ),
                 Text(
                   '${context.l10n.nextRank}: ${nextRank.nameKo}',
-                  style: AppTheme.caption(context).copyWith(
-                    color: AppTheme.textMutedColor(context),
-                  ),
+                  style: AppTheme.caption(
+                    context,
+                  ).copyWith(color: AppTheme.textMutedColor(context)),
                 ),
               ],
             ),
@@ -379,9 +381,9 @@ class _StatsHeader extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               context.l10n.maxLevelTitle,
-              style: AppTheme.bodyMedium(context).copyWith(
-                color: AppTheme.primaryColor(context),
-              ),
+              style: AppTheme.bodyMedium(
+                context,
+              ).copyWith(color: AppTheme.primaryColor(context)),
             ),
           ],
         ],
@@ -403,14 +405,11 @@ class _StatItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTheme.caption(context).copyWith(
-            color: AppTheme.textMutedColor(context),
-          ),
+          style: AppTheme.caption(
+            context,
+          ).copyWith(color: AppTheme.textMutedColor(context)),
         ),
-        Text(
-          value,
-          style: AppTheme.headingMedium(context),
-        ),
+        Text(value, style: AppTheme.headingMedium(context)),
       ],
     );
   }
@@ -420,10 +419,7 @@ class _LevelStickerCard extends StatelessWidget {
   final Sticker sticker;
   final VoidCallback onTap;
 
-  const _LevelStickerCard({
-    required this.sticker,
-    required this.onTap,
-  });
+  const _LevelStickerCard({required this.sticker, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -439,10 +435,11 @@ class _LevelStickerCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             boxShadow: [
               BoxShadow(
-                color: (Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black)
-                    .withValues(alpha: 0.08),
+                color:
+                    (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black)
+                        .withValues(alpha: 0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -454,9 +451,14 @@ class _LevelStickerCard extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor(context).withValues(alpha: 0.2),
+                    color: AppTheme.primaryColor(
+                      context,
+                    ).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -480,7 +482,7 @@ class _LevelStickerCard extends StatelessWidget {
                           fit: BoxFit.contain,
                           width: double.infinity,
                           height: double.infinity,
-                          placeholder: (_, __) => Center(
+                          placeholder: (_, _) => Center(
                             child: SizedBox(
                               width: 32,
                               height: 32,
@@ -490,7 +492,7 @@ class _LevelStickerCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          errorWidget: (_, __, ___) => Icon(
+                          errorWidget: (_, _, _) => Icon(
                             Icons.emoji_events,
                             size: 80,
                             color: AppTheme.primaryColor(context),
@@ -549,10 +551,7 @@ class _LevelStickerPlaceholder extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            'Level $level',
-            style: AppTheme.bodyMedium(context),
-          ),
+          Text('Level $level', style: AppTheme.bodyMedium(context)),
         ],
       ),
     );
@@ -563,10 +562,7 @@ class _StickerCard extends StatelessWidget {
   final Sticker sticker;
   final VoidCallback onTap;
 
-  const _StickerCard({
-    required this.sticker,
-    required this.onTap,
-  });
+  const _StickerCard({required this.sticker, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -582,10 +578,11 @@ class _StickerCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             boxShadow: [
               BoxShadow(
-                color: (Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black)
-                    .withValues(alpha: 0.06),
+                color:
+                    (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black)
+                        .withValues(alpha: 0.06),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -603,7 +600,7 @@ class _StickerCard extends StatelessWidget {
                           fit: BoxFit.contain,
                           width: double.infinity,
                           height: double.infinity,
-                          placeholder: (_, __) => Center(
+                          placeholder: (_, _) => Center(
                             child: SizedBox(
                               width: 24,
                               height: 24,
@@ -613,7 +610,7 @@ class _StickerCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          errorWidget: (_, __, ___) => Icon(
+                          errorWidget: (_, _, _) => Icon(
                             Icons.emoji_events,
                             size: 48,
                             color: AppTheme.primaryColor(context),
@@ -629,9 +626,9 @@ class _StickerCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 sticker.nameKo,
-                style: AppTheme.bodyMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTheme.bodyMedium(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -664,9 +661,9 @@ class _EmptyStoryStickers extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               readStoriesHint,
-              style: AppTheme.bodyMedium(context).copyWith(
-                color: AppTheme.textMutedColor(context),
-              ),
+              style: AppTheme.bodyMedium(
+                context,
+              ).copyWith(color: AppTheme.textMutedColor(context)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -704,7 +701,7 @@ class _StickerDetailDialog extends StatelessWidget {
                     fit: BoxFit.contain,
                     width: double.infinity,
                     height: double.infinity,
-                    placeholder: (_, __) => Center(
+                    placeholder: (_, _) => Center(
                       child: SizedBox(
                         width: 32,
                         height: 32,
@@ -714,7 +711,7 @@ class _StickerDetailDialog extends StatelessWidget {
                         ),
                       ),
                     ),
-                    errorWidget: (_, __, ___) => Icon(
+                    errorWidget: (_, _, _) => Icon(
                       Icons.emoji_events,
                       size: 80,
                       color: AppTheme.primaryColor(context),

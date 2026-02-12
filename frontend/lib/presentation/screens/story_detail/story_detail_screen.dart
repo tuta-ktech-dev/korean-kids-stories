@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../cubits/favorite_cubit/favorite_cubit.dart';
 import '../../cubits/story_detail_cubit/story_detail_cubit.dart';
@@ -26,8 +25,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_loadedFavorites &&
-        context.read<AuthCubit>().state is Authenticated) {
+    if (!_loadedFavorites) {
       _loadedFavorites = true;
       context.read<FavoriteCubit>().loadFavorites();
       context.read<BookmarkCubit>().loadBookmarks();

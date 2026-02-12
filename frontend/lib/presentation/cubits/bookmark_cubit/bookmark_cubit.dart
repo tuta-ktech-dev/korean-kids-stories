@@ -2,32 +2,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../data/repositories/bookmark_repository.dart';
-import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import 'bookmark_state.dart';
 export 'bookmark_state.dart';
 
+/// Kids app: always uses local storage.
 @lazySingleton
 class BookmarkCubit extends Cubit<BookmarkState> {
-  BookmarkCubit({
-    BookmarkRepository? bookmarkRepository,
-    PocketbaseService? pocketbaseService,
-  })  : _repo = bookmarkRepository ?? getIt<BookmarkRepository>(),
-        _pbService = pocketbaseService ?? getIt<PocketbaseService>(),
+  BookmarkCubit({BookmarkRepository? bookmarkRepository})
+      : _repo = bookmarkRepository ?? getIt<BookmarkRepository>(),
         super(const BookmarkInitial());
 
   final BookmarkRepository _repo;
-  final PocketbaseService _pbService;
 
-  /// Load bookmark IDs (lightweight). Preserves stories for Library tab.
   Future<void> loadBookmarks() async {
-    if (!_pbService.isAuthenticated) {
-      emit(const BookmarkLoaded(bookmarkIds: {}));
-      return;
-    }
-
     try {
-      await _pbService.initialize();
       final ids = await _repo.getBookmarkIds();
       final current = state is BookmarkLoaded ? (state as BookmarkLoaded) : null;
       emit(BookmarkLoaded(
@@ -39,15 +28,8 @@ class BookmarkCubit extends Cubit<BookmarkState> {
     }
   }
 
-  /// Load bookmarked stories (for Library tab)
   Future<void> loadBookmarkedStories() async {
-    if (!_pbService.isAuthenticated) {
-      emit(const BookmarkLoaded(bookmarkIds: {}));
-      return;
-    }
-
     try {
-      await _pbService.initialize();
       final stories = await _repo.getBookmarkedStories();
       final ids = stories.map((s) => s.id).toSet();
       emit(BookmarkLoaded(bookmarkIds: ids, stories: stories));
@@ -56,10 +38,7 @@ class BookmarkCubit extends Cubit<BookmarkState> {
     }
   }
 
-  /// Toggle bookmark (read later)
   Future<bool> toggleBookmark(String storyId) async {
-    if (!_pbService.isAuthenticated) return false;
-
     final current = state is BookmarkLoaded ? (state as BookmarkLoaded) : null;
     final ids = current?.bookmarkIds ?? {};
     final isBookmarked = ids.contains(storyId);
@@ -80,7 +59,6 @@ class BookmarkCubit extends Cubit<BookmarkState> {
     return ok;
   }
 
-  /// Clear (e.g. on logout)
   void clearBookmarks() {
     emit(const BookmarkLoaded(bookmarkIds: {}));
   }

@@ -1,113 +1,44 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pocketbase/pocketbase.dart';
 
 import '../models/story.dart';
-import '../services/pocketbase_service.dart';
+import 'local_favorite_repository.dart';
+import 'story_repository.dart';
 
-/// Repository for favorite stories (favorites collection)
+/// Repository for favorite stories. Kids app: always uses local storage.
 @injectable
 class FavoriteRepository {
-  FavoriteRepository(this._pbService);
-  final PocketbaseService _pbService;
+  FavoriteRepository(this._localRepo, this._storyRepo);
+  final LocalFavoriteRepository _localRepo;
+  final StoryRepository _storyRepo;
 
-  PocketBase get _pb => _pbService.pb;
-
-  /// Check if user has favorited a story
   Future<bool> isFavorite(String storyId) async {
-    try {
-      if (!_pbService.isAuthenticated) return false;
-      final userId = _pbService.currentUser?.id;
-      if (userId == null) return false;
-
-      final result = await _pb.collection('favorites').getList(
-            filter: 'user="$userId" && story="$storyId"',
-            perPage: 1,
-          );
-      return result.items.isNotEmpty;
-    } catch (e) {
-      debugPrint('FavoriteRepository.isFavorite error: $e');
-      return false;
-    }
+    return _localRepo.isFavorite(storyId);
   }
 
-  /// Get all favorited story IDs
   Future<Set<String>> getFavoriteIds() async {
-    try {
-      if (!_pbService.isAuthenticated) return {};
-
-      final userId = _pbService.currentUser?.id;
-      if (userId == null) return {};
-
-      final result = await _pb.collection('favorites').getFullList(
-            filter: 'user="$userId"',
-          );
-      return result.map((r) => r.getStringValue('story')).where((s) => s.isNotEmpty).toSet();
-    } catch (e) {
-      debugPrint('FavoriteRepository.getFavoriteIds error: $e');
-      return {};
-    }
+    return _localRepo.getFavoriteIds();
   }
 
   /// Get favorited stories with full Story data
   Future<List<Story>> getFavorites() async {
-    final ids = await getFavoriteIds();
+    final ids = await _localRepo.getFavoriteIds();
     if (ids.isEmpty) return [];
 
     final stories = <Story>[];
     for (final id in ids) {
       try {
-        final record = await _pb.collection('stories').getOne(id);
-        stories.add(Story.fromRecord(record, pb: _pb));
+        final story = await _storyRepo.getStory(id);
+        if (story != null) stories.add(story);
       } catch (_) {}
     }
     return stories;
   }
 
-  /// Add story to favorites
   Future<bool> addFavorite(String storyId) async {
-    try {
-      if (!_pbService.isAuthenticated) return false;
-
-      final userId = _pbService.currentUser?.id;
-      if (userId == null) return false;
-
-      final existing = await _pb.collection('favorites').getList(
-            filter: 'user="$userId" && story="$storyId"',
-            perPage: 1,
-          );
-      if (existing.items.isNotEmpty) return true;
-
-      await _pb.collection('favorites').create(body: {
-        'user': userId,
-        'story': storyId,
-      });
-      return true;
-    } catch (e) {
-      debugPrint('FavoriteRepository.addFavorite error: $e');
-      return false;
-    }
+    return _localRepo.addFavorite(storyId);
   }
 
-  /// Remove story from favorites
   Future<bool> removeFavorite(String storyId) async {
-    try {
-      if (!_pbService.isAuthenticated) return false;
-
-      final userId = _pbService.currentUser?.id;
-      if (userId == null) return false;
-
-      final result = await _pb.collection('favorites').getList(
-            filter: 'user="$userId" && story="$storyId"',
-            perPage: 1,
-          );
-      if (result.items.isEmpty) return true;
-
-      await _pb.collection('favorites').delete(result.items.first.id);
-      return true;
-    } catch (e) {
-      debugPrint('FavoriteRepository.removeFavorite error: $e');
-      return false;
-    }
+    return _localRepo.removeFavorite(storyId);
   }
 }
