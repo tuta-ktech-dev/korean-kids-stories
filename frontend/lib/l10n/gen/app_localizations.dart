@@ -652,6 +652,12 @@ abstract class AppLocalizations {
   /// **'Legend'**
   String get categoryLegend;
 
+  /// No description provided for @categoryEdu.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get categoryEdu;
+
   /// No description provided for @loginRequired.
   ///
   /// In en, this message translates to:

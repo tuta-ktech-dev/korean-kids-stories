@@ -237,6 +237,20 @@ class ProgressRepository {
     return all.where((p) => p.isCompleted).length;
   }
 
+  /// Lấy Set các storyId mà user đã đọc (có ít nhất 1 chapter completed).
+  /// Dùng để loại trừ truyện đã đọc khỏi recommended list.
+  Future<Set<String>> getReadStoryIds() async {
+    final all = await getAllProgress();
+    final completedChapterIds = all
+        .where((p) => p.isCompleted)
+        .map((p) => p.chapterId)
+        .toSet()
+        .toList();
+    if (completedChapterIds.isEmpty) return {};
+    final chapters = await _pbService.getChaptersByIds(completedChapterIds);
+    return chapters.map((c) => c.storyId).toSet();
+  }
+
   /// Lấy tổng thờ gian đọc (ước tính từ percent_read * audio_duration)
   Future<Duration> getTotalReadingTime() async {
     // Note: Cần fetch chapters để tính chính xác

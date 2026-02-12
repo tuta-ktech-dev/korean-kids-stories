@@ -292,6 +292,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get categoryLegend => 'Truyền thuyết';
 
   @override
+  String get categoryEdu => 'Giáo dục';
+
+  @override
   String get loginRequired => 'Cần đăng nhập';
 
   @override

@@ -123,6 +123,8 @@ class StoryCard extends StatelessWidget {
         return isDark ? AppTheme.darkPrimarySky : AppTheme.primarySky;
       case 'legend':
         return isDark ? AppTheme.darkPrimaryMint : AppTheme.primaryMint;
+      case 'edu':
+        return isDark ? AppTheme.darkPrimaryPurple : AppTheme.primaryPurple;
       default:
         return isDark ? AppTheme.darkPrimaryCoral : AppTheme.primaryLavender;
     }
@@ -136,6 +138,8 @@ class StoryCard extends StatelessWidget {
         return context.l10n.categoryHistory;
       case 'legend':
         return context.l10n.categoryLegend;
+      case 'edu':
+        return context.l10n.categoryEdu;
       default:
         return category;
     }

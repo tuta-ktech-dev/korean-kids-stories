@@ -22,6 +22,8 @@ class SearchLoaded extends SearchState {
   final String? category;
   final int? minAge;
   final int? maxAge;
+  final bool hasMore;
+  final bool isLoadingMore;
 
   const SearchLoaded({
     required this.results,
@@ -29,10 +31,12 @@ class SearchLoaded extends SearchState {
     this.category,
     this.minAge,
     this.maxAge,
+    this.hasMore = false,
+    this.isLoadingMore = false,
   });
 
   @override
-  List<Object?> get props => [results, query, category, minAge, maxAge];
+  List<Object?> get props => [results, query, category, minAge, maxAge, hasMore, isLoadingMore];
 
   SearchLoaded copyWith({
     List<Story>? results,
@@ -40,6 +44,8 @@ class SearchLoaded extends SearchState {
     String? category,
     int? minAge,
     int? maxAge,
+    bool? hasMore,
+    bool? isLoadingMore,
   }) {
     return SearchLoaded(
       results: results ?? this.results,
@@ -47,6 +53,8 @@ class SearchLoaded extends SearchState {
       category: category ?? this.category,
       minAge: minAge ?? this.minAge,
       maxAge: maxAge ?? this.maxAge,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }
 }

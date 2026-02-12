@@ -22,6 +22,8 @@ class SearchCubit extends Cubit<SearchState> {
   List<String> _popularCache = _fallbackPopular;
   static const String _historyKey = 'search_history';
   static const int _maxHistoryItems = 10;
+  static const int _perPage = 20;
+  int _currentSearchPage = 1;
   static const List<String> _fallbackPopular = [
     '흥부와 놀부',
     '선녀와 나무꾼',
@@ -93,7 +95,7 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
-  // Search stories
+  // Search stories (paginated)
   Future<void> search({
     required String query,
     String? category,
@@ -110,29 +112,65 @@ class SearchCubit extends Cubit<SearchState> {
     try {
       await _storyRepository.initialize();
 
-      final stories = await _storyRepository.getStories(
+      final result = await _storyRepository.getStoriesPaginated(
+        page: 1,
+        perPage: _perPage,
         search: query.trim().isNotEmpty ? query.trim() : null,
         category: category,
         minAge: minAge,
         maxAge: maxAge,
       );
 
-      // Save to history
       await _saveToHistory(query);
+      _currentSearchPage = 1;
 
       emit(
         SearchLoaded(
-          results: stories,
+          results: result.stories,
           query: query,
           category: category,
           minAge: minAge,
           maxAge: maxAge,
+          hasMore: result.hasMore,
         ),
       );
     } on PocketbaseException catch (e) {
       emit(SearchError('검색 실패: ${e.message}'));
     } catch (e) {
       emit(SearchError('검색 실패: $e'));
+    }
+  }
+
+  // Load more search results
+  Future<void> loadMore() async {
+    final current = state;
+    if (current is! SearchLoaded) return;
+    if (current.isLoadingMore || !current.hasMore) return;
+
+    emit(current.copyWith(isLoadingMore: true));
+
+    try {
+      final nextPage = _currentSearchPage + 1;
+      final result = await _storyRepository.getStoriesPaginated(
+        page: nextPage,
+        perPage: _perPage,
+        search: current.query.trim().isNotEmpty ? current.query.trim() : null,
+        category: current.category,
+        minAge: current.minAge,
+        maxAge: current.maxAge,
+      );
+
+      _currentSearchPage = nextPage;
+
+      emit(
+        current.copyWith(
+          results: [...current.results, ...result.stories],
+          hasMore: result.hasMore,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e) {
+      emit(current.copyWith(isLoadingMore: false));
     }
   }
 

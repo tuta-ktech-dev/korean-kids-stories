@@ -152,6 +152,8 @@ class PocketbaseService {
     int perPage = 20,
     String? category,
     String? search,
+    int? minAge,
+    int? maxAge,
   }) async {
     try {
       final filters = <String>[];
@@ -161,6 +163,12 @@ class PocketbaseService {
       if (search != null && search.isNotEmpty) {
         final escapedSearch = search.replaceAll('"', '\\"');
         filters.add('title~"$escapedSearch"');
+      }
+      if (minAge != null) {
+        filters.add('age_min>=$minAge');
+      }
+      if (maxAge != null) {
+        filters.add('age_max<=$maxAge');
       }
       filters.add('is_published=true');
       final filterString = filters.join(' && ');
@@ -301,6 +309,23 @@ class PocketbaseService {
         message: 'Failed to fetch chapters',
         originalError: e,
       );
+    }
+  }
+
+  /// Get multiple chapters by IDs (for mapping chapter→story from progress)
+  Future<List<Chapter>> getChaptersByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    try {
+      final filter = ids.map((id) => 'id="${id.replaceAll('"', '\\"')}"').join(' || ');
+      final result = await pb.collection('chapters').getList(
+        page: 1,
+        perPage: 500,
+        filter: '($filter)',
+      );
+      return result.items.map((r) => Chapter.fromRecord(r, baseUrl: baseUrl)).toList();
+    } catch (e) {
+      debugPrint('getChaptersByIds error: $e');
+      return [];
     }
   }
 

@@ -74,12 +74,16 @@ class StoryRepository {
     int perPage = 20,
     String? category,
     String? search,
+    int? minAge,
+    int? maxAge,
   }) async {
     final result = await _pbService.getStoriesPage(
       page: page,
       perPage: perPage,
       category: category == 'all' ? null : category,
       search: search,
+      minAge: minAge,
+      maxAge: maxAge,
     );
     final totalPages = result.totalItems <= 0
         ? 1

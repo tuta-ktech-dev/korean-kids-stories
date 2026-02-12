@@ -8,6 +8,7 @@ class AppTheme {
   static const Color primaryLavender = Color(0xFFE2F0CB);
   static const Color primarySky = Color(0xFF95C8F3);
   static const Color primaryCoral = Color(0xFFFFB7B2);
+  static const Color primaryPurple = Color(0xFFC4B5FD);
 
   // Dark mode colors - softer for kids' eyes at night
   static const Color darkBackground = Color(0xFF1A1A2E);
@@ -17,6 +18,7 @@ class AppTheme {
   static const Color darkPrimaryMint = Color(0xFF7DD3C0);
   static const Color darkPrimarySky = Color(0xFF60A5FA);
   static const Color darkPrimaryCoral = Color(0xFFFF9AA2);
+  static const Color darkPrimaryPurple = Color(0xFFA78BFA);
 
   // Background colors (Light)
   static const Color backgroundCream = Color(0xFFFFF9F0);

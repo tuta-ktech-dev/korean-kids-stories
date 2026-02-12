@@ -108,14 +108,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i526.PremiumService>(
       () => _i526.PremiumService(gh<_i700.PocketbaseService>()),
     );
+    gh.lazySingleton<_i712.HomeCubit>(
+      () => _i712.HomeCubit(
+        storyRepository: gh<_i691.StoryRepository>(),
+        progressRepository: gh<_i369.ProgressRepository>(),
+      ),
+    );
     gh.factory<_i266.FavoriteRepository>(
       () => _i266.FavoriteRepository(
         gh<_i252.LocalFavoriteRepository>(),
         gh<_i691.StoryRepository>(),
       ),
-    );
-    gh.lazySingleton<_i712.HomeCubit>(
-      () => _i712.HomeCubit(storyRepository: gh<_i691.StoryRepository>()),
     );
     gh.factory<_i859.StatsCubit>(
       () => _i859.StatsCubit(

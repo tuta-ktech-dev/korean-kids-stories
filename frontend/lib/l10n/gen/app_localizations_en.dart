@@ -292,6 +292,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryLegend => 'Legend';
 
   @override
+  String get categoryEdu => 'Education';
+
+  @override
   String get loginRequired => 'Login required';
 
   @override

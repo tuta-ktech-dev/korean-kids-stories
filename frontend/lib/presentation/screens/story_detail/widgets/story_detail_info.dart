@@ -69,6 +69,8 @@ class StoryDetailInfo extends StatelessWidget {
         return context.l10n.categoryHistory;
       case 'legend':
         return context.l10n.categoryLegend;
+      case 'edu':
+        return context.l10n.categoryEdu;
       default:
         return story.category;
     }

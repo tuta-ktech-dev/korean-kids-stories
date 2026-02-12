@@ -18,6 +18,23 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final state = context.read<SearchCubit>().state;
+    if (state is! SearchLoaded) return;
+    if (state.isLoadingMore || !state.hasMore) return;
+    final pos = _scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 150) {
+      context.read<SearchCubit>().loadMore();
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -32,6 +49,8 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -147,9 +166,16 @@ class _SearchViewState extends State<SearchView> {
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      itemCount: state.results.length,
+      itemCount: state.results.length + (state.hasMore && state.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= state.results.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
         final story = state.results[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -283,6 +309,11 @@ class _SearchViewState extends State<SearchView> {
                 context.l10n.categoryLegend,
                 'legend',
                 Icons.stars,
+              ),
+              _buildCategoryChip(
+                context.l10n.categoryEdu,
+                'edu',
+                Icons.school,
               ),
             ],
           ),

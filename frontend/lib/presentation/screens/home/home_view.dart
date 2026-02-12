@@ -172,6 +172,8 @@ class HomeView extends StatelessWidget {
         return context.l10n.categoryHistory;
       case 'legend':
         return context.l10n.categoryLegend;
+      case 'edu':
+        return context.l10n.categoryEdu;
       default:
         return category.label;
     }
@@ -184,6 +186,7 @@ class HomeView extends StatelessWidget {
       isDark ? AppTheme.darkPrimarySky : AppTheme.primarySky,
       isDark ? AppTheme.darkPrimaryMint : AppTheme.primaryMint,
       isDark ? AppTheme.darkPrimaryCoral : AppTheme.primaryCoral,
+      isDark ? AppTheme.darkPrimaryPurple : AppTheme.primaryPurple,
     ];
     return colors[index % colors.length];
   }

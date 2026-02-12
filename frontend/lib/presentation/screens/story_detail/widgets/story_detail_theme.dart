@@ -24,6 +24,10 @@ class StoryDetailTheme {
         return StoryDetailTheme(
           color: isDark ? AppTheme.darkPrimaryMint : AppTheme.primaryMint,
         );
+      case 'edu':
+        return StoryDetailTheme(
+          color: isDark ? AppTheme.darkPrimaryPurple : AppTheme.primaryPurple,
+        );
       default:
         return StoryDetailTheme(
           color: isDark ? AppTheme.darkPrimaryCoral : AppTheme.primaryCoral,

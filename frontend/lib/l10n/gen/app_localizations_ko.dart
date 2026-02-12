@@ -288,6 +288,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get categoryLegend => '전설';
 
   @override
+  String get categoryEdu => '교육';
+
+  @override
   String get loginRequired => '로그인이 필요합니다';
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../data/models/story.dart';
+import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/story_repository.dart';
 import '../../../injection.dart';
 import 'home_state.dart';
@@ -10,13 +11,17 @@ export 'home_state.dart';
 
 @lazySingleton
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({StoryRepository? storyRepository})
-      : _storyRepo = storyRepository ?? getIt<StoryRepository>(),
+  HomeCubit({
+    StoryRepository? storyRepository,
+    ProgressRepository? progressRepository,
+  })  : _storyRepo = storyRepository ?? getIt<StoryRepository>(),
+        _progressRepo = progressRepository ?? getIt<ProgressRepository>(),
         super(const HomeInitial()) {
     initialize();
   }
 
   final StoryRepository _storyRepo;
+  final ProgressRepository _progressRepo;
   static const int _perPage = 20;
   int _currentPage = 1;
 
@@ -88,7 +93,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<List<HomeStory>> _fetchStories({String? category}) async {
     final stories = await _storyRepo.getStories(category: category);
-    return stories.map((s) => _mapToHomeStory(s)).toList();
+    final readIds = await _progressRepo.getReadStoryIds();
+    return stories
+        .where((s) => !readIds.contains(s.id))
+        .map((s) => _mapToHomeStory(s))
+        .toList();
   }
 
   Future<({List<HomeStory> stories, bool hasMore})> _fetchStoriesPage(
@@ -100,18 +109,22 @@ class HomeCubit extends Cubit<HomeState> {
       perPage: _perPage,
       category: category == 'all' ? null : category,
     );
-    return (
-      stories: result.stories.map((s) => _mapToHomeStory(s)).toList(),
-      hasMore: result.hasMore,
-    );
+    final readIds = await _progressRepo.getReadStoryIds();
+    final filtered = result.stories
+        .where((s) => !readIds.contains(s.id))
+        .map((s) => _mapToHomeStory(s))
+        .toList();
+    return (stories: filtered, hasMore: result.hasMore);
   }
 
   Future<StorySections> _fetchSections() async {
     try {
-      // Fetch all stories for processing
       final allStories = await _storyRepo.getStories();
-
-      final homeStories = allStories.map((s) => _mapToHomeStory(s)).toList();
+      final readIds = await _progressRepo.getReadStoryIds();
+      final homeStories = allStories
+          .where((s) => !readIds.contains(s.id))
+          .map((s) => _mapToHomeStory(s))
+          .toList();
 
       // 🔥 Featured stories
       final featured = homeStories.where((s) => s.isFeatured).take(5).toList();
