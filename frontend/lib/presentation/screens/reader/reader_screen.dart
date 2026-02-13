@@ -35,7 +35,6 @@ class ReaderScreen extends StatelessWidget {
     bool hasQuiz,
     String completedChapterId,
   ) async {
-    // Stop audio when story completes
     context.read<AudioPlayerCubit>().stop();
 
     final storyRepo = getIt<StoryRepository>();
@@ -43,7 +42,6 @@ class ReaderScreen extends StatelessWidget {
     final readIds = await progressRepo.getReadStoryIds();
     final excludeIds = {completedStoryId, ...readIds};
 
-    // Get current story's category for "same category" next
     final currentStory = await storyRepo.getStory(completedStoryId);
     final category = currentStory?.category;
 
@@ -72,32 +70,33 @@ class ReaderScreen extends StatelessWidget {
         : null;
     if (!context.mounted) return;
 
-    void showStoryCompleteDialog() {
-      if (nextStory == null) {
+    void goToNextStoryOrComplete() {
+      if (!context.mounted) return;
+      if (nextStory == null || firstChapter == null) {
         _showStoryCompleteDialog(context, hasQuiz, false, onContinue: () {
           Navigator.of(context).pop();
           context.router.maybePop();
         });
-      } else if (firstChapter != null) {
-        final next = nextStory;
-        final first = firstChapter;
+        return;
+      }
+      final next = nextStory;
+      final first = firstChapter;
+      if (hasQuiz) {
         _showStoryCompleteDialog(
           context,
           hasQuiz,
           false,
-          onQuiz: hasQuiz
-              ? () {
-                  Navigator.of(context).pop();
-                  context.router.push(
-                    QuizRoute(
-                      storyId: completedStoryId,
-                      chapterId: completedChapterId,
-                      nextStoryId: next.id,
-                      nextChapterId: first.id,
-                    ),
-                  );
-                }
-              : null,
+          onQuiz: () {
+            Navigator.of(context).pop();
+            context.router.push(
+              QuizRoute(
+                storyId: completedStoryId,
+                chapterId: completedChapterId,
+                nextStoryId: next.id,
+                nextChapterId: first.id,
+              ),
+            );
+          },
           onContinue: () {
             Navigator.of(context).pop();
             ReaderAutoPlay.request();
@@ -105,6 +104,11 @@ class ReaderScreen extends StatelessWidget {
               ReaderRoute(storyId: next.id, chapterId: first.id),
             );
           },
+        );
+      } else {
+        ReaderAutoPlay.request();
+        context.router.replace(
+          ReaderRoute(storyId: next.id, chapterId: first.id),
         );
       }
     }
@@ -118,11 +122,7 @@ class ReaderScreen extends StatelessWidget {
         storyTitle: currentStory?.title ?? '',
         onContinue: () {
           Navigator.of(context).pop();
-          if (nextStory == null) {
-            context.router.maybePop();
-          } else {
-            showStoryCompleteDialog();
-          }
+          goToNextStoryOrComplete();
         },
         onSeeAlbum: () {
           Navigator.of(context).pop();
@@ -132,7 +132,7 @@ class ReaderScreen extends StatelessWidget {
         },
       );
     } else {
-      showStoryCompleteDialog();
+      goToNextStoryOrComplete();
     }
   }
 

@@ -44,6 +44,8 @@ dependencies:
 
   # Audio player for stories
   just_audio: ^0.9.46
+  audio_service: ^0.18.12
+  audio_session: ^0.1.18
 
   # Navigation
   auto_route: ^9.2.2

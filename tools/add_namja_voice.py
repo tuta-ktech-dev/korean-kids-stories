@@ -22,7 +22,8 @@ from urllib.error import HTTPError
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
-OPENAI_VOICE_MALE = "onyx"  # onyx, echo are male voices
+OPENAI_VOICE_MALE = "nova"  # nova (ấm, kể chuyện ok), onyx/echo (nam hơn)
+STORY_INSTRUCTIONS = "Speak in a warm, gentle storytelling voice for children. Friendly and engaging, not formal."
 
 
 def auth(base_url: str, email: str, password: str) -> str:
@@ -61,14 +62,18 @@ def strip_content(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def generate_openai_tts(text: str, api_key: str, out_path: str, voice: str = OPENAI_VOICE_MALE) -> bool:
+def generate_openai_tts(text: str, api_key: str, out_path: str, voice: str = OPENAI_VOICE_MALE,
+                        model: str = "gpt-4o-mini-tts", instructions: str = None) -> bool:
     url = "https://api.openai.com/v1/audio/speech"
-    body = json.dumps({
-        "model": "tts-1-hd",
+    payload = {
+        "model": model,
         "input": text[:4096],
         "voice": voice,
         "response_format": "mp3",
-    }).encode()
+    }
+    if instructions and model == "gpt-4o-mini-tts":
+        payload["instructions"] = instructions
+    body = json.dumps(payload).encode()
     req = Request(
         url,
         data=body,
@@ -79,7 +84,7 @@ def generate_openai_tts(text: str, api_key: str, out_path: str, voice: str = OPE
         method="POST",
     )
     try:
-        with urlopen(req, timeout=120) as r:
+        with urlopen(req, timeout=300) as r:
             with open(out_path, "wb") as f:
                 f.write(r.read())
         return True
@@ -143,12 +148,17 @@ def has_yeoja(narrators: set) -> bool:
     return False
 
 
+# gpt-4o-mini-tts ~$0.015/min; tts-1-hd $30/1M chars
+BUDGET_USD = 3.0
+EST_COST_PER_MIN = 0.015
+
 def main():
-    parser = argparse.ArgumentParser(description="Add 남자 voice with OpenAI TTS")
+    parser = argparse.ArgumentParser(description="Add 남자 voice with OpenAI TTS (nova, storytelling)")
     parser.add_argument("--limit", type=int, default=0, help="Max chapters (0=all)")
     parser.add_argument("--base-url", default="")
-    parser.add_argument("--voice", default=OPENAI_VOICE_MALE, help="OpenAI voice: onyx, echo")
+    parser.add_argument("--voice", default=OPENAI_VOICE_MALE, help="nova, coral, fable, onyx...")
     parser.add_argument("--max-chars", type=int, default=3500)
+    parser.add_argument("--max-budget", type=float, default=BUDGET_USD, help="Stop when cost exceeds (USD)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -192,7 +202,14 @@ def main():
 
     ok = 0
     fail = 0
+    accumulated_cost = 0.0
+    instructions = STORY_INSTRUCTIONS
+    model = "gpt-4o-mini-tts"
+
     for i, ch_id in enumerate(missing):
+        if accumulated_cost >= args.max_budget:
+            print(f"\n>> Đã đạt ngân sách ${args.max_budget:.2f}, dừng.")
+            break
         ch = chapters_by_id.get(ch_id)
         if not ch:
             continue
@@ -201,23 +218,31 @@ def main():
             continue
         text = content[: args.max_chars]
         title = (ch.get("title") or "?")[:30]
+        est_min = len(text) / 15  # ~15 chars/sec speech
+        est_cost = est_min * EST_COST_PER_MIN
+        if accumulated_cost + est_cost > args.max_budget:
+            print(f"\n>> Chương tiếp theo ước ~${est_cost:.3f}, vượt ngân sách. Dừng.")
+            break
 
         if args.dry_run:
-            print(f"  [{i+1}] {ch_id} ({title}): would add 남자 ({len(text)} chars)")
+            print(f"  [{i+1}] {ch_id} ({title}): would add 남자 ({len(text)} chars, ~${est_cost:.3f})")
             ok += 1
+            accumulated_cost += est_cost
             continue
 
         print(f"  [{i+1}/{len(missing)}] {ch_id} ({title})...", end=" ", flush=True)
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
             mp3_path = tmp.name
         try:
-            if not generate_openai_tts(text, api_key, mp3_path, args.voice):
+            if not generate_openai_tts(text, api_key, mp3_path, args.voice, model, instructions):
                 print("TTS fail")
                 fail += 1
                 continue
             dur = get_duration_sec(mp3_path)
             rec = upload_audio(base_url, token, ch_id, mp3_path, dur)
-            print(f"ok {rec.get('id')} ({dur:.0f}s)")
+            cost = (dur / 60) * EST_COST_PER_MIN
+            accumulated_cost += cost
+            print(f"ok {rec.get('id')} ({dur:.0f}s, ~${cost:.3f}, total ${accumulated_cost:.2f})")
             ok += 1
         except Exception as e:
             print(f"err: {e}")

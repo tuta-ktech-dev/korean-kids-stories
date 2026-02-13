@@ -47,21 +47,9 @@ class KoreanKidsStoriesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) =>
-              getIt<FavoriteCubit>()
-                ..loadFavorites(),
-        ),
-        BlocProvider(
-          create: (_) =>
-              getIt<BookmarkCubit>()
-                ..loadBookmarks(),
-        ),
-        BlocProvider(
-          create: (_) =>
-              getIt<NoteCubit>()
-                ..loadNotes(),
-        ),
+        BlocProvider(create: (_) => getIt<FavoriteCubit>()..loadFavorites()),
+        BlocProvider(create: (_) => getIt<BookmarkCubit>()..loadBookmarks()),
+        BlocProvider(create: (_) => getIt<NoteCubit>()..loadNotes()),
         BlocProvider(create: (_) => getIt<HomeCubit>()),
         BlocProvider(create: (_) => getIt<ProgressCubit>()),
         BlocProvider(create: (_) => getIt<HistoryCubit>()),
@@ -73,13 +61,13 @@ class KoreanKidsStoriesApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
           return MaterialApp.router(
-            onGenerateTitle: (context) =>
-                AppLocalizations.of(context).appTitle,
+            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
             routerConfig: _appRouter.config(),
+            builder: (context, child) => child ?? const SizedBox.shrink(),
             locale: state is SettingsLoaded ? state.locale : null,
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -87,11 +75,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('en'),
-              Locale('vi'),
-              Locale('ko'),
-            ],
+            supportedLocales: const [Locale('en'), Locale('vi'), Locale('ko')],
           );
         },
       ),

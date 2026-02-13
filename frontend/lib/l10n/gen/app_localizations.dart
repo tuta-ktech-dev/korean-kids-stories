@@ -1144,18 +1144,6 @@ abstract class AppLocalizations {
   /// **'Voice'**
   String get voice;
 
-  /// No description provided for @voiceFemale.
-  ///
-  /// In en, this message translates to:
-  /// **'Lady'**
-  String get voiceFemale;
-
-  /// No description provided for @voiceMale.
-  ///
-  /// In en, this message translates to:
-  /// **'Man'**
-  String get voiceMale;
-
   /// No description provided for @sleepTimer.
   ///
   /// In en, this message translates to:

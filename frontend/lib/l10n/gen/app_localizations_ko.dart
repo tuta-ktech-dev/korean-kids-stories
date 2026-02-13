@@ -545,12 +545,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get voice => '음성';
 
   @override
-  String get voiceFemale => '여자';
-
-  @override
-  String get voiceMale => '남자';
-
-  @override
   String get sleepTimer => '잠자기 타이머';
 
   @override

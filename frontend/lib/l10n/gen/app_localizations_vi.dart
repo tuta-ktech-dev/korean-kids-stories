@@ -552,12 +552,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get voice => 'Giọng đọc';
 
   @override
-  String get voiceFemale => 'Cô';
-
-  @override
-  String get voiceMale => 'Chú';
-
-  @override
   String get sleepTimer => 'Hẹn giờ tắt';
 
   @override
