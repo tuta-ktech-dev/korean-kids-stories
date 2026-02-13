@@ -146,8 +146,7 @@ class _SearchViewState extends State<SearchView> {
           children: [
             Image.asset(
               'assets/images/empty_no_search.webp',
-              width: 120,
-              height: 120,
+              width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
@@ -166,39 +165,47 @@ class _SearchViewState extends State<SearchView> {
       );
     }
 
-    return ListView.builder(
+    final crossAxisCount =
+        MediaQuery.sizeOf(context).width > 600 ? 3 : 2;
+
+    return GridView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: 0.6,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
       itemCount: state.results.length + (state.hasMore && state.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= state.results.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
         final story = state.results[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: StoryCard(
-            id: story.id,
-            title: story.title,
-            thumbnailUrl: story.thumbnailUrl,
-            category: story.category,
-            ageMin: story.ageMin,
-            ageMax: story.ageMax,
-            totalChapters: story.totalChapters,
-            isFeatured: story.isFeatured,
-            hasAudio: story.hasAudio,
-            hasQuiz: story.hasQuiz,
-            hasIllustrations: story.hasIllustrations,
-            averageRating: story.averageRating,
-            reviewCount: story.reviewCount,
-            viewCount: story.viewCount,
-            onTap: () {
-              context.router.root.push(StoryDetailRoute(storyId: story.id));
-            },
-          ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return StoryCard(
+              id: story.id,
+              title: story.title,
+              thumbnailUrl: story.thumbnailUrl,
+              category: story.category,
+              ageMin: story.ageMin,
+              ageMax: story.ageMax,
+              totalChapters: story.totalChapters,
+              isFeatured: story.isFeatured,
+              hasAudio: story.hasAudio,
+              hasQuiz: story.hasQuiz,
+              hasIllustrations: story.hasIllustrations,
+              averageRating: story.averageRating,
+              reviewCount: story.reviewCount,
+              viewCount: story.viewCount,
+              width: constraints.maxWidth,
+              onTap: () {
+                context.router.root.push(StoryDetailRoute(storyId: story.id));
+              },
+            );
+          },
         );
       },
     );
