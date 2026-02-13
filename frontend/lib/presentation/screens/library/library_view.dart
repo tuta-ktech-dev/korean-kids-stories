@@ -85,10 +85,11 @@ class _FavoritesTabState extends State<_FavoritesTab> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.favorite_outline,
-                  size: 64,
-                  color: AppTheme.textMutedColor(context),
+                Image.asset(
+                  'assets/images/empty_favorites.webp',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -164,10 +165,11 @@ class _BookmarksTabState extends State<_BookmarksTab> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.bookmark_outline,
-                  size: 64,
-                  color: AppTheme.textMutedColor(context),
+                Image.asset(
+                  'assets/images/empty_bookmarks.webp',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -243,10 +245,11 @@ class _NotesTabState extends State<_NotesTab> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.note_outlined,
-                  size: 64,
-                  color: AppTheme.textMutedColor(context),
+                Image.asset(
+                  'assets/images/empty_notes.webp',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
                 Text(

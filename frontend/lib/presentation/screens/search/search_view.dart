@@ -144,10 +144,11 @@ class _SearchViewState extends State<SearchView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off_outlined,
-              size: 64,
-              color: AppTheme.textMutedColor(context),
+            Image.asset(
+              'assets/images/empty_no_search.webp',
+              width: 120,
+              height: 120,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
             Text(

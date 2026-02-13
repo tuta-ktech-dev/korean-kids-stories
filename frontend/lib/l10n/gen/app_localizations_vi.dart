@@ -402,6 +402,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get selectLanguage => 'Chọn ngôn ngữ';
 
   @override
+  String get minNextChapterTime => 'Thời gian chờ theo số chữ';
+
+  @override
+  String get minNextChapterTimeOff => 'Không giới hạn';
+
+  @override
+  String minNextChapterTimeCharsPerSecond(Object chars) {
+    return '$chars ký tự/giây';
+  }
+
+  @override
+  String minNextChapterCountdown(Object seconds) {
+    return '${seconds}s';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return 'Không tìm thấy kết quả cho \"$query\"';
   }

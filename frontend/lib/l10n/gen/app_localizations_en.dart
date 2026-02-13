@@ -403,6 +403,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectLanguage => 'Select Language';
 
   @override
+  String get minNextChapterTime => 'Time before next chapter (by text length)';
+
+  @override
+  String get minNextChapterTimeOff => 'No restriction';
+
+  @override
+  String minNextChapterTimeCharsPerSecond(Object chars) {
+    return '$chars chars/sec';
+  }
+
+  @override
+  String minNextChapterCountdown(Object seconds) {
+    return '${seconds}s';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return 'No results for \"$query\"';
   }

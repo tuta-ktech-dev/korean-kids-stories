@@ -14,6 +14,7 @@ import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../components/buttons/bookmark_buttons.dart';
 import '../../widgets/responsive_padding.dart';
 import '../../cubits/note_cubit/note_cubit.dart';
+import '../../cubits/settings_cubit/settings_cubit.dart';
 import 'widgets/reader_bottom_bar.dart';
 
 class ReaderView extends StatefulWidget {
@@ -38,6 +39,9 @@ class _ReaderViewState extends State<ReaderView> {
   bool _hasRestoredScroll = false;
   DateTime? _sessionStartTime;
   bool _skipNextZeroProgress = false;
+  DateTime? _chapterStartTime;
+  String? _lastChapterIdForTimer;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -69,6 +73,7 @@ class _ReaderViewState extends State<ReaderView> {
     _scrollController.dispose();
     _saveDebounce?.cancel();
     _audioSaveDebounce?.cancel();
+    _countdownTimer?.cancel();
     // Save scroll progress
     if (_chapterId != null && _lastProgress > 0) {
       final pct = _lastProgress * 100;
@@ -211,10 +216,25 @@ class _ReaderViewState extends State<ReaderView> {
           textAlign: TextAlign.center,
           style: AppTheme.headingMedium(context),
         ),
-        content: Text(
-          context.l10n.chapterCompletedMessage,
-          textAlign: TextAlign.center,
-          style: AppTheme.bodyMedium(context),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                'assets/images/story_complete_shiba_sample.webp',
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              context.l10n.chapterCompletedMessage,
+              textAlign: TextAlign.center,
+              style: AppTheme.bodyMedium(context),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -237,6 +257,7 @@ class _ReaderViewState extends State<ReaderView> {
     VoidCallback? onPrevChapter,
     Chapter? nextChapter,
     VoidCallback? onNextChapter,
+    int? nextChapterSecondsRemaining,
     Chapter? nextChapterLocked,
     bool isLastChapter = false,
   }) {
@@ -308,17 +329,39 @@ class _ReaderViewState extends State<ReaderView> {
                             nextChapterLocked != null ||
                             isLastChapter))
                       const SizedBox(width: 16),
-                    if (nextChapter != null && onNextChapter != null)
-                      IconButton.filled(
-                        onPressed: onNextChapter,
-                        icon: const Icon(Icons.arrow_forward_rounded, size: 28),
-                        iconSize: 32,
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor(context),
-                          foregroundColor: Colors.white,
-                        ),
-                        tooltip: context.l10n.nextChapter,
-                      )
+                    if (nextChapter != null)
+                      (nextChapterSecondsRemaining != null &&
+                              nextChapterSecondsRemaining > 0)
+                          ? Tooltip(
+                              message: context.l10n.minNextChapterCountdown(
+                                nextChapterSecondsRemaining,
+                              ),
+                              child: IconButton.filled(
+                                onPressed: null,
+                                icon: const Icon(
+                                    Icons.arrow_forward_rounded, size: 28),
+                                iconSize: 32,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: AppTheme.textMutedColor(
+                                    context,
+                                  ).withValues(alpha: 0.2),
+                                  foregroundColor: AppTheme.textMutedColor(
+                                    context,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : IconButton.filled(
+                              onPressed: onNextChapter,
+                              icon: const Icon(
+                                  Icons.arrow_forward_rounded, size: 28),
+                              iconSize: 32,
+                              style: IconButton.styleFrom(
+                                backgroundColor: AppTheme.primaryColor(context),
+                                foregroundColor: Colors.white,
+                              ),
+                              tooltip: context.l10n.nextChapter,
+                            )
                     else if (nextChapterLocked != null)
                       IconButton.filled(
                         onPressed: () => _showChapterLockedDialog(context),
@@ -497,6 +540,53 @@ class _ReaderViewState extends State<ReaderView> {
             _lastProgress = state.progress;
             _restoreScrollPosition(state.progress);
 
+            // Min time before next chapter (parent setting)
+            if (chapter.id != _lastChapterIdForTimer) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    _lastChapterIdForTimer = chapter.id;
+                    _chapterStartTime = DateTime.now();
+                    _countdownTimer?.cancel();
+                    _countdownTimer = null;
+                  });
+                }
+              });
+            }
+            final settingsState = context.read<SettingsCubit>().state;
+            final charsPerSecond = settingsState is SettingsLoaded
+                ? settingsState.minCharsPerSecond
+                : 0;
+            final chapterLength = chapter.content.length;
+            final minSec = charsPerSecond > 0 && chapterLength > 0
+                ? (chapterLength / charsPerSecond).ceil()
+                : 0;
+            final effectiveStartTime = chapter.id == _lastChapterIdForTimer
+                ? _chapterStartTime
+                : DateTime.now();
+            final elapsed = effectiveStartTime != null
+                ? DateTime.now().difference(effectiveStartTime).inSeconds
+                : 0;
+            final nextChapterSecondsRemaining =
+                minSec > 0 ? (minSec - elapsed).clamp(0, minSec) : 0;
+            if (nextChapterSecondsRemaining > 0) {
+              _countdownTimer ??= Timer.periodic(
+                const Duration(seconds: 1),
+                (_) {
+                  if (!mounted) return;
+                  setState(() {});
+                },
+              );
+            } else {
+              _countdownTimer?.cancel();
+              _countdownTimer = null;
+            }
+
+            final bool canGoNext =
+                state.nextChapter != null && nextChapterSecondsRemaining <= 0;
+            final VoidCallback? effectiveOnNextChapter =
+                canGoNext ? () => _switchChapter(context, state.nextChapter!.id) : null;
+
             return Scaffold(
               backgroundColor: AppTheme.backgroundColor(context),
               appBar: _showControls
@@ -567,12 +657,11 @@ class _ReaderViewState extends State<ReaderView> {
                                         )
                                       : null,
                                   nextChapter: state.nextChapter,
-                                  onNextChapter: state.nextChapter != null
-                                      ? () => _switchChapter(
-                                          context,
-                                          state.nextChapter!.id,
-                                        )
-                                      : null,
+                                  onNextChapter: effectiveOnNextChapter,
+                                  nextChapterSecondsRemaining:
+                                      state.nextChapter != null
+                                          ? nextChapterSecondsRemaining
+                                          : null,
                                   nextChapterLocked: state.nextChapterLocked,
                                   isLastChapter:
                                       state.nextChapter == null &&
@@ -590,12 +679,7 @@ class _ReaderViewState extends State<ReaderView> {
                                         state.prevChapter!.id,
                                       )
                                     : null,
-                                onNextChapter: state.nextChapter != null
-                                    ? () => _switchChapter(
-                                        context,
-                                        state.nextChapter!.id,
-                                      )
-                                    : null,
+                                onNextChapter: effectiveOnNextChapter,
                                 audios: state.audios,
                                 selectedAudio: state.selectedAudio,
                                 onSelectAudio: state.audios.length > 1
@@ -622,12 +706,11 @@ class _ReaderViewState extends State<ReaderView> {
                                     )
                                   : null,
                               nextChapter: state.nextChapter,
-                              onNextChapter: state.nextChapter != null
-                                  ? () => _switchChapter(
-                                      context,
-                                      state.nextChapter!.id,
-                                    )
-                                  : null,
+                              onNextChapter: effectiveOnNextChapter,
+                              nextChapterSecondsRemaining:
+                                  state.nextChapter != null
+                                      ? nextChapterSecondsRemaining
+                                      : null,
                               nextChapterLocked: state.nextChapterLocked,
                               isLastChapter:
                                   state.nextChapter == null &&

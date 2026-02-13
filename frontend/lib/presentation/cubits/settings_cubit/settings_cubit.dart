@@ -10,20 +10,23 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(const SettingsInitial());
 
   static const String _localeKey = 'app_locale';
+  static const String _minCharsPerSecondKey = 'min_next_chapter_chars_per_second';
+
+  /// Min chars per second = reading speed. 0 = no restriction.
+  /// min_seconds = chapter_content.length / charsPerSecond
+  static const int defaultMinCharsPerSecond = 0;
 
   Future<void> loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final localeCode = prefs.getString(_localeKey);
+      final cps = prefs.getInt(_minCharsPerSecondKey) ?? defaultMinCharsPerSecond;
 
-      if (localeCode != null) {
-        emit(SettingsLoaded(locale: Locale(localeCode)));
-      } else {
-        // Default to system locale or English if not set
-        emit(const SettingsLoaded(locale: Locale('ko')));
-      }
+      emit(SettingsLoaded(
+        locale: localeCode != null ? Locale(localeCode) : const Locale('ko'),
+        minCharsPerSecond: cps,
+      ));
     } catch (e) {
-      // Fallback to Korean if error
       emit(const SettingsLoaded(locale: Locale('ko')));
     }
   }
@@ -32,9 +35,21 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_localeKey, locale.languageCode);
-      emit(SettingsLoaded(locale: locale));
-    } catch (e) {
-      // Find a way to handle error, maybe emit error state or just log
-    }
+      if (state is SettingsLoaded) {
+        emit((state as SettingsLoaded).copyWith(locale: locale));
+      } else {
+        emit(SettingsLoaded(locale: locale));
+      }
+    } catch (e) {}
+  }
+
+  Future<void> setMinCharsPerSecond(int charsPerSecond) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_minCharsPerSecondKey, charsPerSecond.clamp(0, 50));
+      if (state is SettingsLoaded) {
+        emit((state as SettingsLoaded).copyWith(minCharsPerSecond: charsPerSecond));
+      }
+    } catch (e) {}
   }
 }

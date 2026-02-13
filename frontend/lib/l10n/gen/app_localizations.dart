@@ -868,6 +868,30 @@ abstract class AppLocalizations {
   /// **'Select Language'**
   String get selectLanguage;
 
+  /// No description provided for @minNextChapterTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time before next chapter (by text length)'**
+  String get minNextChapterTime;
+
+  /// No description provided for @minNextChapterTimeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'No restriction'**
+  String get minNextChapterTimeOff;
+
+  /// No description provided for @minNextChapterTimeCharsPerSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'{chars} chars/sec'**
+  String minNextChapterTimeCharsPerSecond(Object chars);
+
+  /// No description provided for @minNextChapterCountdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String minNextChapterCountdown(Object seconds);
+
   /// No description provided for @noSearchResults.
   ///
   /// In en, this message translates to:

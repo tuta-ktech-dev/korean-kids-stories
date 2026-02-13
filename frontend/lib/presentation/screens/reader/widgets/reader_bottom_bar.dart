@@ -34,14 +34,15 @@ class ReaderBottomBar extends StatelessWidget {
         20,
         16,
         20,
-        MediaQuery.of(context).viewInsets.bottom,
+        MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       decoration: BoxDecoration(
         color: AppTheme.surfaceColor(context),
         boxShadow: [
           BoxShadow(
-            color: (isDark ? Colors.white : Colors.black)
-                .withValues(alpha: isDark ? 0.08 : 0.1),
+            color: (isDark ? Colors.white : Colors.black).withValues(
+              alpha: isDark ? 0.08 : 0.1,
+            ),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -117,7 +118,9 @@ class ReaderBottomBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: audios.map((audio) {
                 final isSelected = selectedAudio?.id == audio.id;
-                final label = audio.narrator ?? '${context.l10n.voice} ${audios.indexOf(audio) + 1}';
+                final label =
+                    audio.narrator ??
+                    '${context.l10n.voice} ${audios.indexOf(audio) + 1}';
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
@@ -128,8 +131,9 @@ class ReaderBottomBar extends StatelessWidget {
                         : null,
                     selectedColor: primary.withValues(alpha: 0.3),
                     checkmarkColor: primary,
-                    backgroundColor: AppTheme.textMutedColor(context)
-                        .withValues(alpha: 0.3),
+                    backgroundColor: AppTheme.textMutedColor(
+                      context,
+                    ).withValues(alpha: 0.3),
                   ),
                 );
               }).toList(),

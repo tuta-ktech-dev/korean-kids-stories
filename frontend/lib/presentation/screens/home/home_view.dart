@@ -351,10 +351,11 @@ class HomeView extends StatelessWidget {
         padding: const EdgeInsets.all(40),
         child: Column(
           children: [
-            Icon(
-              Icons.book_outlined,
-              size: 64,
-              color: AppTheme.textMutedColor(context),
+            Image.asset(
+              'assets/images/empty_no_stories.webp',
+              width: 120,
+              height: 120,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
             Text(context.l10n.noStories, style: AppTheme.bodyLarge(context)),

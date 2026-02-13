@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/sticker_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/sticker.dart';
-import '../../../injection.dart';
 import '../../../utils/extensions/context_extension.dart';
 import '../../cubits/stats_cubit/stats_cubit.dart';
 
@@ -26,8 +25,8 @@ class StickersScreen extends StatelessWidget {
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
       ),
-      body: BlocProvider(
-        create: (_) => getIt<StatsCubit>()..loadStats(),
+      body: BlocProvider.value(
+        value: context.read<StatsCubit>(),
         child: BlocListener<StatsCubit, StatsState>(
           listenWhen: (prev, curr) =>
               curr.levelUpTo != null && curr.levelUpTo != prev.levelUpTo,
@@ -55,17 +54,28 @@ class _StickersView extends StatefulWidget {
 
 class _StickersViewState extends State<_StickersView> {
   TabsRouter? _tabsRouter;
+  bool _directLoadDone = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final router = context.tabsRouter;
-    if (_tabsRouter != router) {
-      _tabsRouter?.removeListener(_onTabChanged);
-      _tabsRouter = router;
-      router.addListener(_onTabChanged);
-      if (router.activeIndex == _stickersTabIndex) {
-        context.read<StatsCubit>().loadStats();
+    try {
+      final router = context.tabsRouter;
+      if (_tabsRouter != router) {
+        _tabsRouter?.removeListener(_onTabChanged);
+        _tabsRouter = router;
+        router.addListener(_onTabChanged);
+        if (router.activeIndex == _stickersTabIndex) {
+          context.read<StatsCubit>().loadStats(forceRefresh: false);
+        }
+      }
+    } catch (_) {
+      // Not inside TabRouter (e.g. pushed /stickers from Profile)
+      if (!_directLoadDone) {
+        _directLoadDone = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.read<StatsCubit>().loadStats(forceRefresh: false);
+        });
       }
     }
   }
@@ -78,7 +88,7 @@ class _StickersViewState extends State<_StickersView> {
 
   void _onTabChanged() {
     if (mounted && _tabsRouter?.activeIndex == _stickersTabIndex) {
-      context.read<StatsCubit>().loadStats();
+      context.read<StatsCubit>().loadStats(forceRefresh: false);
     }
   }
 
@@ -102,7 +112,7 @@ class _StickersViewState extends State<_StickersView> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => context.read<StatsCubit>().loadStats(),
+                  onPressed: () => context.read<StatsCubit>().loadStats(forceRefresh: true),
                   child: Text(context.l10n.retry),
                 ),
               ],
@@ -122,7 +132,7 @@ class _StickersViewState extends State<_StickersView> {
             .toList();
 
         return RefreshIndicator(
-          onRefresh: () => context.read<StatsCubit>().loadStats(),
+          onRefresh: () => context.read<StatsCubit>().loadStats(forceRefresh: true),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
@@ -199,35 +209,171 @@ void _showLevelUpCongratsDialog(BuildContext context, int newLevel) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-      ),
-      title: Text(
-        context.l10n.levelUpCongratsTitle,
-        textAlign: TextAlign.center,
-        style: AppTheme.headingMedium(context),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            context.l10n.levelUpCongratsMessage(
-              '${rank.nameKo} (${rank.rankKo})',
-            ),
-            textAlign: TextAlign.center,
-            style: AppTheme.bodyMedium(context),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(ctx).pop(),
-          child: Text(context.l10n.continueAction),
-        ),
-      ],
+    builder: (ctx) => _LevelUpCongratsDialog(
+      newLevel: newLevel,
+      rank: rank,
+      onContinue: () => Navigator.of(ctx).pop(),
     ),
   );
+}
+
+/// Dialog chúc mừng thăng cấp với hiệu ứng scale, bounce emoji, confetti-style
+class _LevelUpCongratsDialog extends StatefulWidget {
+  final int newLevel;
+  final LevelRank rank;
+  final VoidCallback onContinue;
+
+  const _LevelUpCongratsDialog({
+    required this.newLevel,
+    required this.rank,
+    required this.onContinue,
+  });
+
+  @override
+  State<_LevelUpCongratsDialog> createState() => _LevelUpCongratsDialogState();
+}
+
+class _LevelUpCongratsDialogState extends State<_LevelUpCongratsDialog>
+    with TickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late AnimationController _emojiController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _emojiBounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _emojiController = AnimationController(
+      duration: const Duration(milliseconds: 900),
+      vsync: this,
+    );
+    _scaleAnimation = CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    );
+    _emojiBounce = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _emojiController, curve: Curves.elasticOut),
+    );
+    _scaleController.forward();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) _emojiController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    _emojiController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+        ),
+        backgroundColor: Colors.transparent,
+        contentPadding: EdgeInsets.zero,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        content: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primaryPink.withValues(alpha: 0.3),
+                blurRadius: 24,
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: AppTheme.primaryMint.withValues(alpha: 0.2),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Ảnh Shiba chúc mừng thăng cấp
+              AnimatedBuilder(
+                animation: _emojiBounce,
+                builder: (context, child) {
+                  final scale = 0.7 + (_emojiBounce.value * 0.3);
+                  return Transform.scale(
+                    scale: scale,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/level_up_shiba_sample.webp',
+                        width: 140,
+                        height: 140,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              Text(
+                context.l10n.levelUpCongratsTitle,
+                textAlign: TextAlign.center,
+                style: AppTheme.headingMedium(context),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryPink.withValues(alpha: 0.2),
+                      AppTheme.primaryMint.withValues(alpha: 0.2),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  context.l10n.levelUpCongratsMessage(
+                    '${widget.rank.nameKo} (${widget.rank.rankKo})',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: AppTheme.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: widget.onContinue,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppTheme.primaryPink,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(context.l10n.continueAction),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 }
 
 class _StatsHeader extends StatelessWidget {
@@ -653,10 +799,11 @@ class _EmptyStoryStickers extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
           children: [
-            Icon(
-              Icons.auto_stories_outlined,
-              size: 64,
-              color: AppTheme.textMutedColor(context),
+            Image.asset(
+              'assets/images/empty_story_stickers.webp',
+              width: 120,
+              height: 120,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
             Text(

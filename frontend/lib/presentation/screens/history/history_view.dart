@@ -212,7 +212,7 @@ String _formatTimeAgo(BuildContext context, DateTime? lastReadAt) {
 
 Widget _buildEmptyState(
   BuildContext context, {
-  required IconData icon,
+  IconData? icon,
   required String title,
   required String subtitle,
 }) {
@@ -220,7 +220,12 @@ Widget _buildEmptyState(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 64, color: AppTheme.textMutedColor(context)),
+        Image.asset(
+          'assets/images/empty_reading_history.webp',
+          width: 120,
+          height: 120,
+          fit: BoxFit.contain,
+        ),
         const SizedBox(height: 16),
         Text(title, style: AppTheme.headingMedium(context)),
         const SizedBox(height: 8),

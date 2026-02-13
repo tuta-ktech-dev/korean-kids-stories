@@ -397,6 +397,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectLanguage => '언어 선택';
 
   @override
+  String get minNextChapterTime => '글자 수 기준 대기 시간';
+
+  @override
+  String get minNextChapterTimeOff => '제한 없음';
+
+  @override
+  String minNextChapterTimeCharsPerSecond(Object chars) {
+    return '초당 $chars자';
+  }
+
+  @override
+  String minNextChapterCountdown(Object seconds) {
+    return '$seconds초';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return '\"$query\" 검색 결과가 없어요';
   }

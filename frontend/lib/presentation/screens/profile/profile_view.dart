@@ -417,10 +417,11 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: 24),
 
-                // Level & XP card
-                BlocProvider(
-                  create: (_) => getIt<StatsCubit>()..loadStats(),
-                  child: BlocBuilder<StatsCubit, StatsState>(
+                // Level & XP card (reuses app-level StatsCubit with cache)
+                BlocProvider.value(
+                  value: context.read<StatsCubit>(),
+                  child: _StatsLoader(
+                    child: BlocBuilder<StatsCubit, StatsState>(
                     buildWhen: (p, c) =>
                         p.stats != c.stats || p.isLoading != c.isLoading,
                     builder: (context, statsState) {
@@ -481,6 +482,7 @@ class _ProfileViewState extends State<ProfileView> {
                       );
                     },
                   ),
+                ),
                 ),
 
                 // Sticker Album button
@@ -609,6 +611,29 @@ class _ProfileViewState extends State<ProfileView> {
       },
     );
   }
+}
+
+/// Triggers loadStats when Profile is shown (uses cache if fresh)
+class _StatsLoader extends StatefulWidget {
+  final Widget child;
+
+  const _StatsLoader({required this.child});
+
+  @override
+  State<_StatsLoader> createState() => _StatsLoaderState();
+}
+
+class _StatsLoaderState extends State<_StatsLoader> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<StatsCubit>().loadStats(forceRefresh: false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _StatItem extends StatelessWidget {

@@ -124,6 +124,15 @@ flutter:
     - assets/images/onboarding_1.png
     - assets/images/onboarding_2.png
     - assets/images/onboarding_3.png
+    - assets/images/level_up_shiba_sample.webp
+    - assets/images/story_complete_shiba_sample.webp
+    - assets/images/empty_no_stories.webp
+    - assets/images/empty_no_search.webp
+    - assets/images/empty_favorites.webp
+    - assets/images/empty_reading_history.webp
+    - assets/images/empty_story_stickers.webp
+    - assets/images/empty_bookmarks.webp
+    - assets/images/empty_notes.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

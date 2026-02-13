@@ -215,6 +215,33 @@ class _ParentZoneContentBody extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
+        // Reading (Parent control)
+        BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, settingsState) {
+            final cps = settingsState is SettingsLoaded
+                ? settingsState.minCharsPerSecond
+                : SettingsCubit.defaultMinCharsPerSecond;
+            return SettingsSection(
+              title: context.l10n.minNextChapterTime,
+              children: [
+                SettingsItem(
+                  icon: Icons.timer_outlined,
+                  title: context.l10n.minNextChapterTime,
+                  trailing: Text(
+                    cps == 0
+                        ? context.l10n.minNextChapterTimeOff
+                        : context.l10n.minNextChapterTimeCharsPerSecond(cps),
+                    style: AppTheme.bodyMedium(context),
+                  ),
+                  onTap: () =>
+                      _ParentZoneHelpers.showMinNextChapterDialog(context),
+                ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+
         // App Info
         SettingsSection(
           title: context.l10n.appInfo,
@@ -255,6 +282,39 @@ class _ParentZoneContentBody extends StatelessWidget {
 
 /// Helper methods for Parent Zone settings (moved from SettingsView)
 class _ParentZoneHelpers {
+  /// Chars per second: 0=off, higher=must read faster (stricter)
+  static const List<int> _minCharsPerSecondOptions = [0, 5, 8, 10, 15, 20];
+
+  static void showMinNextChapterDialog(BuildContext context) {
+    final settings = context.read<SettingsCubit>().state;
+    final current = settings is SettingsLoaded
+        ? settings.minCharsPerSecond
+        : SettingsCubit.defaultMinCharsPerSecond;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(ctx.l10n.minNextChapterTime),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: _minCharsPerSecondOptions.map((cps) {
+            return ListTile(
+              title: Text(
+                cps == 0
+                    ? ctx.l10n.minNextChapterTimeOff
+                    : ctx.l10n.minNextChapterTimeCharsPerSecond(cps),
+              ),
+              trailing: current == cps ? const Icon(Icons.check, color: Colors.blue) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setMinCharsPerSecond(cps);
+                Navigator.pop(ctx);
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   static void showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,

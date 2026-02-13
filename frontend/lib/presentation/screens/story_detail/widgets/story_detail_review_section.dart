@@ -148,9 +148,9 @@ class _MyReviewSummary extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.yourReview,
-                  style: AppTheme.caption(context).copyWith(
-                    color: AppTheme.textMutedColor(context),
-                  ),
+                  style: AppTheme.caption(
+                    context,
+                  ).copyWith(color: AppTheme.textMutedColor(context)),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -227,17 +227,14 @@ class _LoginPrompt extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.rate_review_outlined,
-            color: accentColor,
-            size: 24,
-          ),
+          Icon(Icons.rate_review_outlined, color: accentColor, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               context.l10n.loginToReview,
-              style: AppTheme.bodyMedium(context)
-                  .copyWith(color: AppTheme.textMutedColor(context)),
+              style: AppTheme.bodyMedium(
+                context,
+              ).copyWith(color: AppTheme.textMutedColor(context)),
             ),
           ),
         ],
@@ -277,17 +274,17 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               context.l10n.noReviewsYet,
-              style: AppTheme.bodyMedium(context)
-                  .copyWith(
-                    color: AppTheme.textColor(context),
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: AppTheme.bodyMedium(context).copyWith(
+                color: AppTheme.textColor(context),
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               context.l10n.beFirstToReview,
-              style: AppTheme.caption(context)
-                  .copyWith(color: AppTheme.textMutedColor(context)),
+              style: AppTheme.caption(
+                context,
+              ).copyWith(color: AppTheme.textMutedColor(context)),
             ),
           ],
         ),
@@ -312,7 +309,7 @@ class _ReviewForm extends StatefulWidget {
     required this.isEditing,
     required this.accentColor,
     required this.onSubmitted,
-    this.onCancel,
+    required this.onCancel,
   });
 
   @override
@@ -352,11 +349,11 @@ class _ReviewFormState extends State<_ReviewForm> {
     final cubit = context.read<ReviewCubit>();
     setState(() => _isSubmitting = true);
     final ok = await cubit.submitReview(
-          _rating,
-          comment: _commentController.text.trim().isNotEmpty
-              ? _commentController.text.trim()
-              : null,
-        );
+      _rating,
+      comment: _commentController.text.trim().isNotEmpty
+          ? _commentController.text.trim()
+          : null,
+    );
     if (!mounted) return;
     setState(() => _isSubmitting = false);
     if (ok) widget.onSubmitted();
@@ -404,15 +401,12 @@ class _ReviewFormState extends State<_ReviewForm> {
             widget.isEditing
                 ? context.l10n.editReview
                 : context.l10n.writeReview,
-            style: AppTheme.bodyLarge(context).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTheme.bodyLarge(
+              context,
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
-          Text(
-            context.l10n.yourRating,
-            style: AppTheme.caption(context),
-          ),
+          Text(context.l10n.yourRating, style: AppTheme.caption(context)),
           const SizedBox(height: 8),
           Row(
             children: List.generate(5, (i) {
@@ -435,17 +429,12 @@ class _ReviewFormState extends State<_ReviewForm> {
             }),
           ),
           const SizedBox(height: 16),
-          Text(
-            context.l10n.optionalComment,
-            style: AppTheme.caption(context),
-          ),
+          Text(context.l10n.optionalComment, style: AppTheme.caption(context)),
           const SizedBox(height: 8),
           TextField(
             controller: _commentController,
             maxLines: 3,
-            decoration: InputDecoration(
-              hintText: context.l10n.optionalComment,
-            ),
+            decoration: InputDecoration(hintText: context.l10n.optionalComment),
           ),
           const SizedBox(height: 20),
           Row(
@@ -530,10 +519,9 @@ class _ReviewCard extends StatelessWidget {
                             ? review.userName!.substring(0, 1).toUpperCase()
                             : '?')
                         .substring(0, 1),
-                    style: AppTheme.bodyLarge(context).copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: accentColor,
-                    ),
+                    style: AppTheme.bodyLarge(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w700, color: accentColor),
                   ),
                 ),
               ),
@@ -544,9 +532,9 @@ class _ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       review.userName ?? context.l10n.defaultUser,
-                      style: AppTheme.bodyLarge(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTheme.bodyLarge(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -568,18 +556,15 @@ class _ReviewCard extends StatelessWidget {
               ),
               Text(
                 _formatDate(review.created),
-                style: AppTheme.caption(context)
-                    .copyWith(color: AppTheme.textMutedColor(context)),
+                style: AppTheme.caption(
+                  context,
+                ).copyWith(color: AppTheme.textMutedColor(context)),
               ),
             ],
           ),
-          if (review.comment != null &&
-              review.comment!.trim().isNotEmpty) ...[
+          if (review.comment != null && review.comment!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
-              review.comment!,
-              style: AppTheme.bodyMedium(context),
-            ),
+            Text(review.comment!, style: AppTheme.bodyMedium(context)),
           ],
         ],
       ),
