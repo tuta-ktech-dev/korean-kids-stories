@@ -1,6 +1,6 @@
 {
-    "name": "korean_kids_stories",
-    "short_name": "korean_kids_stories",
+    "name": "꼬마 동화",
+    "short_name": "꼬마 동화",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

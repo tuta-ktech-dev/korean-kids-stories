@@ -196,7 +196,7 @@ class _ParentZoneContentBody extends StatelessWidget {
                 context,
                 type: ReportType.app,
                 targetId: 'app',
-                targetTitle: 'Korean Kids Tales App',
+                targetTitle: '꼬마 동화 App',
               ),
             ),
             SettingsItem(
@@ -615,8 +615,8 @@ class _ParentZoneHelpers {
 
   static Future<void> shareApp(BuildContext context) async {
     await Share.share(
-      'Check out Korean Kids Tales - 꼬마 한동화!\nhttps://play.google.com/store/apps',
-      subject: 'Korean Kids Tales',
+      'Check out 꼬마 동화!\nhttps://play.google.com/store/apps',
+      subject: '꼬마 동화',
     );
   }
 }

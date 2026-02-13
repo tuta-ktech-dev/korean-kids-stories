@@ -9,7 +9,7 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Truyện Cổ Tích Hàn Quốc';
+  String get appTitle => 'Truyện Nhỏ';
 
   @override
   String get homeTab => 'Trang chủ';
@@ -30,7 +30,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsLanguageTitle => 'Cài đặt ngôn ngữ';
 
   @override
-  String get landingTitle => 'Truyện cổ tích Hàn Quốc';
+  String get landingTitle => 'Truyện Nhỏ';
 
   @override
   String get landingSubtitle =>
@@ -40,7 +40,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get landingStartButton => 'Bắt đầu';
 
   @override
-  String get onboardingPage1Title => 'Truyện cổ tích Hàn Quốc';
+  String get onboardingPage1Title => 'Truyện Nhỏ';
 
   @override
   String get onboardingPage1Desc =>

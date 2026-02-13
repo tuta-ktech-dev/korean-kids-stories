@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Korean Kids Tales",
+  "appTitle": "Kkoma Tales",
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -11,10 +11,10 @@
   "settingsLanguage": "Language",
   "settingsLanguageTitle": "Language Settings",
   
-  "landingTitle": "Korean Kids Tales",
+  "landingTitle": "Kkoma Tales",
   "landingSubtitle": "From tradition to history, Korean stories for kids",
   "landingStartButton": "Start",
-  "onboardingPage1Title": "Korean Kids Tales",
+  "onboardingPage1Title": "Kkoma Tales",
   "onboardingPage1Desc": "Discover Korean folktales, history and legends for kids ages 5-10.",
   "onboardingPage2Title": "Read Stories & Collect Badges",
   "onboardingPage2Desc": "Read stories, listen to audio and earn stickers when you finish. Track your progress in History.",
