@@ -554,6 +554,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voice => 'Voice';
 
   @override
+  String get voiceFemale => 'Lady';
+
+  @override
+  String get voiceMale => 'Man';
+
+  @override
   String get sleepTimer => 'Sleep Timer';
 
   @override

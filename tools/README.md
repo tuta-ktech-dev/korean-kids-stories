@@ -79,4 +79,22 @@ python story_to_audio.py --story-id 3ghmc2ea1ivakj4
 python story_to_audio.py --story-id 3ghmc2ea1ivakj4 --dry-run
 ```
 
-Mặc định kết nối `http://trananhtu.vn:8090` với email/password trong script.
+Credentials lấy từ `.env` (PB_BASE_URL, PB_EMAIL, PB_PASSWORD). Xem `tools/.env.example`.
+
+## Kiểm tra và thêm giọng (2 giọng mặc định: 남자 + 여자)
+
+Mỗi chapter cần có 2 giọng đọc (남자 nam, 여자 nữ). Script `check_voices.py` kiểm tra:
+
+```bash
+python check_voices.py
+```
+
+Thêm giọng thiếu:
+
+```bash
+# Thêm 여자 (KSS local - cần TTS model)
+python add_yeoja_voice.py --limit 97
+
+# Thêm 남자 (OpenAI TTS - cần OPENAI_API_KEY)
+OPENAI_API_KEY=sk-xxx python add_namja_voice.py --limit 20
+```

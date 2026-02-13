@@ -78,3 +78,5 @@ node_modules/
 tools/models/
 # TTS output (giữ ko_kss.wav nếu cần cho XTTS - tạo bằng tts_cli)
 tools/*.wav
+tools/test_openai_tts*.mp3
+tools/chapter_*.mp3

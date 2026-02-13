@@ -38,9 +38,10 @@ LevelRank getLevelRank(int level) {
 
 /// XP thresholds for level 1-18 (min XP to reach level N).
 /// Must match backend hooks/reading_progress.go
+/// Tăng gấp đôi để khó lên cấp hơn
 const List<double> xpLevelThresholds = [
-  0, 100, 250, 500, 1000, 1750, 2500, 3500, 5000, 6500, 8500,
-  11000, 14000, 17500, 21500, 26000, 31000,
+  0, 200, 600, 1200, 2500, 4500, 7000, 10000, 14000, 19000,
+  25000, 32000, 40000, 49000, 59000, 70000, 82000, 100000,
 ];
 
 int levelFromXp(double totalXp) {
