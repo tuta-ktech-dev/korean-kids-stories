@@ -11,20 +11,26 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   static const String _localeKey = 'app_locale';
   static const String _minCharsPerSecondKey = 'min_next_chapter_chars_per_second';
+  static const String _dailyGoalStoriesKey = 'daily_goal_stories';
+  static const String _dailyGoalChaptersKey = 'daily_goal_chapters';
 
   /// Min chars per second = reading speed. 0 = no restriction.
   /// min_seconds = chapter_content.length / charsPerSecond
-  static const int defaultMinCharsPerSecond = 0;
+  static const int defaultMinCharsPerSecond = 10;
 
   Future<void> loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final localeCode = prefs.getString(_localeKey);
       final cps = prefs.getInt(_minCharsPerSecondKey) ?? defaultMinCharsPerSecond;
+      final goalStories = prefs.getInt(_dailyGoalStoriesKey) ?? 0;
+      final goalChapters = prefs.getInt(_dailyGoalChaptersKey) ?? 0;
 
       emit(SettingsLoaded(
         locale: localeCode != null ? Locale(localeCode) : const Locale('ko'),
         minCharsPerSecond: cps,
+        dailyGoalStories: goalStories,
+        dailyGoalChapters: goalChapters,
       ));
     } catch (e) {
       emit(const SettingsLoaded(locale: Locale('ko')));
@@ -49,6 +55,26 @@ class SettingsCubit extends Cubit<SettingsState> {
       await prefs.setInt(_minCharsPerSecondKey, charsPerSecond.clamp(0, 50));
       if (state is SettingsLoaded) {
         emit((state as SettingsLoaded).copyWith(minCharsPerSecond: charsPerSecond));
+      }
+    } catch (e) {}
+  }
+
+  Future<void> setDailyGoalStories(int count) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_dailyGoalStoriesKey, count.clamp(0, 10));
+      if (state is SettingsLoaded) {
+        emit((state as SettingsLoaded).copyWith(dailyGoalStories: count));
+      }
+    } catch (e) {}
+  }
+
+  Future<void> setDailyGoalChapters(int count) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_dailyGoalChaptersKey, count.clamp(0, 20));
+      if (state is SettingsLoaded) {
+        emit((state as SettingsLoaded).copyWith(dailyGoalChapters: count));
       }
     } catch (e) {}
   }

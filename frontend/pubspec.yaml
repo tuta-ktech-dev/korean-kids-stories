@@ -75,6 +75,10 @@ dependencies:
   # Parent Zone - biometric / device auth
   local_auth: ^3.0.0
 
+  # Notifications - daily reading reminder
+  flutter_local_notifications: ^17.2.3
+  workmanager: ^0.6.0
+
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.0
@@ -133,6 +137,10 @@ flutter:
     - assets/images/empty_story_stickers.webp
     - assets/images/empty_bookmarks.webp
     - assets/images/empty_notes.webp
+    - assets/images/streak_3_days.webp
+    - assets/images/streak_7_days.webp
+    - assets/images/streak_14_days.webp
+    - assets/images/streak_30_days.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

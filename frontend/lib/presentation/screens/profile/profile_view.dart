@@ -11,7 +11,9 @@ import '../../../data/repositories/user_preferences_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
+import '../../cubits/history_cubit/history_cubit.dart';
 import '../../cubits/stats_cubit/stats_cubit.dart';
+import '../../widgets/streak_badge.dart';
 import '../../../core/router/app_router.dart';
 import 'package:auto_route/auto_route.dart';
 
@@ -483,6 +485,28 @@ class _ProfileViewState extends State<ProfileView> {
                     },
                   ),
                 ),
+                ),
+
+                // Reading streak from History (actual reading days)
+                BlocBuilder<HistoryCubit, HistoryState>(
+                  buildWhen: (p, c) => p != c,
+                  builder: (context, state) {
+                    if (state is HistoryInitial) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        context.read<HistoryCubit>().loadHistory();
+                      });
+                    }
+                    if (state is! HistoryLoaded) return const SizedBox.shrink();
+                    final stats = state.stats;
+                    if (stats.currentStreak == 0 && stats.longestStreak == 0) {
+                      return const SizedBox.shrink();
+                    }
+                    return StreakBadge(
+                      currentStreak: stats.currentStreak,
+                      longestStreak: stats.longestStreak,
+                      compact: true,
+                    );
+                  },
                 ),
 
                 // Sticker Album button

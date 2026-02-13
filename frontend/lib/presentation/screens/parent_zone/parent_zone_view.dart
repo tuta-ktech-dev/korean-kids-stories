@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
+import '../../../core/notification/notification_service.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/repositories/progress_repository.dart';
 import '../../../injection.dart';
 import '../../../data/repositories/app_config_repository.dart';
 import '../../components/buttons/settings_item.dart';
 import '../../components/cards/settings_section.dart';
+import '../../cubits/history_cubit/history_cubit.dart';
 import '../../cubits/parent_zone_cubit/parent_zone_cubit.dart';
 import '../../cubits/parent_zone_cubit/parent_zone_state.dart';
 import '../../cubits/settings_cubit/settings_cubit.dart';
@@ -169,8 +172,8 @@ class _ParentZoneContentBody extends StatelessWidget {
         _ParentZoneItem(
           icon: Icons.history,
           title: context.l10n.parentZoneChildActivity,
-          subtitle: context.l10n.parentZoneComingSoon,
-          onTap: () {},
+          subtitle: context.l10n.recentActivity,
+          onTap: () => _ParentZoneHelpers.showActivitySheet(context),
         ),
         const SizedBox(height: 16),
         _ParentZoneItem(
@@ -242,6 +245,14 @@ class _ParentZoneContentBody extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
+        // Daily reading goal
+        _DailyGoalSection(),
+        const SizedBox(height: 24),
+
+        // Daily reminder (no streak)
+        _ReminderSection(),
+        const SizedBox(height: 24),
+
         // App Info
         SettingsSection(
           title: context.l10n.appInfo,
@@ -284,6 +295,146 @@ class _ParentZoneContentBody extends StatelessWidget {
 class _ParentZoneHelpers {
   /// Chars per second: 0=off, higher=must read faster (stricter)
   static const List<int> _minCharsPerSecondOptions = [0, 5, 8, 10, 15, 20];
+
+  static Future<void> showReminderDialog(BuildContext context) async {
+    final enabled = await NotificationService.isReminderEnabled();
+    final hour = await NotificationService.getReminderHour();
+    final minute = await NotificationService.getReminderMinute();
+
+    if (!context.mounted) return;
+    await showDialog(
+      context: context,
+      builder: (ctx) => _ReminderDialog(
+        initialEnabled: enabled,
+        initialHour: hour,
+        initialMinute: minute,
+        onSave: (en, h, m) async {
+          await NotificationService.setReminderEnabled(en);
+          await NotificationService.setReminderTime(h, m);
+        },
+      ),
+    );
+  }
+
+  static void showActivitySheet(BuildContext context) {
+    context.read<HistoryCubit>().loadHistory();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.95,
+        builder: (_, controller) => Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor(ctx),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textMutedColor(ctx).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  ctx.l10n.recentActivity,
+                  style: AppTheme.headingMedium(ctx),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: BlocBuilder<HistoryCubit, HistoryState>(
+                  builder: (ctx, state) {
+                    if (state is HistoryLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is HistoryError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: AppTheme.bodyMedium(ctx),
+                        ),
+                      );
+                    }
+                    if (state is! HistoryLoaded) {
+                      return const SizedBox.shrink();
+                    }
+                    final items = state.inProgressItems + state.completedItems;
+                    if (items.isEmpty) {
+                      return Center(
+                        child: Text(
+                          ctx.l10n.activityEmpty,
+                          style: AppTheme.bodyMedium(ctx).copyWith(
+                            color: AppTheme.textMutedColor(ctx),
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      controller: controller,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: items.length,
+                      itemBuilder: (_, i) {
+                        final item = items[i];
+                        final sub = item.chapter != null
+                            ? '${item.chapter!.title} • ${item.percentRead.toInt()}%'
+                            : '${item.percentRead.toInt()}%';
+                        final dur = item.durationSeconds > 0
+                            ? ctx.l10n.durationMinutes(
+                                (item.durationSeconds / 60).ceil())
+                            : '';
+                        return ListTile(
+                          title: Text(item.story.title),
+                          subtitle: Text('$sub${dur.isNotEmpty ? ' • $dur' : ''}'),
+                          trailing: Text(
+                            _formatTimeAgo(ctx, item.lastReadAt),
+                            style: AppTheme.caption(ctx),
+                          ),
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            ctx.router.pushNamed(
+                              item.isCompleted
+                                  ? '/story/${item.story.id}'
+                                  : '/reader/${item.story.id}/${item.chapter?.id ?? ''}',
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _formatTimeAgo(BuildContext context, DateTime? lastReadAt) {
+    if (lastReadAt == null) return '';
+    final l10n = context.l10n;
+    final diff = DateTime.now().difference(lastReadAt);
+    if (diff.inMinutes < 60) {
+      return l10n.timeAgoMinutes(diff.inMinutes);
+    } else if (diff.inHours < 24) {
+      return l10n.timeAgoHours(diff.inHours);
+    } else if (diff.inDays < 7) {
+      return l10n.timeAgoDays(diff.inDays);
+    } else if (diff.inDays < 30) {
+      return l10n.timeAgoWeeks((diff.inDays / 7).floor());
+    } else {
+      return l10n.timeAgoMonths((diff.inDays / 30).floor());
+    }
+  }
 
   static void showMinNextChapterDialog(BuildContext context) {
     final settings = context.read<SettingsCubit>().state;
@@ -466,6 +617,278 @@ class _ParentZoneHelpers {
     await Share.share(
       'Check out Korean Kids Tales - 꼬마 한동화!\nhttps://play.google.com/store/apps',
       subject: 'Korean Kids Tales',
+    );
+  }
+}
+
+class _DailyGoalSection extends StatelessWidget {
+  const _DailyGoalSection();
+
+  static const List<int> _storyOptions = [0, 1, 2, 3];
+  static const List<int> _chapterOptions = [0, 3, 5, 10];
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, settingsState) {
+        final goalStories =
+            settingsState is SettingsLoaded ? settingsState.dailyGoalStories : 0;
+        final goalChapters =
+            settingsState is SettingsLoaded ? settingsState.dailyGoalChapters : 0;
+        return SettingsSection(
+          title: context.l10n.dailyGoal,
+          children: [
+            SettingsItem(
+              icon: Icons.menu_book_outlined,
+              title: context.l10n.dailyGoalStories,
+              trailing: FutureBuilder<int>(
+                future: getIt<ProgressRepository>().getStoriesReadToday(),
+                builder: (_, snap) {
+                  final current = snap.data ?? 0;
+                  return Text(
+                    goalStories == 0
+                        ? context.l10n.dailyGoalOff
+                        : context.l10n.dailyGoalFormat(
+                            current.toString(),
+                            goalStories.toString(),
+                          ),
+                    style: AppTheme.bodyMedium(context),
+                  );
+                },
+              ),
+              onTap: () => _showDailyGoalStoriesDialog(context),
+            ),
+            SettingsItem(
+              icon: Icons.collections_bookmark_outlined,
+              title: context.l10n.dailyGoalChapters,
+              trailing: FutureBuilder<int>(
+                future: getIt<ProgressRepository>().getChaptersReadToday(),
+                builder: (_, snap) {
+                  final current = snap.data ?? 0;
+                  return Text(
+                    goalChapters == 0
+                        ? context.l10n.dailyGoalOff
+                        : context.l10n.dailyGoalFormat(
+                            current.toString(),
+                            goalChapters.toString(),
+                          ),
+                    style: AppTheme.bodyMedium(context),
+                  );
+                },
+              ),
+              onTap: () => _showDailyGoalChaptersDialog(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void _showDailyGoalStoriesDialog(BuildContext context) {
+    final settings = context.read<SettingsCubit>().state;
+    final current = settings is SettingsLoaded
+        ? settings.dailyGoalStories
+        : 0;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(ctx.l10n.dailyGoalStories),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(ctx.l10n.dailyGoalOff),
+              trailing: current == 0 ? const Icon(Icons.check, color: Colors.blue) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setDailyGoalStories(0);
+                Navigator.pop(ctx);
+              },
+            ),
+            ..._storyOptions.where((v) => v > 0).map((v) {
+              return ListTile(
+                title: Text('$v'),
+                trailing: current == v ? const Icon(Icons.check, color: Colors.blue) : null,
+                onTap: () {
+                  context.read<SettingsCubit>().setDailyGoalStories(v);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void _showDailyGoalChaptersDialog(BuildContext context) {
+    final settings = context.read<SettingsCubit>().state;
+    final current = settings is SettingsLoaded
+        ? settings.dailyGoalChapters
+        : 0;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(ctx.l10n.dailyGoalChapters),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(ctx.l10n.dailyGoalOff),
+              trailing: current == 0 ? const Icon(Icons.check, color: Colors.blue) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setDailyGoalChapters(0);
+                Navigator.pop(ctx);
+              },
+            ),
+            ..._chapterOptions.where((v) => v > 0).map((v) {
+              return ListTile(
+                title: Text('$v'),
+                trailing: current == v ? const Icon(Icons.check, color: Colors.blue) : null,
+                onTap: () {
+                  context.read<SettingsCubit>().setDailyGoalChapters(v);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReminderSection extends StatefulWidget {
+  const _ReminderSection();
+
+  @override
+  State<_ReminderSection> createState() => _ReminderSectionState();
+}
+
+class _ReminderSectionState extends State<_ReminderSection> {
+  int _refreshKey = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSection(
+      title: context.l10n.reminderStreak,
+      children: [
+        SettingsItem(
+          icon: Icons.notifications_outlined,
+          title: context.l10n.reminderStreak,
+          trailing: FutureBuilder<bool>(
+            key: ValueKey(_refreshKey),
+            future: NotificationService.isReminderEnabled(),
+            builder: (ctx, snap) {
+              return Text(
+                snap.data == true
+                    ? context.l10n.reminderOn
+                    : context.l10n.reminderOff,
+                style: AppTheme.bodyMedium(context),
+              );
+            },
+          ),
+          onTap: () async {
+            await _ParentZoneHelpers.showReminderDialog(context);
+            if (mounted) setState(() => _refreshKey++);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _ReminderDialog extends StatefulWidget {
+  final bool initialEnabled;
+  final int initialHour;
+  final int initialMinute;
+  final Future<void> Function(bool enabled, int hour, int minute) onSave;
+
+  const _ReminderDialog({
+    required this.initialEnabled,
+    required this.initialHour,
+    required this.initialMinute,
+    required this.onSave,
+  });
+
+  @override
+  State<_ReminderDialog> createState() => _ReminderDialogState();
+}
+
+class _ReminderDialogState extends State<_ReminderDialog> {
+  late bool _enabled;
+  late int _hour;
+  late int _minute;
+
+  @override
+  void initState() {
+    super.initState();
+    _enabled = widget.initialEnabled;
+    _hour = widget.initialHour;
+    _minute = widget.initialMinute;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(context.l10n.reminderStreak),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.reminderStreakDesc,
+            style: AppTheme.bodyMedium(context).copyWith(
+              color: AppTheme.textMutedColor(context),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: Text(context.l10n.reminderStreak)),
+              Switch(
+                value: _enabled,
+                onChanged: (v) => setState(() => _enabled = v),
+              ),
+            ],
+          ),
+          if (_enabled) ...[
+            const SizedBox(height: 16),
+            ListTile(
+              title: Text(context.l10n.reminderTime),
+              subtitle: Text(
+                '$_hour:${_minute.toString().padLeft(2, '0')}',
+                style: AppTheme.bodyLarge(context),
+              ),
+              trailing: const Icon(Icons.access_time),
+              onTap: () async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay(hour: _hour, minute: _minute),
+                );
+                if (picked != null) {
+                  setState(() {
+                    _hour = picked.hour;
+                    _minute = picked.minute;
+                  });
+                }
+              },
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(context.l10n.cancel),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await widget.onSave(_enabled, _hour, _minute);
+            if (context.mounted) Navigator.pop(context);
+          },
+          child: Text(context.l10n.continueAction),
+        ),
+      ],
     );
   }
 }

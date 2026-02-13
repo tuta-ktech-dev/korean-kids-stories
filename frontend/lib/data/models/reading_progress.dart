@@ -10,6 +10,8 @@ class ReadingProgress {
   final bool isCompleted;
   final List<Bookmark> bookmarks;
   final DateTime? lastReadAt;
+  /// Total reading duration (seconds) - cumulative across sessions
+  final int durationSeconds;
 
   ReadingProgress({
     required this.id,
@@ -20,6 +22,7 @@ class ReadingProgress {
     this.isCompleted = false,
     this.bookmarks = const [],
     this.lastReadAt,
+    this.durationSeconds = 0,
   });
 
   factory ReadingProgress.fromRecord(RecordModel record) {
@@ -40,6 +43,7 @@ class ReadingProgress {
       isCompleted: record.getBoolValue('is_completed'),
       bookmarks: bookmarks,
       lastReadAt: _parseProgressDateTime(record.data['updated']),
+      durationSeconds: (record.data['duration_seconds'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -51,6 +55,7 @@ class ReadingProgress {
       'last_position': lastPosition,
       'is_completed': isCompleted,
       'bookmarks': bookmarks.map((b) => b.toJson()).toList(),
+      'duration_seconds': durationSeconds,
     };
   }
 
@@ -63,6 +68,7 @@ class ReadingProgress {
     bool? isCompleted,
     List<Bookmark>? bookmarks,
     DateTime? lastReadAt,
+    int? durationSeconds,
   }) {
     return ReadingProgress(
       id: id ?? this.id,
@@ -73,6 +79,7 @@ class ReadingProgress {
       isCompleted: isCompleted ?? this.isCompleted,
       bookmarks: bookmarks ?? this.bookmarks,
       lastReadAt: lastReadAt ?? this.lastReadAt,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
     );
   }
 }

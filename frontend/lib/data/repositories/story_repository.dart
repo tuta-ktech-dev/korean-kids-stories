@@ -135,6 +135,20 @@ class StoryRepository {
     return sorted.take(limit).toList();
   }
 
+  /// Get next story for continuous play: same category, exclude IDs, sort by popularity.
+  Future<Story?> getNextStory({
+    required Set<String> excludeStoryIds,
+    String? category,
+  }) async {
+    final stories = await getStories(category: category);
+    final available = stories
+        .where((s) => !excludeStoryIds.contains(s.id))
+        .toList();
+    if (available.isEmpty) return null;
+    available.sort((a, b) => b.viewCount.compareTo(a.viewCount));
+    return available.first;
+  }
+
   /// Get unique categories from all stories
   Future<List<StoryCategory>> getCategories() async {
     final stories = await _pbService.getStories();

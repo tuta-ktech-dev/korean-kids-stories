@@ -199,6 +199,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendedStories => '✨ Recommended';
 
   @override
+  String get basedOnYourReading => '📖 Based on what you\'ve read';
+
+  @override
   String get refresh => 'Refresh';
 
   @override
@@ -257,6 +260,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chapterCompletedMessage => 'You finished this chapter!';
+
+  @override
+  String get storyCompleteMessage =>
+      'Story finished! Want to do a quiz or listen to the next story?';
+
+  @override
+  String get doQuiz => 'Do Quiz';
+
+  @override
+  String get skipNextStory => 'Next Story';
 
   @override
   String get bookmark => 'Save';
@@ -419,6 +432,49 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get reminderStreak => 'Daily reading reminder';
+
+  @override
+  String get reminderStreakDesc => 'Notify at end of day if no streak yet';
+
+  @override
+  String get reminderOff => 'Off';
+
+  @override
+  String get reminderOn => 'On';
+
+  @override
+  String get reminderTime => 'Reminder time';
+
+  @override
+  String get dailyGoal => 'Daily reading goal';
+
+  @override
+  String get dailyGoalOff => 'Off';
+
+  @override
+  String get dailyGoalStories => 'Stories per day';
+
+  @override
+  String get dailyGoalChapters => 'Chapters per day';
+
+  @override
+  String dailyGoalFormat(Object current, Object target) {
+    return '$current/$target today';
+  }
+
+  @override
+  String get recentActivity => 'Recent activity';
+
+  @override
+  String get activityEmpty => 'No activity yet';
+
+  @override
+  String durationMinutes(Object min) {
+    return '$min min';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return 'No results for \"$query\"';
   }
@@ -486,6 +542,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voice => 'Voice';
+
+  @override
+  String get sleepTimer => 'Sleep Timer';
+
+  @override
+  String get sleepTimerOff => 'Off';
+
+  @override
+  String get sleepTimer5min => '5 min';
+
+  @override
+  String get sleepTimer10min => '10 min';
+
+  @override
+  String get sleepTimer15min => '15 min';
+
+  @override
+  String sleepTimerRemaining(Object min) {
+    return '$min min left';
+  }
 
   @override
   String chapterTitleFormatted(Object number) {
@@ -593,6 +669,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentStreak => 'Current Streak';
+
+  @override
+  String streakBadge(Object days) {
+    return '🔥 $days day streak!';
+  }
+
+  @override
+  String streakBadgeText(Object days) {
+    return '$days day streak!';
+  }
+
+  @override
+  String streakLongest(Object days) {
+    return 'Best: $days days';
+  }
 
   @override
   String get historyLoadError => 'Error loading history';

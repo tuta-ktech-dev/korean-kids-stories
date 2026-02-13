@@ -13,6 +13,9 @@ class ReaderBottomBar extends StatelessWidget {
   final List<ChapterAudio> audios;
   final ChapterAudio? selectedAudio;
   final void Function(ChapterAudio)? onSelectAudio;
+  final int sleepTimerMinutes;
+  final DateTime? sleepTimerEndsAt;
+  final void Function(int)? onSleepTimerChanged;
 
   const ReaderBottomBar({
     super.key,
@@ -24,6 +27,9 @@ class ReaderBottomBar extends StatelessWidget {
     this.audios = const [],
     this.selectedAudio,
     this.onSelectAudio,
+    this.sleepTimerMinutes = 0,
+    this.sleepTimerEndsAt,
+    this.onSleepTimerChanged,
   });
 
   @override
@@ -93,11 +99,43 @@ class ReaderBottomBar extends StatelessWidget {
                   ),
                   onPressed: onNextChapter,
                 ),
+                if (onSleepTimerChanged != null) _buildSleepTimerButton(context),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSleepTimerButton(BuildContext context) {
+    final hasTimer = sleepTimerMinutes > 0;
+    return PopupMenuButton<int>(
+      tooltip: context.l10n.sleepTimer,
+      icon: Icon(
+        Icons.timer_outlined,
+        color: hasTimer
+            ? AppTheme.primaryColor(context)
+            : AppTheme.textColor(context),
+      ),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      onSelected: onSleepTimerChanged!,
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Text(context.l10n.sleepTimerOff),
+        ),
+        PopupMenuItem(value: 5, child: Text(context.l10n.sleepTimer5min)),
+        PopupMenuItem(
+          value: 10,
+          child: Text(context.l10n.sleepTimer10min),
+        ),
+        PopupMenuItem(
+          value: 15,
+          child: Text(context.l10n.sleepTimer15min),
+        ),
+      ],
     );
   }
 

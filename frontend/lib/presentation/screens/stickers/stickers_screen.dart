@@ -801,8 +801,7 @@ class _EmptyStoryStickers extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/empty_story_stickers.webp',
-              width: 120,
-              height: 120,
+              width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),

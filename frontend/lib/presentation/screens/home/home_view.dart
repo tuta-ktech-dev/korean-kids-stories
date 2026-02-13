@@ -63,6 +63,16 @@ class HomeView extends StatelessWidget {
               ),
             ),
 
+            // 📖 Based on your reading
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) => _buildSectionWithTitle(
+                context,
+                state,
+                context.l10n.basedOnYourReading,
+                (s) => s.sections.recommendedByHistory,
+              ),
+            ),
+
             // 🎧 Stories with Audio
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) => _buildSectionWithTitle(
@@ -353,8 +363,7 @@ class HomeView extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/empty_no_stories.webp',
-              width: 120,
-              height: 120,
+              width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),

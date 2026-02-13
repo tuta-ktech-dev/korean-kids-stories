@@ -196,6 +196,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recommendedStories => '✨ 추천 동화';
 
   @override
+  String get basedOnYourReading => '📖 읽은 이야기 기반 추천';
+
+  @override
   String get refresh => '새로고침';
 
   @override
@@ -254,6 +257,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chapterCompletedMessage => '이 화를 다 읽었어요!';
+
+  @override
+  String get storyCompleteMessage => '이야기 끝! 퀴즈 할까요, 다음 이야기 들을까요?';
+
+  @override
+  String get doQuiz => '퀴즈 하기';
+
+  @override
+  String get skipNextStory => '다음 이야기';
 
   @override
   String get bookmark => '저장';
@@ -413,6 +425,49 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get reminderStreak => '매일 독서 알림';
+
+  @override
+  String get reminderStreakDesc => '오늘 읽지 않으면 저녁에 알림';
+
+  @override
+  String get reminderOff => '끄기';
+
+  @override
+  String get reminderOn => '켜기';
+
+  @override
+  String get reminderTime => '알림 시간';
+
+  @override
+  String get dailyGoal => '일일 읽기 목표';
+
+  @override
+  String get dailyGoalOff => '끄기';
+
+  @override
+  String get dailyGoalStories => '이야기/일';
+
+  @override
+  String get dailyGoalChapters => '챕터/일';
+
+  @override
+  String dailyGoalFormat(Object current, Object target) {
+    return '오늘 $current/$target';
+  }
+
+  @override
+  String get recentActivity => '최근 활동';
+
+  @override
+  String get activityEmpty => '아직 활동 없음';
+
+  @override
+  String durationMinutes(Object min) {
+    return '$min분';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return '\"$query\" 검색 결과가 없어요';
   }
@@ -479,6 +534,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get voice => '음성';
+
+  @override
+  String get sleepTimer => '잠자기 타이머';
+
+  @override
+  String get sleepTimerOff => '끄기';
+
+  @override
+  String get sleepTimer5min => '5분';
+
+  @override
+  String get sleepTimer10min => '10분';
+
+  @override
+  String get sleepTimer15min => '15분';
+
+  @override
+  String sleepTimerRemaining(Object min) {
+    return '$min분 남음';
+  }
 
   @override
   String chapterTitleFormatted(Object number) {
@@ -585,6 +660,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get currentStreak => '연속 학습';
+
+  @override
+  String streakBadge(Object days) {
+    return '🔥 $days일 연속 읽기!';
+  }
+
+  @override
+  String streakBadgeText(Object days) {
+    return '$days일 연속 읽기!';
+  }
+
+  @override
+  String streakLongest(Object days) {
+    return '최고: $days일';
+  }
 
   @override
   String get historyLoadError => '기록을 불러올 수 없어요';

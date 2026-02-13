@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../core/notification/notification_service.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/reading_history_repository.dart';
 import '../../../injection.dart';
@@ -42,7 +43,11 @@ class ProgressCubit extends Cubit<ProgressState> {
       percentRead: percentRead,
       lastPosition: lastPosition,
       isCompleted: isCompleted,
+      durationSeconds: durationSeconds,
     );
+
+    // Mark "read today" for reminder notification (only show if no streak)
+    await NotificationService.markReadToday();
 
     if (storyId != null && storyId.isNotEmpty) {
       _historyRepo.logAction(

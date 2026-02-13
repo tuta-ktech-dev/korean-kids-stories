@@ -38,6 +38,10 @@ class ReaderCubit extends Cubit<ReaderState> {
   StreamSubscription<Duration>? _positionSub;
   StreamSubscription<Duration?>? _durationSub;
   String? _loadedAudioUrl;
+  Timer? _sleepTimer;
+
+  /// Called when last chapter of story completes (audio done). Enables continuous + quiz flow.
+  void Function(String storyId, bool hasQuiz)? onStoryComplete;
 
   /// Load a chapter. Set [skipLoading] true to avoid showing loading spinner
   /// when switching between chapters (smoother UX).
@@ -74,6 +78,7 @@ class ReaderCubit extends Cubit<ReaderState> {
 
       final audios = await _storyRepository.getChapterAudios(chapterId);
       final selectedAudio = audios.isNotEmpty ? audios.first : null;
+      final story = await _storyRepository.getStory(chapter.storyId);
 
       final progress = await _progressRepository.getProgress(chapterId);
       final percent = progress?.percentRead ?? 0.0;
@@ -84,9 +89,11 @@ class ReaderCubit extends Cubit<ReaderState> {
 
       await _stopPlayer();
       final prevSpeed = state is ReaderLoaded ? (state as ReaderLoaded).playbackSpeed : _defaultPlaybackSpeed;
+      final prevLoaded = state is ReaderLoaded ? state as ReaderLoaded : null;
       emit(
         ReaderLoaded(
           chapter: chapter,
+          story: story,
           prevChapter: prevChapter,
           nextChapter: nextChapter,
           nextChapterLocked: nextChapterLocked,
@@ -98,6 +105,8 @@ class ReaderCubit extends Cubit<ReaderState> {
           playbackSpeed: prevSpeed,
           playbackError: null,
           initialAudioPositionSec: initialSec,
+          sleepTimerMinutes: prevLoaded?.sleepTimerMinutes ?? 0,
+          sleepTimerEndsAt: prevLoaded?.sleepTimerEndsAt,
         ),
       );
       _historyRepository.logAction(
@@ -198,6 +207,43 @@ class ReaderCubit extends Cubit<ReaderState> {
     _durationSub = null;
   }
 
+  /// Set sleep timer: 0 = off, else minutes until auto-pause.
+  void setSleepTimer(int minutes) {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+
+    if (state is! ReaderLoaded) return;
+    final s = state as ReaderLoaded;
+
+    if (minutes <= 0) {
+      emit(s.copyWith(sleepTimerMinutes: 0, clearSleepTimer: true));
+      return;
+    }
+
+    final endsAt = DateTime.now().add(Duration(minutes: minutes));
+    emit(s.copyWith(
+      sleepTimerMinutes: minutes,
+      sleepTimerEndsAt: endsAt,
+    ));
+
+    _sleepTimer = Timer(Duration(minutes: minutes), () async {
+      _sleepTimer = null;
+      if (state is! ReaderLoaded) return;
+      final current = state as ReaderLoaded;
+      if (current.isPlaying) await _player.pause();
+      emit(current.copyWith(
+        isPlaying: false,
+        sleepTimerMinutes: 0,
+        clearSleepTimer: true,
+      ));
+    });
+  }
+
+  void _cancelSleepTimer() {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+  }
+
   void _listenToPlayerIfNeeded(String chapterId) {
     if (_stateSub != null) return;
 
@@ -222,6 +268,12 @@ class ReaderCubit extends Cubit<ReaderState> {
               togglePlaying();
             }
           });
+        } else if (s.nextChapter == null && s.nextChapterLocked == null) {
+          // Last chapter of story - signal for next story / quiz
+          onStoryComplete?.call(
+            s.chapter.storyId,
+            s.story?.hasQuiz ?? false,
+          );
         }
         return;
       }
@@ -251,6 +303,7 @@ class ReaderCubit extends Cubit<ReaderState> {
 
   @override
   Future<void> close() async {
+    _cancelSleepTimer();
     await _stopPlayer();
     await _player.dispose();
     return super.close();

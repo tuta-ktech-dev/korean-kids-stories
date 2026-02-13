@@ -55,6 +55,7 @@ class LocalProgressRepository {
     required double percentRead,
     double? lastPosition,
     bool? isCompleted,
+    int? durationSeconds,
   }) async {
     try {
       final all = await _getAllMap();
@@ -82,6 +83,11 @@ class LocalProgressRepository {
         data['is_completed'] = true;
       } else if (isCompleted == false && data['is_completed'] != true) {
         data['is_completed'] = false;
+      }
+      // Accumulate duration_seconds
+      if (durationSeconds != null && durationSeconds > 0) {
+        final prev = (data['duration_seconds'] as num?)?.toInt() ?? 0;
+        data['duration_seconds'] = prev + durationSeconds;
       }
 
       all[chapterId] = data;
@@ -215,6 +221,7 @@ class LocalProgressRepository {
       isCompleted: data['is_completed'] == true,
       bookmarks: bookmarks,
       lastReadAt: _parseDateTime(data['last_read_at']),
+      durationSeconds: (data['duration_seconds'] as num?)?.toInt() ?? 0,
     );
   }
 

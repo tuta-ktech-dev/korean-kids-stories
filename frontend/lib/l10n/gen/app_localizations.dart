@@ -472,6 +472,12 @@ abstract class AppLocalizations {
   /// **'✨ Recommended'**
   String get recommendedStories;
 
+  /// No description provided for @basedOnYourReading.
+  ///
+  /// In en, this message translates to:
+  /// **'📖 Based on what you\'ve read'**
+  String get basedOnYourReading;
+
   /// No description provided for @refresh.
   ///
   /// In en, this message translates to:
@@ -591,6 +597,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You finished this chapter!'**
   String get chapterCompletedMessage;
+
+  /// No description provided for @storyCompleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Story finished! Want to do a quiz or listen to the next story?'**
+  String get storyCompleteMessage;
+
+  /// No description provided for @doQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Do Quiz'**
+  String get doQuiz;
+
+  /// No description provided for @skipNextStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Story'**
+  String get skipNextStory;
 
   /// No description provided for @bookmark.
   ///
@@ -892,6 +916,84 @@ abstract class AppLocalizations {
   /// **'{seconds}s'**
   String minNextChapterCountdown(Object seconds);
 
+  /// No description provided for @reminderStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reading reminder'**
+  String get reminderStreak;
+
+  /// No description provided for @reminderStreakDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify at end of day if no streak yet'**
+  String get reminderStreakDesc;
+
+  /// No description provided for @reminderOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get reminderOff;
+
+  /// No description provided for @reminderOn.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get reminderOn;
+
+  /// No description provided for @reminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder time'**
+  String get reminderTime;
+
+  /// No description provided for @dailyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reading goal'**
+  String get dailyGoal;
+
+  /// No description provided for @dailyGoalOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get dailyGoalOff;
+
+  /// No description provided for @dailyGoalStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories per day'**
+  String get dailyGoalStories;
+
+  /// No description provided for @dailyGoalChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapters per day'**
+  String get dailyGoalChapters;
+
+  /// No description provided for @dailyGoalFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{target} today'**
+  String dailyGoalFormat(Object current, Object target);
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get recentActivity;
+
+  /// No description provided for @activityEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity yet'**
+  String get activityEmpty;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} min'**
+  String durationMinutes(Object min);
+
   /// No description provided for @noSearchResults.
   ///
   /// In en, this message translates to:
@@ -1023,6 +1125,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voice'**
   String get voice;
+
+  /// No description provided for @sleepTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep Timer'**
+  String get sleepTimer;
+
+  /// No description provided for @sleepTimerOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get sleepTimerOff;
+
+  /// No description provided for @sleepTimer5min.
+  ///
+  /// In en, this message translates to:
+  /// **'5 min'**
+  String get sleepTimer5min;
+
+  /// No description provided for @sleepTimer10min.
+  ///
+  /// In en, this message translates to:
+  /// **'10 min'**
+  String get sleepTimer10min;
+
+  /// No description provided for @sleepTimer15min.
+  ///
+  /// In en, this message translates to:
+  /// **'15 min'**
+  String get sleepTimer15min;
+
+  /// No description provided for @sleepTimerRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{min} min left'**
+  String sleepTimerRemaining(Object min);
 
   /// No description provided for @chapterTitleFormatted.
   ///
@@ -1203,6 +1341,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current Streak'**
   String get currentStreak;
+
+  /// No description provided for @streakBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'🔥 {days} day streak!'**
+  String streakBadge(Object days);
+
+  /// No description provided for @streakBadgeText.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} day streak!'**
+  String streakBadgeText(Object days);
+
+  /// No description provided for @streakLongest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best: {days} days'**
+  String streakLongest(Object days);
 
   /// No description provided for @historyLoadError.
   ///

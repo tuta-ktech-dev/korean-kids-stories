@@ -11,6 +11,7 @@ class HistoryItem extends Equatable {
   final bool isCompleted;
   final DateTime? lastReadAt;
   final Duration? lastPosition;
+  final int durationSeconds;
 
   const HistoryItem({
     required this.id,
@@ -20,6 +21,7 @@ class HistoryItem extends Equatable {
     this.isCompleted = false,
     this.lastReadAt,
     this.lastPosition,
+    this.durationSeconds = 0,
   });
 
   @override
@@ -31,6 +33,7 @@ class HistoryItem extends Equatable {
         isCompleted,
         lastReadAt,
         lastPosition,
+        durationSeconds,
       ];
 }
 

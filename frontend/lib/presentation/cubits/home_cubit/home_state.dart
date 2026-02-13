@@ -60,14 +60,16 @@ class HomeStory extends Equatable {
 
 // Story sections
 class StorySections extends Equatable {
-  final List<HomeStory> featured;      // 🔥 Nổi bật
-  final List<HomeStory> withAudio;     // 🎧 Có Audio
-  final List<HomeStory> mostReviewed;  // ⭐ Review nhiều
-  final List<HomeStory> mostViewed;    // 👁 Lượt xem nhiều
-  final List<HomeStory> recent;        // 🆕 Mới nhất
+  final List<HomeStory> featured;          // 🔥 Nổi bật
+  final List<HomeStory> recommendedByHistory; // 📖 Dựa trên lịch sử đọc
+  final List<HomeStory> withAudio;         // 🎧 Có Audio
+  final List<HomeStory> mostReviewed;      // ⭐ Review nhiều
+  final List<HomeStory> mostViewed;        // 👁 Lượt xem nhiều
+  final List<HomeStory> recent;             // 🆕 Mới nhất
 
   const StorySections({
     this.featured = const [],
+    this.recommendedByHistory = const [],
     this.withAudio = const [],
     this.mostReviewed = const [],
     this.mostViewed = const [],
@@ -75,10 +77,12 @@ class StorySections extends Equatable {
   });
 
   @override
-  List<Object?> get props => [featured, withAudio, mostReviewed, mostViewed, recent];
+  List<Object?> get props =>
+      [featured, recommendedByHistory, withAudio, mostReviewed, mostViewed, recent];
 
   StorySections copyWith({
     List<HomeStory>? featured,
+    List<HomeStory>? recommendedByHistory,
     List<HomeStory>? withAudio,
     List<HomeStory>? mostReviewed,
     List<HomeStory>? mostViewed,
@@ -86,6 +90,8 @@ class StorySections extends Equatable {
   }) {
     return StorySections(
       featured: featured ?? this.featured,
+      recommendedByHistory:
+          recommendedByHistory ?? this.recommendedByHistory,
       withAudio: withAudio ?? this.withAudio,
       mostReviewed: mostReviewed ?? this.mostReviewed,
       mostViewed: mostViewed ?? this.mostViewed,

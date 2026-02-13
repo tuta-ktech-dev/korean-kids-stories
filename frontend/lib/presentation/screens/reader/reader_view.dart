@@ -687,6 +687,11 @@ class _ReaderViewState extends State<ReaderView> {
                                           .read<ReaderCubit>()
                                           .selectAudio(a)
                                     : null,
+                                sleepTimerMinutes: state.sleepTimerMinutes,
+                                sleepTimerEndsAt: state.sleepTimerEndsAt,
+                                onSleepTimerChanged: (min) => context
+                                    .read<ReaderCubit>()
+                                    .setSleepTimer(min),
                               ),
                             ],
                           )

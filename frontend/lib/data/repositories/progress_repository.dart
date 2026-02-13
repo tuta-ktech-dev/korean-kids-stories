@@ -70,6 +70,7 @@ class ProgressRepository {
     required double percentRead,
     double? lastPosition,
     bool? isCompleted,
+    int? durationSeconds,
   }) async {
     if (_useLocal) {
       return _localRepo.saveProgress(
@@ -77,6 +78,7 @@ class ProgressRepository {
         percentRead: percentRead,
         lastPosition: lastPosition,
         isCompleted: isCompleted,
+        durationSeconds: durationSeconds,
       );
     }
 
@@ -251,15 +253,50 @@ class ProgressRepository {
     return chapters.map((c) => c.storyId).toSet();
   }
 
-  /// Lấy tổng thờ gian đọc (ước tính từ percent_read * audio_duration)
-  Future<Duration> getTotalReadingTime() async {
-    // Note: Cần fetch chapters để tính chính xác
-    // Hiện tại trả về estimate
+  /// Số chương đã đọc hôm nay (lastReadAt date = today)
+  Future<int> getChaptersReadToday() async {
     final all = await getAllProgress();
-    final totalMinutes = all.fold<double>(
-      0,
-      (sum, p) => sum + (p.percentRead / 100 * 5), // estimate 5 min per chapter
-    );
-    return Duration(minutes: totalMinutes.round());
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    return all.where((p) {
+      final at = p.lastReadAt;
+      if (at == null) return false;
+      final d = DateTime(at.year, at.month, at.day);
+      return d == todayDate;
+    }).length;
+  }
+
+  /// Số truyện (distinct story) đã đọc hôm nay
+  Future<int> getStoriesReadToday() async {
+    final readIds = await getReadStoryIds();
+    if (readIds.isEmpty) return 0;
+    final all = await getAllProgress();
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final chapterIdsToday = all
+        .where((p) {
+          final at = p.lastReadAt;
+          if (at == null) return false;
+          return DateTime(at.year, at.month, at.day) == todayDate;
+        })
+        .map((p) => p.chapterId)
+        .toSet();
+    if (chapterIdsToday.isEmpty) return 0;
+    final chapters = await _pbService.getChaptersByIds(chapterIdsToday.toList());
+    return chapters.map((c) => c.storyId).toSet().length;
+  }
+
+  /// Lấy tổng thời gian đọc (duration_seconds khi có, else ước tính)
+  Future<Duration> getTotalReadingTime() async {
+    final all = await getAllProgress();
+    var totalSeconds = 0;
+    for (final p in all) {
+      if (p.durationSeconds > 0) {
+        totalSeconds += p.durationSeconds;
+      } else {
+        totalSeconds += ((p.percentRead / 100) * 300).round(); // 5 min per chapter
+      }
+    }
+    return Duration(seconds: totalSeconds);
   }
 }

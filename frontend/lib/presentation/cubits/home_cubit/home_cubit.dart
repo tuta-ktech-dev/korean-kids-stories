@@ -126,6 +126,35 @@ class HomeCubit extends Cubit<HomeState> {
           .map((s) => _mapToHomeStory(s))
           .toList();
 
+      // Categories of stories user has read
+      final readCategories = allStories
+          .where((s) => readIds.contains(s.id))
+          .map((s) => s.category)
+          .toSet()
+          .toList();
+
+      // 📖 Recommended by history: same category as read, unread, sort by popularity
+      List<HomeStory> recommendedByHistory = [];
+      if (readCategories.isNotEmpty) {
+        recommendedByHistory = homeStories
+            .where((s) => readCategories.contains(s.category))
+            .toList();
+        recommendedByHistory.sort(
+          (a, b) => b.viewCount.compareTo(a.viewCount),
+        );
+        if (recommendedByHistory.length > 5) {
+          recommendedByHistory = recommendedByHistory.take(5).toList();
+        }
+      }
+      // Fallback: if little history or no match → use mostViewed
+      if (recommendedByHistory.isEmpty) {
+        recommendedByHistory = List<HomeStory>.from(homeStories)
+          ..sort((a, b) => b.viewCount.compareTo(a.viewCount));
+        if (recommendedByHistory.length > 5) {
+          recommendedByHistory = recommendedByHistory.take(5).toList();
+        }
+      }
+
       // 🔥 Featured stories
       final featured = homeStories.where((s) => s.isFeatured).take(5).toList();
 
@@ -151,6 +180,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       return StorySections(
         featured: featured,
+        recommendedByHistory: recommendedByHistory,
         withAudio: withAudio,
         mostReviewed: mostReviewed,
         mostViewed: mostViewed,

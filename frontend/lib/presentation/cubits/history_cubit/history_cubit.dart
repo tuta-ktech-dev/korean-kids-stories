@@ -90,6 +90,7 @@ class HistoryCubit extends Cubit<HistoryState> {
           isCompleted: progress.isCompleted,
           lastReadAt: progress.lastReadAt,
           lastPosition: Duration(milliseconds: progress.lastPosition.toInt()),
+          durationSeconds: progress.durationSeconds,
         ));
       } catch (e) {
         debugPrint('Error building history item: $e');
@@ -123,11 +124,14 @@ class HistoryCubit extends Cubit<HistoryState> {
   ) async {
     final completed = progresses.where((p) => p.isCompleted).length;
 
-    // Calculate total reading time (estimate)
-    // Assume ~5 minutes per chapter, based on percent_read
-    var totalMinutes = 0.0;
+    // Total reading time: use duration_seconds when available, else estimate
+    var totalSeconds = 0;
     for (final p in progresses) {
-      totalMinutes += (p.percentRead / 100) * 5; // 5 min per chapter estimate
+      if (p.durationSeconds > 0) {
+        totalSeconds += p.durationSeconds;
+      } else {
+        totalSeconds += ((p.percentRead / 100) * 300).round(); // 5 min per chapter
+      }
     }
 
     // Calculate streak
@@ -136,7 +140,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     return ReadingStats(
       totalChaptersRead: progresses.length,
       completedChapters: completed,
-      totalReadingTime: Duration(minutes: totalMinutes.round()),
+      totalReadingTime: Duration(seconds: totalSeconds),
       currentStreak: streak['current'] ?? 0,
       longestStreak: streak['longest'] ?? 0,
     );

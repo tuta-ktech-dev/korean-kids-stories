@@ -199,6 +199,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get recommendedStories => '✨ Truyện hay nên đọc';
 
   @override
+  String get basedOnYourReading => '📖 Dựa trên những gì bạn đã đọc';
+
+  @override
   String get refresh => 'Làm mới';
 
   @override
@@ -257,6 +260,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chapterCompletedMessage => 'Bé đã đọc xong chương này!';
+
+  @override
+  String get storyCompleteMessage =>
+      'Truyện đã xong! Làm quiz hay nghe truyện tiếp?';
+
+  @override
+  String get doQuiz => 'Làm Quiz';
+
+  @override
+  String get skipNextStory => 'Nghe truyện tiếp';
 
   @override
   String get bookmark => 'Lưu';
@@ -418,6 +431,49 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get reminderStreak => 'Nhắc đọc hàng ngày';
+
+  @override
+  String get reminderStreakDesc => 'Thông báo cuối ngày nếu chưa có streak';
+
+  @override
+  String get reminderOff => 'Tắt';
+
+  @override
+  String get reminderOn => 'Bật';
+
+  @override
+  String get reminderTime => 'Giờ nhắc';
+
+  @override
+  String get dailyGoal => 'Mục tiêu đọc hằng ngày';
+
+  @override
+  String get dailyGoalOff => 'Tắt';
+
+  @override
+  String get dailyGoalStories => 'Truyện/ngày';
+
+  @override
+  String get dailyGoalChapters => 'Chương/ngày';
+
+  @override
+  String dailyGoalFormat(Object current, Object target) {
+    return '$current/$target hôm nay';
+  }
+
+  @override
+  String get recentActivity => 'Hoạt động gần đây';
+
+  @override
+  String get activityEmpty => 'Chưa có hoạt động';
+
+  @override
+  String durationMinutes(Object min) {
+    return '$min phút';
+  }
+
+  @override
   String noSearchResults(Object query) {
     return 'Không tìm thấy kết quả cho \"$query\"';
   }
@@ -485,6 +541,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get voice => 'Giọng đọc';
+
+  @override
+  String get sleepTimer => 'Hẹn giờ tắt';
+
+  @override
+  String get sleepTimerOff => 'Tắt';
+
+  @override
+  String get sleepTimer5min => '5 phút';
+
+  @override
+  String get sleepTimer10min => '10 phút';
+
+  @override
+  String get sleepTimer15min => '15 phút';
+
+  @override
+  String sleepTimerRemaining(Object min) {
+    return 'Còn $min phút';
+  }
 
   @override
   String chapterTitleFormatted(Object number) {
@@ -591,6 +667,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get currentStreak => 'Chuỗi ngày học';
+
+  @override
+  String streakBadge(Object days) {
+    return '🔥 Đã đọc $days ngày liên tiếp!';
+  }
+
+  @override
+  String streakBadgeText(Object days) {
+    return 'Đã đọc $days ngày liên tiếp!';
+  }
+
+  @override
+  String streakLongest(Object days) {
+    return 'Kỷ lục: $days ngày';
+  }
 
   @override
   String get historyLoadError => 'Không thể tải lịch sử';

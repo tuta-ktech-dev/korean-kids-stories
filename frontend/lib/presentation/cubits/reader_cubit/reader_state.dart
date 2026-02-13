@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../data/models/chapter.dart';
 import '../../../data/models/chapter_audio.dart';
+import '../../../data/models/story.dart';
 
 abstract class ReaderState extends Equatable {
   const ReaderState();
@@ -20,6 +21,7 @@ class ReaderLoading extends ReaderState {
 
 class ReaderLoaded extends ReaderState {
   final Chapter chapter;
+  final Story? story; // For hasQuiz, category, title
   /// Previous chapter in the story, if any.
   final Chapter? prevChapter;
   /// Next chapter in the story (free), if any.
@@ -44,9 +46,14 @@ class ReaderLoaded extends ReaderState {
   final String? playbackError;
   /// Seek to this position (seconds) when user hits play (from saved progress).
   final double? initialAudioPositionSec;
+  /// Sleep timer: 0 = off, else minutes until auto-pause.
+  final int sleepTimerMinutes;
+  /// When sleep timer ends. null when off.
+  final DateTime? sleepTimerEndsAt;
 
   const ReaderLoaded({
     required this.chapter,
+    this.story,
     this.prevChapter,
     this.nextChapter,
     this.nextChapterLocked,
@@ -60,9 +67,13 @@ class ReaderLoaded extends ReaderState {
     this.playbackSpeed = 0.85,
     this.playbackError,
     this.initialAudioPositionSec,
+    this.sleepTimerMinutes = 0,
+    this.sleepTimerEndsAt,
   });
 
   bool get hasAudio => audios.isNotEmpty;
+
+  bool get hasSleepTimer => sleepTimerMinutes > 0;
 
   /// Progress to show in bottom bar: audio position when hasAudio, else scroll.
   /// When hasAudio, never show scroll - use 0 if not yet played.
@@ -78,6 +89,7 @@ class ReaderLoaded extends ReaderState {
 
   ReaderLoaded copyWith({
     Chapter? chapter,
+    Story? story,
     Chapter? prevChapter,
     Chapter? nextChapter,
     Chapter? nextChapterLocked,
@@ -94,9 +106,13 @@ class ReaderLoaded extends ReaderState {
     bool clearPlaybackError = false,
     double? initialAudioPositionSec,
     bool clearInitialAudioPosition = false,
+    int? sleepTimerMinutes,
+    DateTime? sleepTimerEndsAt,
+    bool clearSleepTimer = false,
   }) {
     return ReaderLoaded(
       chapter: chapter ?? this.chapter,
+      story: story ?? this.story,
       prevChapter: prevChapter ?? this.prevChapter,
       nextChapter: nextChapter ?? this.nextChapter,
       nextChapterLocked: nextChapterLocked ?? this.nextChapterLocked,
@@ -110,11 +126,15 @@ class ReaderLoaded extends ReaderState {
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       playbackError: clearPlaybackError ? null : (playbackError ?? this.playbackError),
       initialAudioPositionSec: clearInitialAudioPosition ? null : (initialAudioPositionSec ?? this.initialAudioPositionSec),
+      sleepTimerMinutes: sleepTimerMinutes ?? this.sleepTimerMinutes,
+      sleepTimerEndsAt: clearSleepTimer || (sleepTimerMinutes ?? this.sleepTimerMinutes) == 0
+          ? null
+          : (sleepTimerEndsAt ?? this.sleepTimerEndsAt),
     );
   }
 
   @override
-  List<Object?> get props => [chapter, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec];
+  List<Object?> get props => [chapter, story, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec, sleepTimerMinutes, sleepTimerEndsAt];
 }
 
 class ReaderError extends ReaderState {
