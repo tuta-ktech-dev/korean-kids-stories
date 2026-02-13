@@ -1,0 +1,21 @@
+# Apache .htaccess - Proxy /api và /_/ tới PocketBase (port 8090)
+# Copy vào document root của trananhtu.vn (cùng thư mục với index.html nếu có SPA)
+#
+# Yêu cầu: mod_rewrite, mod_proxy, mod_proxy_http
+# Lưu ý: Một số shared hosting không cho phép [P] (Proxy) trong .htaccess.
+#        Nếu lỗi 500, dùng ProxyPass trong Apache vhost thay thế.
+
+RewriteEngine On
+
+# Proxy /api/* -> PocketBase
+RewriteCond %{REQUEST_URI} ^/api
+RewriteRule ^api(.*)$ http://127.0.0.1:8090/api$1 [P,L]
+
+# Proxy /_/* -> PocketBase Admin (optional, có thể bỏ nếu không cần admin qua HTTPS)
+RewriteCond %{REQUEST_URI} ^/_/
+RewriteRule ^_/(.*)$ http://127.0.0.1:8090/_/$1 [P,L]
+
+# SPA fallback (nếu có React/Vue ở root)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

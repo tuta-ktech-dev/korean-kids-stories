@@ -1,0 +1,29 @@
+# Apache VirtualHost - Dùng khi .htaccess [P] không hoạt động (shared hosting)
+# Thêm vào /etc/apache2/sites-available/ hoặc httpd.conf
+
+<VirtualHost *:443>
+    ServerName trananhtu.vn
+
+    # SSL config...
+    # SSLEngine on
+    # SSLCertificateFile /path/to/cert.pem
+    # SSLCertificateKeyFile /path/to/key.pem
+
+    DocumentRoot /var/www/trananhtu.vn
+
+    # Proxy PocketBase API
+    ProxyPreserveHost On
+    ProxyPass /api http://127.0.0.1:8090/api
+    ProxyPassReverse /api http://127.0.0.1:8090/api
+
+    # Proxy PocketBase Admin (optional)
+    ProxyPass /_/ http://127.0.0.1:8090/_/
+    ProxyPassReverse /_/ http://127.0.0.1:8090/_/
+
+    # Static files / SPA
+    <Directory /var/www/trananhtu.vn>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
