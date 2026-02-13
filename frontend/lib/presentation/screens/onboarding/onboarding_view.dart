@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
@@ -136,32 +138,39 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 5,
-            child: Center(child: Image.asset(image, fit: BoxFit.contain)),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 5,
+          child: Image.asset(
+            image,
+            fit: BoxFit.cover,
+            width: min(context.width, context.height),
           ),
-          const SizedBox(height: 24),
-          Text(
+        ),
+        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
             title,
             style: AppTheme.headingMedium(context),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          Text(
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
             subtitle,
             style: AppTheme.bodyLarge(
               context,
             ).copyWith(color: AppTheme.textMutedColor(context)),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
-        ],
-      ),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

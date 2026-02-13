@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/notification/notification_service.dart';
-import 'core/notification/reminder_task.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'data/services/pocketbase_service.dart';
@@ -32,11 +30,6 @@ void main() async {
   getIt<TrackingService>().startSession(null);
 
   runApp(KoreanKidsStoriesApp());
-
-  // Notifications - defer until after first frame (Android Context/Activity must be ready)
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    NotificationService().initialize().then((_) => ReminderTask.init());
-  });
 }
 
 class KoreanKidsStoriesApp extends StatelessWidget {
