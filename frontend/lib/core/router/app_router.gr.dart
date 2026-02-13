@@ -176,6 +176,52 @@ class ProfileRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [QuizScreen]
+class QuizRoute extends PageRouteInfo<QuizRouteArgs> {
+  QuizRoute({
+    Key? key,
+    String? storyId,
+    String? chapterId,
+    List<PageRouteInfo>? children,
+  }) : super(
+         QuizRoute.name,
+         args: QuizRouteArgs(key: key, storyId: storyId, chapterId: chapterId),
+         initialChildren: children,
+       );
+
+  static const String name = 'QuizRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<QuizRouteArgs>(
+        orElse: () => const QuizRouteArgs(),
+      );
+      return QuizScreen(
+        key: args.key,
+        storyId: args.storyId,
+        chapterId: args.chapterId,
+      );
+    },
+  );
+}
+
+class QuizRouteArgs {
+  const QuizRouteArgs({this.key, this.storyId, this.chapterId});
+
+  final Key? key;
+
+  final String? storyId;
+
+  final String? chapterId;
+
+  @override
+  String toString() {
+    return 'QuizRouteArgs{key: $key, storyId: $storyId, chapterId: $chapterId}';
+  }
+}
+
+/// generated route for
 /// [ReaderScreen]
 class ReaderRoute extends PageRouteInfo<ReaderRouteArgs> {
   ReaderRoute({

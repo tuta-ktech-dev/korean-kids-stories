@@ -259,7 +259,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chapterCompletedMessage => '이 화를 다 읽었어요!';
 
   @override
-  String get storyCompleteMessage => '이야기 끝! 퀴즈 할까요, 다음 이야기 들을까요?';
+  String get storyCompleteTitle => '이야기 끝! 🎉';
+
+  @override
+  String get storyCompleteMessage => '퀴즈 할까요, 다음 이야기 들을까요?';
+
+  @override
+  String get stickerEarnedCongrats => '새 스티커를 받았어요! 앨범에서 확인해보세요 🎉';
+
+  @override
+  String get stickerEarnedTitle => '축하해요! 스티커를 받았어요! 🎉';
 
   @override
   String get doQuiz => '퀴즈 하기';

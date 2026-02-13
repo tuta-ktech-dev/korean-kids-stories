@@ -33,6 +33,7 @@ class Story {
   final bool hasAudio;
   final bool hasQuiz;
   final bool hasIllustrations;
+  final bool hasSticker;
   final bool requiredLogin;
   final double? averageRating;
   final int reviewCount;
@@ -55,6 +56,7 @@ class Story {
     this.hasAudio = false,
     this.hasQuiz = false,
     this.hasIllustrations = false,
+    this.hasSticker = false,
     this.requiredLogin = false,
     this.averageRating,
     this.reviewCount = 0,
@@ -91,6 +93,7 @@ class Story {
       hasAudio: record.getBoolValue('has_audio'),
       hasQuiz: record.getBoolValue('has_quiz'),
       hasIllustrations: record.getBoolValue('has_illustrations'),
+      hasSticker: record.getBoolValue('has_sticker'),
       requiredLogin: record.getBoolValue('required_login'),
       averageRating: record.data['average_rating'] != null
           ? (record.data['average_rating'] as num).toDouble()

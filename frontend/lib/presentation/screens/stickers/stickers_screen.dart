@@ -1,13 +1,17 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/sticker_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/sticker.dart';
+import '../../../data/repositories/sticker_repository.dart';
+import '../../../injection.dart';
 import '../../../utils/extensions/context_extension.dart';
 import '../../cubits/stats_cubit/stats_cubit.dart';
+import '../../widgets/story_sticker_congrats_dialog.dart';
 
 @RoutePage()
 class StickersScreen extends StatelessWidget {
@@ -24,6 +28,14 @@ class StickersScreen extends StatelessWidget {
         ),
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
+        actions: [
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.bug_report_outlined),
+              tooltip: 'Test sticker dialog',
+              onPressed: () => _testStickerCongratsDialog(context),
+            ),
+        ],
       ),
       body: BlocProvider.value(
         value: context.read<StatsCubit>(),
@@ -44,6 +56,20 @@ class StickersScreen extends StatelessWidget {
 }
 
 const int _stickersTabIndex = 1;
+
+Future<void> _testStickerCongratsDialog(BuildContext context) async {
+  final repo = getIt<StickerRepository>();
+  final stickers = await repo.getStoryStickers();
+  if (stickers.isEmpty || !context.mounted) return;
+  final sticker = stickers.first;
+  showStoryStickerCongratsDialog(
+    context,
+    sticker: sticker,
+    storyTitle: sticker.nameKo,
+    onContinue: () => Navigator.of(context).pop(),
+    onSeeAlbum: () => Navigator.of(context).pop(),
+  );
+}
 
 class _StickersView extends StatefulWidget {
   const _StickersView();
@@ -739,8 +765,7 @@ class _StickerCard extends StatelessWidget {
             children: [
               Expanded(
                 child: sticker.imageUrl != null && sticker.imageUrl!.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                    ? ClipOval(
                         child: CachedNetworkImage(
                           imageUrl: sticker.imageUrl!,
                           fit: BoxFit.contain,
@@ -838,8 +863,7 @@ class _StickerDetailDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (sticker.imageUrl != null && sticker.imageUrl!.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+              ClipOval(
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: CachedNetworkImage(

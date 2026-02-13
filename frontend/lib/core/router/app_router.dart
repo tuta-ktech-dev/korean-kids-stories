@@ -21,6 +21,7 @@ import '../../presentation/screens/profile/profile_screen.dart';
 import '../../presentation/screens/search/search_screen.dart';
 import '../../presentation/screens/stickers/stickers_screen.dart';
 import '../../presentation/screens/parent_zone/parent_zone_screen.dart';
+import '../../presentation/screens/quiz/quiz_screen.dart';
 
 part 'app_router.gr.dart';
 
@@ -39,6 +40,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(path: '/search', page: SearchRoute.page),
     AutoRoute(path: '/story/:id', page: StoryDetailRoute.page),
     AutoRoute(path: '/reader/:storyId/:chapterId', page: ReaderRoute.page),
+    AutoRoute(path: '/quiz', page: QuizRoute.page),
 
     // Main app - Kids app, no login
     AutoRoute(

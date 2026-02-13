@@ -262,8 +262,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chapterCompletedMessage => 'You finished this chapter!';
 
   @override
+  String get storyCompleteTitle => 'Story finished! 🎉';
+
+  @override
   String get storyCompleteMessage =>
-      'Story finished! Want to do a quiz or listen to the next story?';
+      'Want to do a quiz or listen to the next story?';
+
+  @override
+  String get stickerEarnedCongrats =>
+      'You earned a new sticker! Check your Album 🎉';
+
+  @override
+  String get stickerEarnedTitle => 'Congratulations! You got a sticker! 🎉';
 
   @override
   String get doQuiz => 'Do Quiz';

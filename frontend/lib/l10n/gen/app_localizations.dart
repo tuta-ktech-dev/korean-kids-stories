@@ -598,11 +598,29 @@ abstract class AppLocalizations {
   /// **'You finished this chapter!'**
   String get chapterCompletedMessage;
 
+  /// No description provided for @storyCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Story finished! 🎉'**
+  String get storyCompleteTitle;
+
   /// No description provided for @storyCompleteMessage.
   ///
   /// In en, this message translates to:
-  /// **'Story finished! Want to do a quiz or listen to the next story?'**
+  /// **'Want to do a quiz or listen to the next story?'**
   String get storyCompleteMessage;
+
+  /// No description provided for @stickerEarnedCongrats.
+  ///
+  /// In en, this message translates to:
+  /// **'You earned a new sticker! Check your Album 🎉'**
+  String get stickerEarnedCongrats;
+
+  /// No description provided for @stickerEarnedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! You got a sticker! 🎉'**
+  String get stickerEarnedTitle;
 
   /// No description provided for @doQuiz.
   ///

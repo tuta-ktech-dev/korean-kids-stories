@@ -262,8 +262,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chapterCompletedMessage => 'Bé đã đọc xong chương này!';
 
   @override
-  String get storyCompleteMessage =>
-      'Truyện đã xong! Làm quiz hay nghe truyện tiếp?';
+  String get storyCompleteTitle => 'Truyện đã xong! 🎉';
+
+  @override
+  String get storyCompleteMessage => 'Làm quiz hay nghe truyện tiếp?';
+
+  @override
+  String get stickerEarnedCongrats =>
+      'Bé nhận được sticker mới! Xem trong Album nhé 🎉';
+
+  @override
+  String get stickerEarnedTitle => 'Chúc mừng! Bé nhận được sticker! 🎉';
 
   @override
   String get doQuiz => 'Làm Quiz';

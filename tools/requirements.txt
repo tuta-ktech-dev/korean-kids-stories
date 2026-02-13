@@ -3,3 +3,5 @@ torch
 torchaudio
 ttkbootstrap>=1.10
 sounddevice>=0.4.0
+rembg[cpu]>=2.0.0
+Pillow>=10.0.0

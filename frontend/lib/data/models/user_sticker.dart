@@ -40,4 +40,21 @@ class UserSticker {
           : null,
     );
   }
+
+  /// Tạo UserSticker từ dữ liệu local (app không đăng nhập)
+  factory UserSticker.fromLocal({
+    required String stickerId,
+    required Sticker sticker,
+    required String unlockSource,
+    DateTime? unlockedAt,
+  }) {
+    return UserSticker(
+      id: 'local_$stickerId',
+      userId: 'local',
+      stickerId: stickerId,
+      sticker: sticker,
+      unlockSource: unlockSource,
+      unlockedAt: unlockedAt,
+    );
+  }
 }

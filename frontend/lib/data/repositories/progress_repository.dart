@@ -19,7 +19,7 @@ class ProgressRepository {
 
   PocketBase get _pb => _pbService.pb;
 
-  /// Kids app: always use local storage (no login)
+  /// App kids không đăng nhập - luôn dùng local
   bool get _useLocal => true;
 
   /// Lấy progress của user cho chapter cụ thể

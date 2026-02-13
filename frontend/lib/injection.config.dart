@@ -21,8 +21,10 @@ import 'data/repositories/local_bookmark_repository.dart' as _i504;
 import 'data/repositories/local_favorite_repository.dart' as _i252;
 import 'data/repositories/local_note_repository.dart' as _i657;
 import 'data/repositories/local_progress_repository.dart' as _i825;
+import 'data/repositories/local_sticker_repository.dart' as _i770;
 import 'data/repositories/note_repository.dart' as _i627;
 import 'data/repositories/progress_repository.dart' as _i369;
+import 'data/repositories/quiz_repository.dart' as _i656;
 import 'data/repositories/reading_history_repository.dart' as _i821;
 import 'data/repositories/report_repository.dart' as _i726;
 import 'data/repositories/review_repository.dart' as _i1049;
@@ -41,6 +43,7 @@ import 'presentation/cubits/history_cubit/history_cubit.dart' as _i476;
 import 'presentation/cubits/home_cubit/home_cubit.dart' as _i712;
 import 'presentation/cubits/note_cubit/note_cubit.dart' as _i764;
 import 'presentation/cubits/progress_cubit/progress_cubit.dart' as _i1000;
+import 'presentation/cubits/quiz_cubit/quiz_cubit.dart' as _i1043;
 import 'presentation/cubits/reader_cubit/reader_cubit.dart' as _i433;
 import 'presentation/cubits/search_cubit/search_cubit.dart' as _i349;
 import 'presentation/cubits/settings_cubit/settings_cubit.dart' as _i1055;
@@ -57,13 +60,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i825.LocalProgressRepository>(
       () => _i825.LocalProgressRepository(),
     );
+    gh.factory<_i770.LocalStickerRepository>(
+      () => _i770.LocalStickerRepository(),
+    );
     gh.lazySingleton<_i700.PocketbaseService>(
       () => injectionModule.pocketbaseService,
     );
     gh.lazySingleton<_i194.TrackingService>(
       () => injectionModule.trackingService,
     );
-    gh.lazySingleton<_i1055.SettingsCubit>(() => _i1055.SettingsCubit());
     gh.lazySingleton<_i657.LocalNoteRepository>(
       () => _i657.LocalNoteRepository(),
     );
@@ -73,6 +78,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i504.LocalBookmarkRepository>(
       () => _i504.LocalBookmarkRepository(),
     );
+    gh.lazySingleton<_i1055.SettingsCubit>(() => _i1055.SettingsCubit());
     gh.lazySingleton<_i739.FavoriteCubit>(
       () => _i739.FavoriteCubit(
         favoriteRepository: gh<_i266.FavoriteRepository>(),
@@ -90,11 +96,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i726.ReportRepository>(
       () => _i726.ReportRepository(gh<_i700.PocketbaseService>()),
     );
+    gh.factory<_i656.QuizRepository>(
+      () => _i656.QuizRepository(gh<_i700.PocketbaseService>()),
+    );
     gh.factory<_i821.ReadingHistoryRepository>(
       () => _i821.ReadingHistoryRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i577.StickerRepository>(
-      () => _i577.StickerRepository(gh<_i700.PocketbaseService>()),
     );
     gh.factory<_i691.StoryRepository>(
       () => _i691.StoryRepository(gh<_i700.PocketbaseService>()),
@@ -146,6 +152,9 @@ extension GetItInjectableX on _i174.GetIt {
         bookmarkRepository: gh<_i318.BookmarkRepository>(),
       ),
     );
+    gh.factory<_i1043.QuizCubit>(
+      () => _i1043.QuizCubit(quizRepository: gh<_i656.QuizRepository>()),
+    );
     gh.factory<_i369.ProgressRepository>(
       () => _i369.ProgressRepository(
         gh<_i700.PocketbaseService>(),
@@ -157,6 +166,12 @@ extension GetItInjectableX on _i174.GetIt {
         storyRepository: gh<_i691.StoryRepository>(),
         progressRepository: gh<_i369.ProgressRepository>(),
         readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
+      ),
+    );
+    gh.factory<_i577.StickerRepository>(
+      () => _i577.StickerRepository(
+        gh<_i700.PocketbaseService>(),
+        gh<_i770.LocalStickerRepository>(),
       ),
     );
     gh.factory<_i318.BookmarkRepository>(

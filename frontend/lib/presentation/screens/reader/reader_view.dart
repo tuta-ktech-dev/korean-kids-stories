@@ -194,7 +194,12 @@ class _ReaderViewState extends State<ReaderView> {
   Future<void> _onMarkComplete(BuildContext context) async {
     _saveDebounce?.cancel();
     if (_chapterId == null) return;
-    final router = context.router;
+    final cubit = context.read<ReaderCubit>();
+    final state = cubit.state;
+    final isLastChapter = state is ReaderLoaded &&
+        state.nextChapter == null &&
+        state.nextChapterLocked == null;
+
     await _progressCubit?.saveProgress(
       chapterId: _chapterId!,
       percentRead: 100.0,
@@ -204,6 +209,13 @@ class _ReaderViewState extends State<ReaderView> {
     );
     if (!mounted) return;
     if (!context.mounted) return;
+
+    if (isLastChapter && cubit.onStoryComplete != null) {
+      cubit.onStoryComplete!(widget.storyId, state.story?.hasQuiz ?? false);
+      return;
+    }
+
+    final router = context.router;
     showDialog(
       context: context,
       barrierDismissible: false,
