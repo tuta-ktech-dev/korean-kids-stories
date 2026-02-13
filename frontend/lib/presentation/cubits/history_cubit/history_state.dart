@@ -96,12 +96,14 @@ class HistoryLoaded extends HistoryState {
   final List<HistoryItem> completedItems;
   final List<HistoryItem> inProgressItems;
   final ReadingStats stats;
+  final bool isRefreshing;
 
   const HistoryLoaded({
     required this.items,
     this.completedItems = const [],
     this.inProgressItems = const [],
     this.stats = const ReadingStats(),
+    this.isRefreshing = false,
   });
 
   @override
@@ -110,6 +112,7 @@ class HistoryLoaded extends HistoryState {
         completedItems,
         inProgressItems,
         stats,
+        isRefreshing,
       ];
 
   HistoryLoaded copyWith({
@@ -117,12 +120,14 @@ class HistoryLoaded extends HistoryState {
     List<HistoryItem>? completedItems,
     List<HistoryItem>? inProgressItems,
     ReadingStats? stats,
+    bool? isRefreshing,
   }) {
     return HistoryLoaded(
       items: items ?? this.items,
       completedItems: completedItems ?? this.completedItems,
       inProgressItems: inProgressItems ?? this.inProgressItems,
       stats: stats ?? this.stats,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
     );
   }
 }

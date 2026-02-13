@@ -15,14 +15,16 @@ class FavoriteInitial extends FavoriteState {
 class FavoriteLoaded extends FavoriteState {
   final Set<String> favoriteIds;
   final List<Story>? stories; // optional, for Library tab
+  final bool isRefreshing;
 
   const FavoriteLoaded({
     required this.favoriteIds,
     this.stories,
+    this.isRefreshing = false,
   });
 
   bool isFavorite(String storyId) => favoriteIds.contains(storyId);
 
   @override
-  List<Object?> get props => [favoriteIds, stories];
+  List<Object?> get props => [favoriteIds, stories, isRefreshing];
 }

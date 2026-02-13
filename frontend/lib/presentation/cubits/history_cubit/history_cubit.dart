@@ -23,12 +23,17 @@ class HistoryCubit extends Cubit<HistoryState> {
   final ProgressRepository _progressRepo;
   final StoryRepository _storyRepo;
 
-  /// Load all reading history
+  /// Load all reading history.
+  /// Stale-while-revalidate: shows cached data if any, fetches in background.
   Future<void> loadHistory() async {
-    emit(const HistoryLoading());
+    final hasCache = state is HistoryLoaded;
+    if (hasCache) {
+      emit((state as HistoryLoaded).copyWith(isRefreshing: true));
+    } else {
+      emit(const HistoryLoading());
+    }
 
     try {
-      // Get all progress from repository
       final progresses = await _progressRepo.getAllProgress();
 
       if (progresses.isEmpty) {
@@ -36,13 +41,8 @@ class HistoryCubit extends Cubit<HistoryState> {
         return;
       }
 
-      // Build history items from progress
       final items = await _buildHistoryItems(progresses);
-
-      // Calculate stats
       final stats = await _calculateStats(progresses);
-
-      // Separate by status
       final completed = items.where((i) => i.isCompleted).toList();
       final inProgress = items.where((i) => !i.isCompleted).toList();
 
@@ -54,7 +54,11 @@ class HistoryCubit extends Cubit<HistoryState> {
       ));
     } catch (e) {
       debugPrint('HistoryCubit.loadHistory error: $e');
-      emit(HistoryError('Failed to load history: $e'));
+      if (hasCache) {
+        emit((state as HistoryLoaded).copyWith(isRefreshing: false));
+      } else {
+        emit(HistoryError('Failed to load history: $e'));
+      }
     }
   }
 

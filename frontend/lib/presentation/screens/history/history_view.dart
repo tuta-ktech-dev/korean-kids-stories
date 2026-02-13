@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../components/cards/history_card.dart';
 import '../../cubits/history_cubit/history_cubit.dart';
+import '../../widgets/streak_badge.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class HistoryView extends StatefulWidget {
@@ -34,17 +35,49 @@ class _HistoryViewState extends State<HistoryView> {
         backgroundColor: AppTheme.backgroundColor(context),
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<HistoryCubit>().refresh(),
+          BlocBuilder<HistoryCubit, HistoryState>(
+            buildWhen: (p, c) => p != c,
+            builder: (context, state) {
+              final refreshing =
+                  state is HistoryLoaded && state.isRefreshing;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: refreshing
+                        ? null
+                        : () => context.read<HistoryCubit>().refresh(),
+                  ),
+                  if (refreshing)
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.primaryColor(context),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
-      body: DefaultTabController(
-            length: 2,
-            child: Column(
-              children: [
-                TabBar(
+      body: BlocBuilder<HistoryCubit, HistoryState>(
+            buildWhen: (p, c) => p != c,
+            builder: (context, state) {
+              return DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    if (state is HistoryLoaded && (state.stats.currentStreak > 0 || state.stats.longestStreak > 0)) ...[
+                      StreakBadge(
+                        currentStreak: state.stats.currentStreak,
+                        longestStreak: state.stats.longestStreak,
+                      ),
+                    ],
+                    TabBar(
                   labelColor: AppTheme.primaryColor(context),
                   unselectedLabelColor: AppTheme.textMutedColor(context),
                   indicatorColor: AppTheme.primaryColor(context),
@@ -101,7 +134,9 @@ class _HistoryViewState extends State<HistoryView> {
                 ),
               ],
             ),
-          ),
+          );
+          },
+        ),
     );
   }
 }
@@ -222,8 +257,7 @@ Widget _buildEmptyState(
       children: [
         Image.asset(
           'assets/images/empty_reading_history.webp',
-          width: 120,
-          height: 120,
+          width: MediaQuery.sizeOf(context).width * 0.5,
           fit: BoxFit.contain,
         ),
         const SizedBox(height: 16),

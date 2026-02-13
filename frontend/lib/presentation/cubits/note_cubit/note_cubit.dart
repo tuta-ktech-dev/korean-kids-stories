@@ -15,12 +15,23 @@ class NoteCubit extends Cubit<NoteState> {
 
   final NoteRepository _repo;
 
+  /// Stale-while-revalidate: shows cached notes if any, fetches in background.
   Future<void> loadNotes() async {
+    final current = state is NoteLoaded ? (state as NoteLoaded) : null;
+    final hasCache = current != null;
+    if (hasCache && current != null) {
+      emit(NoteLoaded(notes: current.notes, isRefreshing: true));
+    }
+
     try {
       final notes = await _repo.getNotes();
       emit(NoteLoaded(notes: notes));
     } catch (e) {
-      emit(const NoteLoaded(notes: []));
+      if (hasCache && current != null) {
+        emit(NoteLoaded(notes: current.notes, isRefreshing: false));
+      } else {
+        emit(const NoteLoaded(notes: []));
+      }
     }
   }
 

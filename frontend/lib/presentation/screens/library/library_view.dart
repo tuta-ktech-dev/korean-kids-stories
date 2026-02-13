@@ -74,21 +74,21 @@ class _FavoritesTabState extends State<_FavoritesTab> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FavoriteCubit, FavoriteState>(
-      buildWhen: (prev, curr) => curr is FavoriteLoaded,
+      buildWhen: (prev, curr) => curr is FavoriteLoaded || curr is FavoriteInitial,
       builder: (context, state) {
         if (state is! FavoriteLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
         final stories = state.stories ?? [];
-        if (stories.isEmpty) {
+        final isRefreshing = state.isRefreshing;
+        if (stories.isEmpty && !isRefreshing) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/empty_favorites.webp',
-                  width: 120,
-                  height: 120,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
@@ -103,32 +103,41 @@ class _FavoritesTabState extends State<_FavoritesTab> {
             ),
           );
         }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: stories.length,
-          itemBuilder: (context, i) {
-            final s = stories[i];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: StoryCard(
-                id: s.id,
-                title: s.title,
-                thumbnailUrl: s.thumbnailUrl,
-                category: s.category,
-                ageMin: s.ageMin,
-                ageMax: s.ageMax,
-                totalChapters: s.totalChapters,
-                isFeatured: s.isFeatured,
-                hasAudio: s.hasAudio,
-                hasQuiz: s.hasQuiz,
-                hasIllustrations: s.hasIllustrations,
-                averageRating: s.averageRating,
-                reviewCount: s.reviewCount,
-                viewCount: s.viewCount,
-                onTap: () => context.router.push(StoryDetailRoute(storyId: s.id)),
+        return Column(
+          children: [
+            if (isRefreshing)
+              const LinearProgressIndicator(),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: stories.length,
+                itemBuilder: (context, i) {
+                  final s = stories[i];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: StoryCard(
+                      id: s.id,
+                      title: s.title,
+                      thumbnailUrl: s.thumbnailUrl,
+                      category: s.category,
+                      ageMin: s.ageMin,
+                      ageMax: s.ageMax,
+                      totalChapters: s.totalChapters,
+                      isFeatured: s.isFeatured,
+                      hasAudio: s.hasAudio,
+                      hasQuiz: s.hasQuiz,
+                      hasIllustrations: s.hasIllustrations,
+                      averageRating: s.averageRating,
+                      reviewCount: s.reviewCount,
+                      viewCount: s.viewCount,
+                      onTap: () =>
+                          context.router.push(StoryDetailRoute(storyId: s.id)),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         );
       },
     );
@@ -154,21 +163,21 @@ class _BookmarksTabState extends State<_BookmarksTab> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BookmarkCubit, BookmarkState>(
-      buildWhen: (prev, curr) => curr is BookmarkLoaded,
+      buildWhen: (prev, curr) => curr is BookmarkLoaded || curr is BookmarkInitial,
       builder: (context, state) {
         if (state is! BookmarkLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
         final stories = state.stories ?? [];
-        if (stories.isEmpty) {
+        final isRefreshing = state.isRefreshing;
+        if (stories.isEmpty && !isRefreshing) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/empty_bookmarks.webp',
-                  width: 120,
-                  height: 120,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
@@ -183,32 +192,41 @@ class _BookmarksTabState extends State<_BookmarksTab> {
             ),
           );
         }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: stories.length,
-          itemBuilder: (context, i) {
-            final s = stories[i];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: StoryCard(
-                id: s.id,
-                title: s.title,
-                thumbnailUrl: s.thumbnailUrl,
-                category: s.category,
-                ageMin: s.ageMin,
-                ageMax: s.ageMax,
-                totalChapters: s.totalChapters,
-                isFeatured: s.isFeatured,
-                hasAudio: s.hasAudio,
-                hasQuiz: s.hasQuiz,
-                hasIllustrations: s.hasIllustrations,
-                averageRating: s.averageRating,
-                reviewCount: s.reviewCount,
-                viewCount: s.viewCount,
-                onTap: () => context.router.push(StoryDetailRoute(storyId: s.id)),
+        return Column(
+          children: [
+            if (isRefreshing)
+              const LinearProgressIndicator(),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: stories.length,
+                itemBuilder: (context, i) {
+                  final s = stories[i];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: StoryCard(
+                      id: s.id,
+                      title: s.title,
+                      thumbnailUrl: s.thumbnailUrl,
+                      category: s.category,
+                      ageMin: s.ageMin,
+                      ageMax: s.ageMax,
+                      totalChapters: s.totalChapters,
+                      isFeatured: s.isFeatured,
+                      hasAudio: s.hasAudio,
+                      hasQuiz: s.hasQuiz,
+                      hasIllustrations: s.hasIllustrations,
+                      averageRating: s.averageRating,
+                      reviewCount: s.reviewCount,
+                      viewCount: s.viewCount,
+                      onTap: () =>
+                          context.router.push(StoryDetailRoute(storyId: s.id)),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         );
       },
     );
@@ -234,21 +252,21 @@ class _NotesTabState extends State<_NotesTab> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NoteCubit, NoteState>(
-      buildWhen: (prev, curr) => curr is NoteLoaded,
+      buildWhen: (prev, curr) => curr is NoteLoaded || curr is NoteInitial,
       builder: (context, state) {
         if (state is! NoteLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
         final notes = state.notes;
-        if (notes.isEmpty) {
+        final isRefreshing = state.isRefreshing;
+        if (notes.isEmpty && !isRefreshing) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/empty_notes.webp',
-                  width: 120,
-                  height: 120,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 16),
@@ -263,34 +281,42 @@ class _NotesTabState extends State<_NotesTab> {
             ),
           );
         }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: notes.length,
-          itemBuilder: (context, i) {
-            final note = notes[i];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+        return Column(
+          children: [
+            if (isRefreshing)
+              const LinearProgressIndicator(),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: notes.length,
+                itemBuilder: (context, i) {
+                  final note = notes[i];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        note.storyTitle ?? note.storyId,
+                        style: AppTheme.bodyLarge(context).copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        note.note,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTheme.bodyMedium(context).copyWith(
+                          color: AppTheme.textMutedColor(context),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              child: ListTile(
-                title: Text(
-                  note.storyTitle ?? note.storyId,
-                  style: AppTheme.bodyLarge(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: Text(
-                  note.note,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.bodyMedium(context).copyWith(
-                    color: AppTheme.textMutedColor(context),
-                  ),
-                ),
-              ),
-            );
-          },
+            ),
+          ],
         );
       },
     );

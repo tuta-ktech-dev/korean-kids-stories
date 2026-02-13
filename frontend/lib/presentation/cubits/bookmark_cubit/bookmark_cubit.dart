@@ -28,13 +28,24 @@ class BookmarkCubit extends Cubit<BookmarkState> {
     }
   }
 
+  /// Stale-while-revalidate: shows cached stories if any, fetches in background.
   Future<void> loadBookmarkedStories() async {
+    final current = state is BookmarkLoaded ? (state as BookmarkLoaded) : null;
+    final hasCache = current?.stories != null;
+    if (hasCache && current != null) {
+      emit(current.copyWith(isRefreshing: true));
+    }
+
     try {
       final stories = await _repo.getBookmarkedStories();
       final ids = stories.map((s) => s.id).toSet();
       emit(BookmarkLoaded(bookmarkIds: ids, stories: stories));
     } catch (e) {
-      emit(const BookmarkLoaded(bookmarkIds: {}));
+      if (hasCache && current != null) {
+        emit(current.copyWith(isRefreshing: false));
+      } else {
+        emit(const BookmarkLoaded(bookmarkIds: {}));
+      }
     }
   }
 

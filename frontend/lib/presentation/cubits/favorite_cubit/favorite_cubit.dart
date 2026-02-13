@@ -25,13 +25,32 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     }
   }
 
+  /// Stale-while-revalidate: shows cached stories if any, fetches in background.
   Future<void> loadFavoriteStories() async {
+    final current = state is FavoriteLoaded ? (state as FavoriteLoaded) : null;
+    final hasCache = current?.stories != null;
+    if (hasCache && current != null) {
+      emit(FavoriteLoaded(
+        favoriteIds: current.favoriteIds,
+        stories: current.stories,
+        isRefreshing: true,
+      ));
+    }
+
     try {
       final stories = await _repo.getFavorites();
       final ids = stories.map((s) => s.id).toSet();
       emit(FavoriteLoaded(favoriteIds: ids, stories: stories));
     } catch (e) {
-      emit(const FavoriteLoaded(favoriteIds: {}));
+      if (hasCache && current != null) {
+        emit(FavoriteLoaded(
+          favoriteIds: current.favoriteIds,
+          stories: current.stories,
+          isRefreshing: false,
+        ));
+      } else {
+        emit(const FavoriteLoaded(favoriteIds: {}));
+      }
     }
   }
 

@@ -15,9 +15,10 @@ class NoteInitial extends NoteState {
 
 class NoteLoaded extends NoteState {
   final List<StoryNote> notes;
+  final bool isRefreshing;
 
-  const NoteLoaded({required this.notes});
+  const NoteLoaded({required this.notes, this.isRefreshing = false});
 
   @override
-  List<Object?> get props => [notes];
+  List<Object?> get props => [notes, isRefreshing];
 }
