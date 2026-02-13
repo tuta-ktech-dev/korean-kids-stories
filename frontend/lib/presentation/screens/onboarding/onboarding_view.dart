@@ -79,8 +79,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                         decoration: BoxDecoration(
                           color: _currentPage == i
                               ? AppTheme.primaryColor(context)
-                              : AppTheme.textMutedColor(context)
-                                  .withValues(alpha: 0.3),
+                              : AppTheme.textMutedColor(
+                                  context,
+                                ).withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -136,31 +137,29 @@ class _OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            flex: 2,
-            child: Image.asset(
-              image,
-              fit: BoxFit.contain,
-            ),
+            flex: 5,
+            child: Center(child: Image.asset(image, fit: BoxFit.contain)),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             title,
             style: AppTheme.headingMedium(context),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             subtitle,
-            style: AppTheme.bodyLarge(context).copyWith(
-              color: AppTheme.textMutedColor(context),
-            ),
+            style: AppTheme.bodyLarge(
+              context,
+            ).copyWith(color: AppTheme.textMutedColor(context)),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );

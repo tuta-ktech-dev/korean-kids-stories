@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
@@ -32,9 +34,7 @@ class _LandingViewState extends State<LandingView> {
   @override
   Widget build(BuildContext context) {
     if (!_checkedOnboarding) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
@@ -46,50 +46,18 @@ class _LandingViewState extends State<LandingView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.primaryPink,
-                            AppTheme.primaryCoral,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryPink.withValues(
-                              alpha: 0.3,
-                            ),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
+                    Image.asset(
+                      'assets/images/landing_logo.png',
+                      width: min(context.width, context.height),
+                      height: min(context.width, context.height),
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => Icon(
                         Icons.auto_stories,
                         size: 60,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: AppTheme.primaryColor(context),
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Text(
-                      context.l10n.landingTitle,
-                      style: AppTheme.headingLarge(
-                        context,
-                      ).copyWith(fontSize: 36),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Korean Kids Tales',
-                      style: AppTheme.bodyLarge(
-                        context,
-                      ).copyWith(color: AppTheme.textMutedColor(context)),
-                    ),
-                    const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
