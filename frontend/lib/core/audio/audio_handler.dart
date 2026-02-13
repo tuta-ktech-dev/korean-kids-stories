@@ -30,6 +30,10 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
   final _positionUpdateController = StreamController<double>.broadcast();
   Stream<double> get positionUpdates => _positionUpdateController.stream;
 
+  /// Cached position when positionStream stops (e.g. on pause). Prevents progress
+  /// from jumping to 0 when _player.position returns zero while paused.
+  Duration _lastKnownPosition = Duration.zero;
+
   StoryAudioHandler() {
     _init();
   }
@@ -80,6 +84,7 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
 
     // Listen to position changes for persistence + progress bar updates
     _positionSub = _player.positionStream.listen((position) {
+      _lastKnownPosition = position;
       final now = DateTime.now();
       // Update playbackState for progress bar (throttle to ~4 updates/sec)
       if (now.difference(_lastPlaybackStateUpdate).inMilliseconds >= 250) {
@@ -111,6 +116,14 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
   void _updatePlaybackState() {
     final playing = _player.playing;
     final processingState = _player.processingState;
+    final rawPosition = _player.position;
+    // When paused, positionStream stops and _player.position may return 0.
+    // Use cached position to keep progress bar correct.
+    final effectivePosition = rawPosition > Duration.zero ||
+            playing ||
+            _lastKnownPosition <= Duration.zero
+        ? rawPosition
+        : _lastKnownPosition;
 
     playbackState.add(
       PlaybackState(
@@ -127,7 +140,7 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
         },
         playing: playing,
         processingState: _mapProcessingState(processingState),
-        updatePosition: _player.position,
+        updatePosition: effectivePosition,
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
         queueIndex: 0,
@@ -194,6 +207,7 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
     try {
       // Stop any current playback
       await _player.stop();
+      _lastKnownPosition = Duration.zero;
 
       // Brief pause to let platform fully release (avoids "Loading interrupted")
       await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -205,6 +219,9 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
       if (initialPositionSeconds > 0) {
         await _player.seek(
           Duration(milliseconds: (initialPositionSeconds * 1000).round()),
+        );
+        _lastKnownPosition = Duration(
+          milliseconds: (initialPositionSeconds * 1000).round(),
         );
       }
 
@@ -232,12 +249,14 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
+    _lastKnownPosition = Duration.zero;
     _updatePlaybackState();
   }
 
   @override
   Future<void> seek(Duration position) async {
     await _player.seek(position);
+    _lastKnownPosition = position;
     _updatePlaybackState();
   }
 
