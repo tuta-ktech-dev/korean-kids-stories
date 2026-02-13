@@ -10,8 +10,8 @@ export 'note_state.dart';
 @lazySingleton
 class NoteCubit extends Cubit<NoteState> {
   NoteCubit({NoteRepository? noteRepository})
-      : _repo = noteRepository ?? getIt<NoteRepository>(),
-        super(const NoteInitial());
+    : _repo = noteRepository ?? getIt<NoteRepository>(),
+      super(const NoteInitial());
 
   final NoteRepository _repo;
 
@@ -19,7 +19,7 @@ class NoteCubit extends Cubit<NoteState> {
   Future<void> loadNotes() async {
     final current = state is NoteLoaded ? (state as NoteLoaded) : null;
     final hasCache = current != null;
-    if (hasCache && current != null) {
+    if (hasCache) {
       emit(NoteLoaded(notes: current.notes, isRefreshing: true));
     }
 
@@ -27,7 +27,7 @@ class NoteCubit extends Cubit<NoteState> {
       final notes = await _repo.getNotes();
       emit(NoteLoaded(notes: notes));
     } catch (e) {
-      if (hasCache && current != null) {
+      if (hasCache) {
         emit(NoteLoaded(notes: current.notes, isRefreshing: false));
       } else {
         emit(const NoteLoaded(notes: []));
@@ -41,9 +41,14 @@ class NoteCubit extends Cubit<NoteState> {
   }) async {
     final added = await _repo.addStoryNote(storyId: storyId, note: note);
     if (added != null) {
-      final current = state is NoteLoaded ? (state as NoteLoaded).notes : <StoryNote>[];
-      final without = current.where((n) =>
-          !(n.storyId == storyId && (n.chapterId == null || n.chapterId!.isEmpty)));
+      final current = state is NoteLoaded
+          ? (state as NoteLoaded).notes
+          : <StoryNote>[];
+      final without = current.where(
+        (n) =>
+            !(n.storyId == storyId &&
+                (n.chapterId == null || n.chapterId!.isEmpty)),
+      );
       emit(NoteLoaded(notes: [added, ...without]));
     }
     return added;
@@ -56,13 +61,15 @@ class NoteCubit extends Cubit<NoteState> {
     double? position,
   }) async {
     final added = await _repo.addChapterNote(
-          storyId: storyId,
-          chapterId: chapterId,
-          note: note,
-          position: position,
-        );
+      storyId: storyId,
+      chapterId: chapterId,
+      note: note,
+      position: position,
+    );
     if (added != null) {
-      final current = state is NoteLoaded ? (state as NoteLoaded).notes : <StoryNote>[];
+      final current = state is NoteLoaded
+          ? (state as NoteLoaded).notes
+          : <StoryNote>[];
       final without = current.where((n) => n.chapterId != chapterId);
       emit(NoteLoaded(notes: [added, ...without]));
     }
@@ -88,7 +95,9 @@ class NoteCubit extends Cubit<NoteState> {
   Future<bool> deleteNote(String noteId) async {
     final ok = await _repo.deleteNote(noteId);
     if (ok) {
-      final current = state is NoteLoaded ? (state as NoteLoaded).notes : <StoryNote>[];
+      final current = state is NoteLoaded
+          ? (state as NoteLoaded).notes
+          : <StoryNote>[];
       emit(NoteLoaded(notes: current.where((n) => n.id != noteId).toList()));
     }
     return ok;

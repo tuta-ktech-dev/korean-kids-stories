@@ -41,64 +41,64 @@ class _LandingViewState extends State<LandingView> {
       body: SafeArea(
         child: Column(
           children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/images/landing_logo.png',
-                        width: min(400, min(context.width, context.height)),
-                        height: min(400, min(context.width, context.height)),
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
-                          Icons.auto_stories,
-                          size: 60,
-                          color: AppTheme.primaryColor(context),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor(
-                            context,
-                          ).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          context.l10n.landingSubtitle,
-                          style: AppTheme.bodyMedium(context).copyWith(
-                            color: AppTheme.primaryColor(context),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.router.replaceNamed('/main');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/images/landing_logo.png',
+                      width: min(400, min(context.width, context.height)),
+                      height: min(400, min(context.width, context.height)),
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => Icon(
+                        Icons.auto_stories,
+                        size: 60,
+                        color: AppTheme.primaryColor(context),
                       ),
                     ),
-                    child: Text(context.l10n.landingStartButton),
-                  ),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor(
+                          context,
+                        ).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        context.l10n.landingSubtitle,
+                        style: AppTheme.bodyMedium(context).copyWith(
+                          color: AppTheme.primaryColor(context),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.router.replaceNamed('/main');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(context.l10n.landingStartButton),
+                ),
+              ),
+            ),
           ],
         ),
       ),

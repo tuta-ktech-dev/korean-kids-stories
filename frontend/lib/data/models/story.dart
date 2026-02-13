@@ -4,13 +4,13 @@ import 'package:pocketbase/pocketbase.dart';
 enum ThumbSize {
   /// Small thumbnail for lists (100x100) ~20KB
   small('100x100'),
-  
+
   /// Medium thumbnail for cards (300x300) ~50-100KB
   medium('300x300'),
-  
+
   /// Large for detail view (600x600) ~150-300KB
   large('600x600'),
-  
+
   /// Full size without thumb parameter
   full('');
 
@@ -106,13 +106,13 @@ class Story {
   }
 
   /// Get thumbnail URL with size optimization
-  /// 
+  ///
   /// [size] - ThumbSize preset (small/medium/large/full)
   /// Returns optimized URL or null if no thumbnail
   String? getThumbnailUrl({ThumbSize size = ThumbSize.medium}) {
     if (thumbnailUrl == null || thumbnailUrl!.isEmpty) return null;
     if (size == ThumbSize.full) return thumbnailUrl;
-    
+
     // Add thumb parameter to URL
     final separator = thumbnailUrl!.contains('?') ? '&' : '?';
     return '$thumbnailUrl${separator}thumb=${size.value}';
@@ -120,10 +120,10 @@ class Story {
 
   /// Quick access to small thumbnail (for lists)
   String? get thumbnailSmall => getThumbnailUrl(size: ThumbSize.small);
-  
+
   /// Quick access to medium thumbnail (for cards)
   String? get thumbnailMedium => getThumbnailUrl(size: ThumbSize.medium);
-  
+
   /// Quick access to large thumbnail (for detail view)
   String? get thumbnailLarge => getThumbnailUrl(size: ThumbSize.large);
 
@@ -141,6 +141,7 @@ class Story {
   }
 }
 
+// ignore: unintended_html_in_doc_comment
 /// Extension for List<Story> to get optimized URLs
 extension StoryListExtension on List<Story> {
   /// Preload thumbnail URLs with specific size
