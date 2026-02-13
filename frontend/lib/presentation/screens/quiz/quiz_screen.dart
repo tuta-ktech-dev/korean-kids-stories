@@ -2,6 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/reader_auto_play.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/repositories/quiz_repository.dart';
 import '../../../injection.dart';
@@ -14,11 +16,16 @@ import 'widgets/quiz_result.dart';
 class QuizScreen extends StatelessWidget {
   final String? storyId;
   final String? chapterId;
+  /// Khi có giá trị: sau khi xong quiz, "Tiếp tục" → chuyển sang truyện tiếp theo
+  final String? nextStoryId;
+  final String? nextChapterId;
 
   const QuizScreen({
     super.key,
     this.storyId,
     this.chapterId,
+    this.nextStoryId,
+    this.nextChapterId,
   });
 
   @override
@@ -30,6 +37,8 @@ class QuizScreen extends StatelessWidget {
       child: QuizView(
         storyId: storyId,
         chapterId: chapterId,
+        nextStoryId: nextStoryId,
+        nextChapterId: nextChapterId,
       ),
     );
   }
@@ -38,11 +47,15 @@ class QuizScreen extends StatelessWidget {
 class QuizView extends StatefulWidget {
   final String? storyId;
   final String? chapterId;
+  final String? nextStoryId;
+  final String? nextChapterId;
 
   const QuizView({
     super.key,
     this.storyId,
     this.chapterId,
+    this.nextStoryId,
+    this.nextChapterId,
   });
 
   @override
@@ -111,7 +124,7 @@ class _QuizViewState extends State<QuizView> {
             QuizCompleted() => QuizResultView(
                 state: state,
                 onRetry: () => context.read<QuizCubit>().resetQuiz(),
-                onClose: () => context.router.maybePop(),
+                onClose: () => _handleQuizClose(context),
               ),
             _ => const SizedBox.shrink(),
           };
@@ -125,6 +138,20 @@ class _QuizViewState extends State<QuizView> {
       context.read<QuizCubit>().loadQuizzesByChapter(widget.chapterId!);
     } else if (widget.storyId != null) {
       context.read<QuizCubit>().loadQuizzesByStory(widget.storyId!);
+    }
+  }
+
+  void _handleQuizClose(BuildContext context) {
+    if (widget.nextStoryId != null && widget.nextChapterId != null) {
+      ReaderAutoPlay.request();
+      context.router.replace(
+        ReaderRoute(
+          storyId: widget.nextStoryId!,
+          chapterId: widget.nextChapterId!,
+        ),
+      );
+    } else {
+      context.router.maybePop();
     }
   }
 }

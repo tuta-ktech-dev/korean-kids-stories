@@ -96,9 +96,9 @@ class QuizCubit extends Cubit<QuizState> {
 
     // Validate indices
     if (questionIndex < 0 || questionIndex >= currentState.quizzes.length) return;
-    if (answerIndex < 0 || answerIndex >= 4) return;
 
     final quiz = currentState.quizzes[questionIndex];
+    if (answerIndex < 0 || answerIndex >= quiz.options.length) return;
     final isCorrect = answerIndex == quiz.correctAnswer;
 
     // Update selected answers and results

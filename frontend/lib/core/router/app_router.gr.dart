@@ -182,10 +182,18 @@ class QuizRoute extends PageRouteInfo<QuizRouteArgs> {
     Key? key,
     String? storyId,
     String? chapterId,
+    String? nextStoryId,
+    String? nextChapterId,
     List<PageRouteInfo>? children,
   }) : super(
          QuizRoute.name,
-         args: QuizRouteArgs(key: key, storyId: storyId, chapterId: chapterId),
+         args: QuizRouteArgs(
+           key: key,
+           storyId: storyId,
+           chapterId: chapterId,
+           nextStoryId: nextStoryId,
+           nextChapterId: nextChapterId,
+         ),
          initialChildren: children,
        );
 
@@ -201,13 +209,21 @@ class QuizRoute extends PageRouteInfo<QuizRouteArgs> {
         key: args.key,
         storyId: args.storyId,
         chapterId: args.chapterId,
+        nextStoryId: args.nextStoryId,
+        nextChapterId: args.nextChapterId,
       );
     },
   );
 }
 
 class QuizRouteArgs {
-  const QuizRouteArgs({this.key, this.storyId, this.chapterId});
+  const QuizRouteArgs({
+    this.key,
+    this.storyId,
+    this.chapterId,
+    this.nextStoryId,
+    this.nextChapterId,
+  });
 
   final Key? key;
 
@@ -215,9 +231,13 @@ class QuizRouteArgs {
 
   final String? chapterId;
 
+  final String? nextStoryId;
+
+  final String? nextChapterId;
+
   @override
   String toString() {
-    return 'QuizRouteArgs{key: $key, storyId: $storyId, chapterId: $chapterId}';
+    return 'QuizRouteArgs{key: $key, storyId: $storyId, chapterId: $chapterId, nextStoryId: $nextStoryId, nextChapterId: $nextChapterId}';
   }
 }
 

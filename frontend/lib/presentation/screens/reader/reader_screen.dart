@@ -86,8 +86,11 @@ class ReaderScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                   context.router.push(
                     QuizRoute(
-                        storyId: completedStoryId,
-                        chapterId: completedChapterId),
+                      storyId: completedStoryId,
+                      chapterId: completedChapterId,
+                      nextStoryId: next.id,
+                      nextChapterId: first.id,
+                    ),
                   );
                 }
               : null,
