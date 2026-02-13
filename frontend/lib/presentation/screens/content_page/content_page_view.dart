@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../widgets/responsive_padding.dart';
 import '../../../injection.dart';
 import '../../../data/repositories/content_page_repository.dart';
 
@@ -68,7 +69,10 @@ class _ContentPageViewState extends State<ContentPageView> {
                     ),
                   ),
                 )
-              : SingleChildScrollView(
+              : ResponsivePadding(
+                  maxWidth: 720,
+                  horizontalPadding: 24,
+                  child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Html(
                     data: _page?.content ?? '',
@@ -95,6 +99,7 @@ class _ContentPageViewState extends State<ContentPageView> {
                       ),
                     },
                   ),
+                ),
                 ),
     );
   }

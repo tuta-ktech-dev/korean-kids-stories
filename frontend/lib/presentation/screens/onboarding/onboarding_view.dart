@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../widgets/responsive_padding.dart';
 
 const _onboardingCompletedKey = 'onboarding_completed';
 
@@ -55,7 +56,9 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Scaffold(
       backgroundColor: AppTheme.onboardingBackgroundColor(context),
       body: SafeArea(
-        child: Column(
+        child: ResponsivePadding(
+          maxWidth: 480,
+          child: Column(
           children: [
             Expanded(
               child: PageView.builder(
@@ -120,6 +123,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -145,8 +149,8 @@ class _OnboardingPage extends StatelessWidget {
           flex: 5,
           child: Image.asset(
             image,
-            fit: BoxFit.cover,
-            width: min(context.width, context.height),
+            fit: BoxFit.contain,
+            width: min(400, min(context.width, context.height)),
           ),
         ),
         const SizedBox(height: 24),
