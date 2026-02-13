@@ -9,6 +9,7 @@ import '../../../data/models/chapter_audio.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/reading_history_repository.dart';
 import '../../../data/repositories/story_repository.dart';
+import '../../../data/services/premium_service.dart';
 import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
 import '../audio_player_cubit/audio_player_cubit.dart';
@@ -30,19 +31,23 @@ class ReaderCubit extends Cubit<ReaderState> {
     ProgressRepository? progressRepository,
     ReadingHistoryRepository? readingHistoryRepository,
     AudioPlayerCubit? audioPlayerCubit,
+    PremiumService? premiumService,
   }) : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
        _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
        _historyRepository =
            readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
        _audioCubit = audioPlayerCubit ?? getIt<AudioPlayerCubit>(),
+       _premiumService = premiumService ?? getIt<PremiumService>(),
        super(const ReaderInitial());
 
   final StoryRepository _storyRepository;
   final ProgressRepository _progressRepository;
   final ReadingHistoryRepository _historyRepository;
   final AudioPlayerCubit _audioCubit;
+  final PremiumService _premiumService;
 
   StreamSubscription<AudioPlayerState>? _audioStateSub;
+  double _lastReportedPositionSec = 0;
   Timer? _sleepTimer;
   bool _isHandlingChapterComplete = false;
 
@@ -248,6 +253,13 @@ class ReaderCubit extends Cubit<ReaderState> {
     }
   }
 
+  /// Dismiss the free limit reached / upgrade dialog.
+  void clearFreeLimitReached() {
+    if (state is ReaderLoaded) {
+      emit((state as ReaderLoaded).copyWith(freeLimitReached: false));
+    }
+  }
+
   void updateProgress(double progress) {
     if (state is ReaderLoaded) {
       emit((state as ReaderLoaded).copyWith(progress: progress));
@@ -277,8 +289,15 @@ class ReaderCubit extends Cubit<ReaderState> {
     final url = s.selectedAudio?.audioUrl;
     if (url == null || url.isEmpty) return;
 
+    // Gate: free users limited to 15 min/day
+    if (!(await _premiumService.canPlayAudio())) {
+      emit(s.copyWith(freeLimitReached: true));
+      return;
+    }
+
     try {
       final seekToSec = s.initialAudioPositionSec ?? 0;
+      _lastReportedPositionSec = seekToSec;
 
       await _audioCubit.loadChapter(
         chapterId: s.chapter.id,
@@ -311,16 +330,42 @@ class ReaderCubit extends Cubit<ReaderState> {
   void _listenToAudioCubitIfNeeded(String chapterId) {
     if (_audioStateSub != null) return;
 
-    _audioStateSub = _audioCubit.stream.listen((audioState) {
+    _audioStateSub = _audioCubit.stream.listen((audioState) async {
       if (state is! ReaderLoaded) return;
       final s = state as ReaderLoaded;
       if (audioState is! AudioPlayerReady) return;
       final ready = audioState;
-      // Luôn dùng chapter hiện tại để nhận update khi chuyển chapter
       if (ready.chapterId != s.chapter.id) return;
 
       final posSec = ready.position.inMilliseconds / 1000.0;
       final durSec = ready.duration.inMilliseconds / 1000.0;
+
+      // Track free daily usage when playing
+      if (ready.isPlaying) {
+        final deltaSec = (posSec - _lastReportedPositionSec).floor();
+        if (deltaSec > 0) {
+          _lastReportedPositionSec = posSec;
+          final remaining = await _premiumService.getRemainingFreeSecondsToday();
+          final toAdd = deltaSec.clamp(0, remaining);
+          if (toAdd > 0) {
+            await _premiumService.addAudioSecondsUsed(toAdd);
+            final afterRemaining =
+                await _premiumService.getRemainingFreeSecondsToday();
+            if (afterRemaining <= 0) {
+              await _audioCubit.pause();
+              emit(s.copyWith(
+                isPlaying: false,
+                audioPosition: posSec,
+                audioDurationSeconds: durSec > 0 ? durSec : null,
+                freeLimitReached: true,
+              ));
+              return;
+            }
+          }
+        }
+      } else {
+        _lastReportedPositionSec = posSec;
+      }
 
       emit(s.copyWith(
         isPlaying: ready.isPlaying,

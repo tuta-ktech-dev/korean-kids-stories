@@ -932,4 +932,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get parentZoneAuthFailed => '인증에 실패했습니다. 다시 시도하세요.';
+
+  @override
+  String get freeLimitReachedTitle => '오늘 무료 15분 사용 완료';
+
+  @override
+  String get freeLimitReachedMessage =>
+      '오늘 무료 15분을 모두 사용했습니다. 프리미엄으로 업그레이드하면 무제한으로 들을 수 있습니다.';
+
+  @override
+  String get freeLimitUpgrade => '프리미엄 업그레이드';
+
+  @override
+  String get premiumActive => '프리미엄 사용 중';
+
+  @override
+  String get premiumActiveDesc => '프리미엄을 구독하고 있습니다. 매일 무제한으로 들을 수 있습니다.';
+
+  @override
+  String premiumFreeRemaining(Object minutes) {
+    return '오늘 무료 청취 $minutes분 남음';
+  }
+
+  @override
+  String get premiumUpgradeDesc => '프리미엄으로 업그레이드하면 매일 무제한으로 들을 수 있습니다.';
 }

@@ -947,4 +947,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get parentZoneAuthFailed => 'Authentication failed. Try again.';
+
+  @override
+  String get freeLimitReachedTitle => '15 minutes used today';
+
+  @override
+  String get freeLimitReachedMessage =>
+      'You\'ve used your free 15 minutes. Upgrade to Premium for unlimited listening.';
+
+  @override
+  String get freeLimitUpgrade => 'Upgrade to Premium';
+
+  @override
+  String get premiumActive => 'Premium active';
+
+  @override
+  String get premiumActiveDesc =>
+      'You have Premium. Listen to unlimited audio every day.';
+
+  @override
+  String premiumFreeRemaining(Object minutes) {
+    return '$minutes minutes of free listening left today';
+  }
+
+  @override
+  String get premiumUpgradeDesc =>
+      'Upgrade to Premium for unlimited listening every day.';
 }

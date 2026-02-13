@@ -943,4 +943,30 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get parentZoneAuthFailed => 'Xác thực thất bại. Thử lại.';
+
+  @override
+  String get freeLimitReachedTitle => 'Hết 15 phút hôm nay';
+
+  @override
+  String get freeLimitReachedMessage =>
+      'Bạn đã dùng hết 15 phút nghe miễn phí. Nâng cấp Premium để nghe không giới hạn.';
+
+  @override
+  String get freeLimitUpgrade => 'Nâng cấp Premium';
+
+  @override
+  String get premiumActive => 'Đang dùng Premium';
+
+  @override
+  String get premiumActiveDesc =>
+      'Bạn đã nâng cấp Premium. Nghe audio không giới hạn mỗi ngày.';
+
+  @override
+  String premiumFreeRemaining(Object minutes) {
+    return 'Còn $minutes phút nghe miễn phí hôm nay';
+  }
+
+  @override
+  String get premiumUpgradeDesc =>
+      'Nâng cấp Premium để nghe truyện không giới hạn mỗi ngày.';
 }

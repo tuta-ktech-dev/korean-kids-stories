@@ -454,6 +454,39 @@ class _ReaderViewState extends State<ReaderView> {
         BlocListener<ReaderCubit, ReaderState>(
           listenWhen: (prev, curr) =>
               curr is ReaderLoaded &&
+              curr.freeLimitReached &&
+              (prev is! ReaderLoaded || !prev.freeLimitReached),
+          listener: (context, state) {
+            if (state is! ReaderLoaded || !state.freeLimitReached) return;
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text(context.l10n.freeLimitReachedTitle),
+                content: Text(context.l10n.freeLimitReachedMessage),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      context.read<ReaderCubit>().clearFreeLimitReached();
+                      Navigator.pop(ctx);
+                    },
+                    child: Text(context.l10n.cancel),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<ReaderCubit>().clearFreeLimitReached();
+                      Navigator.pop(ctx);
+                      context.router.pushNamed('/main');
+                    },
+                    child: Text(context.l10n.freeLimitUpgrade),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        BlocListener<ReaderCubit, ReaderState>(
+          listenWhen: (prev, curr) =>
+              curr is ReaderLoaded &&
               curr.playbackError != null &&
               curr.playbackError !=
                   (prev is ReaderLoaded ? prev.playbackError : null),

@@ -318,5 +318,13 @@
   "parentZoneAuthReason": "Authenticate to access Parent Zone",
   "parentZoneAuthenticate": "Authenticate",
   "parentZoneNotSupported": "This device does not support biometric or PIN authentication.",
-  "parentZoneAuthFailed": "Authentication failed. Try again."
+  "parentZoneAuthFailed": "Authentication failed. Try again.",
+  "freeLimitReachedTitle": "15 minutes used today",
+  "freeLimitReachedMessage": "You've used your free 15 minutes. Upgrade to Premium for unlimited listening.",
+  "freeLimitUpgrade": "Upgrade to Premium",
+  "premiumActive": "Premium active",
+  "premiumActiveDesc": "You have Premium. Listen to unlimited audio every day.",
+  "premiumFreeRemaining": "{minutes} minutes of free listening left today",
+  "@premiumFreeRemaining": {"placeholders": {"minutes": {}}},
+  "premiumUpgradeDesc": "Upgrade to Premium for unlimited listening every day."
 }

@@ -50,6 +50,8 @@ class ReaderLoaded extends ReaderState {
   final int sleepTimerMinutes;
   /// When sleep timer ends. null when off.
   final DateTime? sleepTimerEndsAt;
+  /// Free daily audio limit reached - show upgrade dialog.
+  final bool freeLimitReached;
 
   const ReaderLoaded({
     required this.chapter,
@@ -69,6 +71,7 @@ class ReaderLoaded extends ReaderState {
     this.initialAudioPositionSec,
     this.sleepTimerMinutes = 0,
     this.sleepTimerEndsAt,
+    this.freeLimitReached = false,
   });
 
   bool get hasAudio => audios.isNotEmpty;
@@ -113,6 +116,7 @@ class ReaderLoaded extends ReaderState {
     int? sleepTimerMinutes,
     DateTime? sleepTimerEndsAt,
     bool clearSleepTimer = false,
+    bool? freeLimitReached,
   }) {
     return ReaderLoaded(
       chapter: chapter ?? this.chapter,
@@ -134,11 +138,12 @@ class ReaderLoaded extends ReaderState {
       sleepTimerEndsAt: clearSleepTimer || (sleepTimerMinutes ?? this.sleepTimerMinutes) == 0
           ? null
           : (sleepTimerEndsAt ?? this.sleepTimerEndsAt),
+      freeLimitReached: freeLimitReached ?? this.freeLimitReached,
     );
   }
 
   @override
-  List<Object?> get props => [chapter, story, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec, sleepTimerMinutes, sleepTimerEndsAt];
+  List<Object?> get props => [chapter, story, prevChapter, nextChapter, nextChapterLocked, audios, selectedAudio, fontSize, progress, isPlaying, audioPosition, audioDurationSeconds, playbackSpeed, playbackError, initialAudioPositionSec, sleepTimerMinutes, sleepTimerEndsAt, freeLimitReached];
 }
 
 class ReaderError extends ReaderState {

@@ -311,5 +311,13 @@
   "parentZoneAuthReason": "Xác thực để truy cập khu vực phụ huynh",
   "parentZoneAuthenticate": "Xác thực",
   "parentZoneNotSupported": "Thiết bị không hỗ trợ xác thực vân tay hoặc mã PIN.",
-  "parentZoneAuthFailed": "Xác thực thất bại. Thử lại."
+  "parentZoneAuthFailed": "Xác thực thất bại. Thử lại.",
+  "freeLimitReachedTitle": "Hết 15 phút hôm nay",
+  "freeLimitReachedMessage": "Bạn đã dùng hết 15 phút nghe miễn phí. Nâng cấp Premium để nghe không giới hạn.",
+  "freeLimitUpgrade": "Nâng cấp Premium",
+  "premiumActive": "Đang dùng Premium",
+  "premiumActiveDesc": "Bạn đã nâng cấp Premium. Nghe audio không giới hạn mỗi ngày.",
+  "premiumFreeRemaining": "Còn {minutes} phút nghe miễn phí hôm nay",
+  "@premiumFreeRemaining": {"placeholders": {"minutes": {}}},
+  "premiumUpgradeDesc": "Nâng cấp Premium để nghe truyện không giới hạn mỗi ngày."
 }

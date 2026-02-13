@@ -1857,6 +1857,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Authentication failed. Try again.'**
   String get parentZoneAuthFailed;
+
+  /// No description provided for @freeLimitReachedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'15 minutes used today'**
+  String get freeLimitReachedTitle;
+
+  /// No description provided for @freeLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used your free 15 minutes. Upgrade to Premium for unlimited listening.'**
+  String get freeLimitReachedMessage;
+
+  /// No description provided for @freeLimitUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get freeLimitUpgrade;
+
+  /// No description provided for @premiumActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium active'**
+  String get premiumActive;
+
+  /// No description provided for @premiumActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have Premium. Listen to unlimited audio every day.'**
+  String get premiumActiveDesc;
+
+  /// No description provided for @premiumFreeRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes of free listening left today'**
+  String premiumFreeRemaining(Object minutes);
+
+  /// No description provided for @premiumUpgradeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium for unlimited listening every day.'**
+  String get premiumUpgradeDesc;
 }
 
 class _AppLocalizationsDelegate

@@ -65,6 +65,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i825.LocalProgressRepository>(
       () => _i825.LocalProgressRepository(),
     );
+    gh.factory<_i526.PremiumService>(() => _i526.PremiumService());
     gh.lazySingleton<_i700.PocketbaseService>(
       () => injectionModule.pocketbaseService,
     );
@@ -112,9 +113,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i83.AppConfigRepository>(
       () => _i83.AppConfigRepository(gh<_i700.PocketbaseService>()),
-    );
-    gh.factory<_i526.PremiumService>(
-      () => _i526.PremiumService(gh<_i700.PocketbaseService>()),
     );
     gh.lazySingleton<_i712.HomeCubit>(
       () => _i712.HomeCubit(

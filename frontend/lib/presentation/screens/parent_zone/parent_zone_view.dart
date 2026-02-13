@@ -10,6 +10,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../injection.dart';
 import '../../../data/repositories/app_config_repository.dart';
+import '../../../data/services/premium_service.dart';
 import '../../components/buttons/settings_item.dart';
 import '../../components/cards/settings_section.dart';
 import '../../cubits/history_cubit/history_cubit.dart';
@@ -176,12 +177,7 @@ class _ParentZoneContentBody extends StatelessWidget {
           onTap: () => _ParentZoneHelpers.showActivitySheet(context),
         ),
         const SizedBox(height: 16),
-        _ParentZoneItem(
-          icon: Icons.workspace_premium,
-          title: context.l10n.parentZonePremium,
-          subtitle: context.l10n.parentZoneComingSoon,
-          onTap: () {},
-        ),
+        _PremiumItem(),
         const SizedBox(height: 24),
 
         // Report & Support
@@ -921,6 +917,124 @@ class _ContactRow extends StatelessWidget {
     return onTap != null
         ? InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: child)
         : child;
+  }
+}
+
+class _PremiumItem extends StatelessWidget {
+  const _PremiumItem();
+
+  @override
+  Widget build(BuildContext context) {
+    final premium = getIt<PremiumService>();
+    return FutureBuilder<bool>(
+      future: premium.checkIsPremium(),
+      builder: (ctx, snap) {
+        final isPremium = snap.data ?? false;
+        final subtitle = isPremium
+            ? context.l10n.premiumActive
+            : context.l10n.parentZoneComingSoon;
+        return _ParentZoneItem(
+          icon: Icons.workspace_premium,
+          title: context.l10n.parentZonePremium,
+          subtitle: subtitle,
+          onTap: () => _showPremiumSheet(context, premium, isPremium),
+        );
+      },
+    );
+  }
+
+  static void _showPremiumSheet(
+    BuildContext context,
+    PremiumService premium,
+    bool isPremium,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (_, controller) => Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor(ctx),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textMutedColor(ctx).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.workspace_premium,
+                          size: 32,
+                          color: AppTheme.primaryColor(ctx),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          context.l10n.parentZonePremium,
+                          style: AppTheme.headingMedium(ctx),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (isPremium)
+                      Text(
+                        context.l10n.premiumActiveDesc,
+                        style: AppTheme.bodyMedium(ctx),
+                      )
+                    else ...[
+                      FutureBuilder<int>(
+                        future: premium.getRemainingFreeSecondsToday(),
+                        builder: (c, s) {
+                          final remain = s.data ?? 900;
+                          final min = (remain / 60).floor();
+                          return Text(
+                            context.l10n.premiumFreeRemaining(min),
+                            style: AppTheme.bodyMedium(ctx),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.l10n.premiumUpgradeDesc,
+                        style: AppTheme.bodyMedium(ctx).copyWith(
+                          color: AppTheme.textMutedColor(ctx),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: null,
+                          icon: const Icon(Icons.shopping_cart_outlined),
+                          label: Text(context.l10n.parentZoneComingSoon),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
