@@ -17,17 +17,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 logging.getLogger("TTS.tts.utils.text.tokenizer").setLevel(logging.ERROR)
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     """Authenticate and return token."""
     import urllib.request
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -126,9 +124,10 @@ def upload_audio(base_url: str, token: str, chapter_id: str, audio_path: str, na
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--story-id", help="Story ID (default: first published)")
-    parser.add_argument("--base-url", default=BASE_URL, help="PocketBase base URL")
-    parser.add_argument("--model", default="/tmp/best_model.pth", help="KSS model path")
-    parser.add_argument("--config", default="/tmp/config.json", help="KSS config path")
+    parser.add_argument("--base-url", default=PB_BASE_URL or None, help="PocketBase base URL (hoặc PB_BASE_URL env)")
+    _tools = Path(__file__).resolve().parent
+    parser.add_argument("--model", default=str(_tools / "models" / "best_model.pth"), help="KSS model path")
+    parser.add_argument("--config", default=str(_tools / "models" / "config.json"), help="KSS config path")
     parser.add_argument("--max-chars", type=int, default=500, help="Max chars per TTS chunk (default 500)")
     parser.add_argument("--dry-run", action="store_true", help="Fetch only, no TTS/upload")
     args = parser.parse_args()
@@ -139,12 +138,15 @@ def main():
         print("  curl -L -o /tmp/config.json https://huggingface.co/neurlang/coqui-vits-kss-korean/resolve/main/config.json", file=sys.stderr)
         sys.exit(1)
 
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
+
     os.environ["COQUI_TOS_AGREED"] = "1"
 
     print("Auth...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
     print("Fetch story + chapters...")
-    story, chapters = fetch_story_and_chapters(args.base_url, token, args.story_id)
+    story, chapters = fetch_story_and_chapters(base_url, token, args.story_id)
     print(f"Story: {story.get('title')} (id={story['id']}), chapters: {len(chapters)}")
 
     if args.dry_run:
@@ -174,7 +176,7 @@ def main():
         try:
             generate_tts(full_text, args.model, args.config, wav_path)
             print(f"  Ch{ch['chapter_number']}: uploading...")
-            rec = upload_audio(args.base_url, token, ch_id, wav_path)
+            rec = upload_audio(base_url, token, ch_id, wav_path)
             print(f"  Ch{ch['chapter_number']}: done -> {rec.get('id')}")
         finally:
             Path(wav_path).unlink(missing_ok=True)

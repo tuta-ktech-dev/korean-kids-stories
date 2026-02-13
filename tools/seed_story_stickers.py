@@ -8,16 +8,16 @@ import argparse
 import json
 import sys
 import urllib.request
+from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -56,18 +56,20 @@ def post(base_url: str, token: str, collection: str, data: dict) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL)
+    parser.add_argument("--base-url", default="")
     parser.add_argument("--enable-all", action="store_true", help="Set has_sticker=true for all published stories")
     args = parser.parse_args()
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
 
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     # Fetch stories
     data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
+        f"{base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
     )
     stories = data.get("items", [])
     if not stories:
@@ -76,9 +78,9 @@ def main():
 
     # Fetch existing story stickers
     sticker_data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/stickers/records?perPage=500&filter=type%3D%22story%22",
+        f"{base_url}/api/collections/stickers/records?perPage=500&filter=type%3D%22story%22",
     )
     existing = {s["story"]: s for s in sticker_data.get("items", []) if s.get("story")}
 
@@ -91,13 +93,13 @@ def main():
         has_sticker = s.get("has_sticker", False)
 
         if args.enable_all and not has_sticker:
-            patch(args.base_url, token, "stories", sid, {"has_sticker": True})
+            patch(base_url, token, "stories", sid, {"has_sticker": True})
             enabled += 1
             print(f"  Enabled has_sticker: {title}")
 
         if sid not in existing:
             key = f"story_{sid}"
-            post(args.base_url, token, "stickers", {
+            post(base_url, token, "stickers", {
                 "type": "story",
                 "key": key,
                 "name_ko": title,

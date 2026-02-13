@@ -9,18 +9,18 @@ Usage:
 import argparse
 import json
 import sys
+from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     import urllib.request
 
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -51,17 +51,19 @@ def has_thumbnail(record: dict) -> bool:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL, help="PocketBase base URL")
+    parser.add_argument("--base-url", default="", help="PB_BASE_URL env")
     args = parser.parse_args()
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
 
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     print("Fetching stories...")
     data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
+        f"{base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
     )
     stories = data.get("items", [])
     if not stories:

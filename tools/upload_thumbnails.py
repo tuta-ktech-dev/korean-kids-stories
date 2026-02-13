@@ -11,17 +11,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     import urllib.request
 
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -55,12 +54,14 @@ def upload_thumbnail(base_url: str, token: str, story_id: str, image_path: str) 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL, help="PocketBase base URL")
+    parser.add_argument("--base-url", default="", help="PB_BASE_URL env")
     parser.add_argument("--image-dir", help="Directory with images named {story_id}.webp")
     parser.add_argument("--story-id", help="Specific story ID (use with --image-dir)")
     parser.add_argument("--map", help='Comma-separated id:path pairs, e.g. "id1:path1.webp,id2:path2.webp"')
     parser.add_argument("--dry-run", action="store_true", help="Show what would be uploaded")
     args = parser.parse_args()
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
 
     pairs: list[tuple[str, str]] = []
 
@@ -98,14 +99,14 @@ def main():
         return
 
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     for story_id, image_path in pairs:
         print(f"  {story_id}: {image_path}")
         if args.dry_run:
             continue
         try:
-            rec = upload_thumbnail(args.base_url, token, story_id, image_path)
+            rec = upload_thumbnail(base_url, token, story_id, image_path)
             thumb = rec.get("thumbnail") or rec.get("thumbnailUrl") or "uploaded"
             print(f"    -> OK ({thumb})")
         except Exception as e:

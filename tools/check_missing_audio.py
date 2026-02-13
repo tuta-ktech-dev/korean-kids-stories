@@ -13,18 +13,17 @@ import subprocess
 import sys
 from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     """Authenticate and return token."""
     import urllib.request
 
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -43,18 +42,21 @@ def fetch_json(base_url: str, token: str, url: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL, help="PocketBase base URL")
+    parser.add_argument("--base-url", default="", help="PB_BASE_URL env")
     parser.add_argument("--gen", action="store_true", help="Run story_to_audio.py for each missing story")
     args = parser.parse_args()
 
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
+
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     print("Fetching stories...")
     data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
+        f"{base_url}/api/collections/stories/records?perPage=500&filter=is_published=true&sort=title",
     )
     stories = data.get("items", [])
     if not stories:
@@ -66,26 +68,26 @@ def main():
     for s in stories:
         sid = s["id"]
         data = fetch_json(
-            args.base_url,
+            base_url,
             token,
-            f"{args.base_url}/api/collections/chapters/records?perPage=200&filter=(story='{sid}')&sort=chapter_number",
+            f"{base_url}/api/collections/chapters/records?perPage=200&filter=(story='{sid}')&sort=chapter_number",
         )
         chapters_by_story[sid] = data.get("items", [])
 
     print("Fetching chapter_audios...")
     data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/chapter_audios/records?perPage=2000&expand=chapter",
+        f"{base_url}/api/collections/chapter_audios/records?perPage=2000&expand=chapter",
     )
     all_audios = data.get("items", [])
     # Paginate if more
     while data.get("totalPages", 1) > data.get("page", 1):
         page = data.get("page", 1) + 1
         data = fetch_json(
-            args.base_url,
+            base_url,
             token,
-            f"{args.base_url}/api/collections/chapter_audios/records?perPage=2000&page={page}",
+            f"{base_url}/api/collections/chapter_audios/records?perPage=2000&page={page}",
         )
         all_audios.extend(data.get("items", []))
 
@@ -122,7 +124,7 @@ def main():
             sid = s["id"]
             print(f"\n>>> Generating audio for: {s['title']} ({sid})")
             rc = subprocess.run(
-                [sys.executable, str(story_to_audio), "--story-id", sid, "--base-url", args.base_url],
+                [sys.executable, str(story_to_audio), "--story-id", sid, "--base-url", base_url],
                 cwd=str(script_dir),
             )
             if rc.returncode != 0:

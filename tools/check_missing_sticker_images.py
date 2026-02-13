@@ -7,16 +7,16 @@ import argparse
 import json
 import sys
 import urllib.request
+from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -43,16 +43,18 @@ def has_image(record: dict) -> bool:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL)
+    parser.add_argument("--base-url", default="")
     args = parser.parse_args()
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
 
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     data = fetch_json(
-        args.base_url,
+        base_url,
         token,
-        f"{args.base_url}/api/collections/stickers/records?perPage=500&filter=type%3D%22story%22&expand=story",
+        f"{base_url}/api/collections/stickers/records?perPage=500&filter=type%3D%22story%22&expand=story",
     )
     stickers = data.get("items", [])
 

@@ -14,9 +14,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-BASE_URL = "http://trananhtu.vn:8090"
-EMAIL = "ichimoku.0902@gmail.com"
-PASSWORD = "@nhTu09022001"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pb_config import PB_BASE_URL, PB_EMAIL, PB_PASSWORD, require_pb_config
 
 
 def remove_background(input_path: str, output_path: str, size: int = 512) -> str:
@@ -33,12 +32,12 @@ def remove_background(input_path: str, output_path: str, size: int = 512) -> str
     return output_path
 
 
-def auth(base_url: str) -> str:
+def auth(base_url: str, email: str, password: str) -> str:
     import urllib.request
 
     req = urllib.request.Request(
         f"{base_url}/api/collections/_superusers/auth-with-password",
-        data=json.dumps({"identity": EMAIL, "password": PASSWORD}).encode(),
+        data=json.dumps({"identity": email, "password": password}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -70,12 +69,14 @@ def upload_image(base_url: str, token: str, sticker_id: str, image_path: str) ->
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default=BASE_URL)
+    parser.add_argument("--base-url", default="")
     parser.add_argument("--map", help='id1:path1.jpg,id2:path2.jpg')
     parser.add_argument("--image-dir", help="Dir with sticker_xxx.webp or {sticker_id}.jpg")
     parser.add_argument("--remove-bg", action="store_true", help="Remove background trước khi upload (rembg)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    require_pb_config()
+    base_url = args.base_url or PB_BASE_URL
 
     pairs: list[tuple[str, str]] = []
 
@@ -108,7 +109,7 @@ def main():
         return
 
     print("Authenticating...")
-    token = auth(args.base_url)
+    token = auth(base_url, PB_EMAIL, PB_PASSWORD)
 
     for sticker_id, image_path in pairs:
         print(f"  {sticker_id}: {image_path}")
@@ -128,7 +129,7 @@ def main():
             except Exception as e:
                 print(f"    remove_bg FAIL: {e}, uploading original", file=sys.stderr)
         try:
-            rec = upload_image(args.base_url, token, sticker_id, upload_path)
+            rec = upload_image(base_url, token, sticker_id, upload_path)
             img = rec.get("image") or "uploaded"
             print(f"    -> OK ({img})")
         except Exception as e:

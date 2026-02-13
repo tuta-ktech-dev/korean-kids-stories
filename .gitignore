@@ -73,3 +73,8 @@ frontend/android/app/release/
 
 # Node
 node_modules/
+
+# TTS models (KSS ~950MB)
+tools/models/
+# TTS output (giữ ko_kss.wav nếu cần cho XTTS - tạo bằng tts_cli)
+tools/*.wav
