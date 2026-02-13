@@ -31,11 +31,12 @@ void main() async {
   await getIt<PocketbaseService>().initialize();
   getIt<TrackingService>().startSession(null);
 
-  // Notifications - daily reminder when no streak
-  await NotificationService().initialize();
-  await ReminderTask.init();
-
   runApp(KoreanKidsStoriesApp());
+
+  // Notifications - defer until after first frame (Android Context/Activity must be ready)
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    NotificationService().initialize().then((_) => ReminderTask.init());
+  });
 }
 
 class KoreanKidsStoriesApp extends StatelessWidget {

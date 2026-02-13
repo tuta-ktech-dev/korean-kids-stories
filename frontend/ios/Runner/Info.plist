@@ -65,7 +65,7 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<true/>
+		<false/>
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
@@ -74,7 +74,7 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.koreankids.stories.reading_reminder</string>
+		<string>com.hbstore.koreankids.reading_reminder</string>
 	</array>
 </dict>
 </plist>

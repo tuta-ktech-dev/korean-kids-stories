@@ -19,7 +19,7 @@ import workmanager
     // WorkManager: register periodic task for reading reminder (iOS 13+)
     if #available(iOS 13.0, *) {
       WorkmanagerPlugin.registerPeriodicTask(
-        withIdentifier: "com.koreankids.stories.reading_reminder",
+        withIdentifier: "com.hbstore.koreankids.reading_reminder",
         frequency: NSNumber(value: 60 * 60) // 1 hour in seconds
       )
     }

@@ -7,7 +7,7 @@
 ### ✅ Đã sẵn sàng
 - [x] Version: `1.0.0+1` (pubspec.yaml)
 - [x] App name: 꼬마 한동화 - Kids Tales
-- [x] Bundle ID: `com.koreankids.korean_kids_stories`
+- [x] Bundle ID: `com.hbstore.koreankids`
 - [x] API: `trananhtu.vn:8090` (dev = prod)
 - [x] iOS Info.plist có NSAppTransportSecurity (cho phép HTTP)
 - [x] `debugShowCheckedModeBanner: false`

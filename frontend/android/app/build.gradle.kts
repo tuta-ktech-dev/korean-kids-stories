@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.koreankids.korean_kids_stories"
+    namespace = "com.hbstore.koreankids"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,7 +23,7 @@ android {
     defaultConfig {
         multiDexEnabled = true
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.koreankids.korean_kids_stories"
+        applicationId = "com.hbstore.koreankids"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

@@ -8,7 +8,7 @@
 PRODUCT_NAME = korean_kids_stories
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.koreankids.stories
+PRODUCT_BUNDLE_IDENTIFIER = com.hbstore.koreankids
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.koreankids. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.hbstore. All rights reserved.

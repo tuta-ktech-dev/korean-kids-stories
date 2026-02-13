@@ -8,8 +8,8 @@ import 'notification_service.dart';
 const String _reminderTaskName = 'reading_reminder_check';
 
 /// iOS requires this exact identifier in Info.plist & AppDelegate.
-/// Must match com.koreankids.stories.reading_reminder.
-const String _reminderTaskId = 'com.koreankids.stories.reading_reminder';
+/// Must match com.hbstore.koreankids.reading_reminder (Info.plist, AppDelegate).
+const String _reminderTaskId = 'com.hbstore.koreankids.reading_reminder';
 
 /// Top-level callback for WorkManager - MUST be top-level, not nested.
 @pragma('vm:entry-point')

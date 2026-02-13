@@ -48,7 +48,7 @@ class AudioPlayerCubit extends Cubit<AudioPlayerState> {
       _audioHandler = await AudioService.init(
         builder: () => StoryAudioHandler(),
         config: AudioServiceConfig(
-          androidNotificationChannelId: 'com.korean_kids_stories.audio',
+          androidNotificationChannelId: 'com.hbstore.koreankids.audio',
           androidNotificationChannelName: 'Audio Playback',
           androidNotificationOngoing: true,
           androidStopForegroundOnPause: true,

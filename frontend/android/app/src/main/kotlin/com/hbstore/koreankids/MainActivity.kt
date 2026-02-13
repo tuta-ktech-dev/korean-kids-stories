@@ -1,4 +1,4 @@
-package com.koreankids.korean_kids_stories
+package com.hbstore.koreankids
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
