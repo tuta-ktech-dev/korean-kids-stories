@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../widgets/responsive_padding.dart';
 
 const _onboardingCompletedKey = 'onboarding_completed';
 
@@ -56,9 +55,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Scaffold(
       backgroundColor: AppTheme.onboardingBackgroundColor(context),
       body: SafeArea(
-        child: ResponsivePadding(
-          maxWidth: 480,
-          child: Column(
+        child: Column(
           children: [
             Expanded(
               child: PageView.builder(
@@ -122,7 +119,6 @@ class _OnboardingViewState extends State<OnboardingView> {
               ),
             ),
           ],
-        ),
         ),
       ),
     );

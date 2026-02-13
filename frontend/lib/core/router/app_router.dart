@@ -7,7 +7,6 @@ import '../../presentation/cubits/bookmark_cubit/bookmark_cubit.dart';
 import '../../presentation/cubits/favorite_cubit/favorite_cubit.dart';
 import '../../presentation/cubits/history_cubit/history_cubit.dart';
 import '../../presentation/cubits/note_cubit/note_cubit.dart';
-import '../../presentation/widgets/responsive_padding.dart';
 import '../../presentation/screens/landing/landing_screen.dart';
 import '../../presentation/screens/onboarding/onboarding_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
@@ -116,10 +115,10 @@ class _MainScaffoldState extends State<_MainScaffold> {
           }
 
           return Scaffold(
-            body: ResponsivePadding(child: widget.child),
+            body: widget.child,
             bottomNavigationBar: SafeArea(
-              child: ResponsivePadding(
-                horizontalPadding: 16,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: AppBottomNav(
                   currentIndex: tabsRouter.activeIndex,
                   onTap: tabsRouter.setActiveIndex,

@@ -7,7 +7,6 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/chapter.dart';
 import '../../../data/models/story.dart';
 import '../../cubits/story_detail_cubit/story_detail_cubit.dart';
-import '../../widgets/responsive_padding.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import 'widgets/story_detail_bottom_bar.dart';
 import 'widgets/story_detail_chapter_list.dart';
@@ -39,8 +38,7 @@ class StoryDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
-      body: ResponsivePadding(
-        child: BlocBuilder<StoryDetailCubit, StoryDetailState>(
+      body: BlocBuilder<StoryDetailCubit, StoryDetailState>(
           builder: (context, state) {
           return switch (state) {
             StoryDetailLoading() => const _LoadingView(),
@@ -57,7 +55,6 @@ class StoryDetailView extends StatelessWidget {
             _ => const SizedBox.shrink(),
           };
         },
-        ),
       ),
     );
   }

@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../widgets/responsive_padding.dart';
 import '../onboarding/onboarding_view.dart';
 
 class LandingView extends StatefulWidget {
@@ -40,10 +39,8 @@ class _LandingViewState extends State<LandingView> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       body: SafeArea(
-        child: ResponsivePadding(
-          maxWidth: 480,
-          child: Column(
-            children: [
+        child: Column(
+          children: [
               Expanded(
                 child: Center(
                   child: Column(
@@ -102,8 +99,7 @@ class _LandingViewState extends State<LandingView> {
                   ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
