@@ -75,6 +75,10 @@ class ReaderLoaded extends ReaderState {
 
   bool get hasSleepTimer => sleepTimerMinutes > 0;
 
+  /// Last chapter of story (no next free, no next locked).
+  bool get isLastChapterOfStory =>
+      nextChapter == null && nextChapterLocked == null;
+
   /// Progress to show in bottom bar: audio position when hasAudio, else scroll.
   /// When hasAudio, never show scroll - use 0 if not yet played.
   double get displayProgress {

@@ -12,6 +12,7 @@ import '../../../data/repositories/progress_repository.dart';
 import '../../../data/repositories/sticker_repository.dart';
 import '../../../data/repositories/story_repository.dart';
 import '../../../injection.dart';
+import '../../cubits/audio_player_cubit/audio_player_cubit.dart';
 import '../../cubits/reader_cubit/reader_cubit.dart';
 import '../../cubits/stats_cubit/stats_cubit.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
@@ -34,6 +35,9 @@ class ReaderScreen extends StatelessWidget {
     bool hasQuiz,
     String completedChapterId,
   ) async {
+    // Stop audio when story completes
+    context.read<AudioPlayerCubit>().stop();
+
     final storyRepo = getIt<StoryRepository>();
     final progressRepo = getIt<ProgressRepository>();
     final readIds = await progressRepo.getReadStoryIds();
@@ -234,8 +238,8 @@ class ReaderScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) {
         final cubit = getIt<ReaderCubit>();
-        cubit.onStoryComplete = (sid, hasQuiz) =>
-            _handleStoryComplete(context, sid, hasQuiz, chapterId);
+        cubit.onStoryComplete = (sid, completedChapterId, hasQuiz) =>
+            _handleStoryComplete(context, sid, hasQuiz, completedChapterId);
         cubit.loadChapter(chapterId);
         return cubit;
       },

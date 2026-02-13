@@ -211,7 +211,11 @@ class _ReaderViewState extends State<ReaderView> {
     if (!context.mounted) return;
 
     if (isLastChapter && cubit.onStoryComplete != null) {
-      cubit.onStoryComplete!(widget.storyId, state.story?.hasQuiz ?? false);
+      cubit.onStoryComplete!(
+        widget.storyId,
+        _chapterId!,
+        state.story?.hasQuiz ?? false,
+      );
       return;
     }
 
@@ -682,6 +686,20 @@ class _ReaderViewState extends State<ReaderView> {
                               ),
                               ReaderBottomBar(
                                 progress: state.displayProgress,
+                                position: Duration(
+                                  milliseconds: ((state.audioPosition ??
+                                          state.initialAudioPositionSec ??
+                                          0) *
+                                      1000)
+                                      .round(),
+                                ),
+                                duration: Duration(
+                                  milliseconds: ((state.audioDurationSeconds ??
+                                          state.selectedAudio?.audioDuration ??
+                                          0) *
+                                      1000)
+                                      .round(),
+                                ),
                                 isPlaying: state.isPlaying,
                                 onPlayPause: () =>
                                     context.read<ReaderCubit>().togglePlaying(),
@@ -692,6 +710,10 @@ class _ReaderViewState extends State<ReaderView> {
                                       )
                                     : null,
                                 onNextChapter: effectiveOnNextChapter,
+                                onSeek: state.hasAudio
+                                    ? (pos) =>
+                                        context.read<ReaderCubit>().seek(pos)
+                                    : null,
                                 audios: state.audios,
                                 selectedAudio: state.selectedAudio,
                                 onSelectAudio: state.audios.length > 1

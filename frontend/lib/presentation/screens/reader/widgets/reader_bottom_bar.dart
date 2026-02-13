@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/chapter_audio.dart';
+import '../../../components/audio_progress_bar.dart';
 import 'package:korean_kids_stories/utils/extensions/context_extension.dart';
 
 class ReaderBottomBar extends StatelessWidget {
   final double progress;
+  final Duration position;
+  final Duration duration;
   final bool isPlaying;
   final VoidCallback? onPlayPause;
   final VoidCallback? onPrevChapter;
   final VoidCallback? onNextChapter;
+  final void Function(Duration)? onSeek;
   final List<ChapterAudio> audios;
   final ChapterAudio? selectedAudio;
   final void Function(ChapterAudio)? onSelectAudio;
@@ -20,10 +24,13 @@ class ReaderBottomBar extends StatelessWidget {
   const ReaderBottomBar({
     super.key,
     this.progress = 0.0,
+    this.position = Duration.zero,
+    this.duration = Duration.zero,
     this.isPlaying = false,
     this.onPlayPause,
     this.onPrevChapter,
     this.onNextChapter,
+    this.onSeek,
     this.audios = const [],
     this.selectedAudio,
     this.onSelectAudio,
@@ -35,6 +42,7 @@ class ReaderBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasAudio = audios.isNotEmpty;
     return Container(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -59,13 +67,21 @@ class ReaderBottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: AppTheme.textMutedColor(context),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                AppTheme.primaryColor(context),
-              ),
-            ),
+            hasAudio
+                ? AudioProgressBar(
+                    position: position,
+                    duration: duration,
+                    onSeek: onSeek,
+                    height: 6,
+                    showTime: true,
+                  )
+                : LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: AppTheme.textMutedColor(context),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppTheme.primaryColor(context),
+                    ),
+                  ),
             if (audios.length > 1) ...[
               const SizedBox(height: 12),
               _buildNarratorSelector(context),

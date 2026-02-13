@@ -36,6 +36,8 @@ import 'data/services/pocketbase_service.dart' as _i700;
 import 'data/services/premium_service.dart' as _i526;
 import 'data/services/tracking_service.dart' as _i194;
 import 'injection_module.dart' as _i212;
+import 'presentation/cubits/audio_player_cubit/audio_player_cubit.dart'
+    as _i678;
 import 'presentation/cubits/auth_cubit/auth_cubit.dart' as _i519;
 import 'presentation/cubits/bookmark_cubit/bookmark_cubit.dart' as _i686;
 import 'presentation/cubits/favorite_cubit/favorite_cubit.dart' as _i739;
@@ -57,11 +59,11 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final injectionModule = _$InjectionModule();
-    gh.factory<_i825.LocalProgressRepository>(
-      () => _i825.LocalProgressRepository(),
-    );
     gh.factory<_i770.LocalStickerRepository>(
       () => _i770.LocalStickerRepository(),
+    );
+    gh.factory<_i825.LocalProgressRepository>(
+      () => _i825.LocalProgressRepository(),
     );
     gh.lazySingleton<_i700.PocketbaseService>(
       () => injectionModule.pocketbaseService,
@@ -161,13 +163,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i825.LocalProgressRepository>(),
       ),
     );
-    gh.factory<_i433.ReaderCubit>(
-      () => _i433.ReaderCubit(
-        storyRepository: gh<_i691.StoryRepository>(),
-        progressRepository: gh<_i369.ProgressRepository>(),
-        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
-      ),
-    );
     gh.factory<_i577.StickerRepository>(
       () => _i577.StickerRepository(
         gh<_i700.PocketbaseService>(),
@@ -187,6 +182,19 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i349.SearchCubit(
         storyRepository: gh<_i691.StoryRepository>(),
         pocketbaseService: gh<_i700.PocketbaseService>(),
+      ),
+    );
+    gh.factory<_i433.ReaderCubit>(
+      () => _i433.ReaderCubit(
+        storyRepository: gh<_i691.StoryRepository>(),
+        progressRepository: gh<_i369.ProgressRepository>(),
+        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
+        audioPlayerCubit: gh<_i678.AudioPlayerCubit>(),
+      ),
+    );
+    gh.lazySingleton<_i678.AudioPlayerCubit>(
+      () => _i678.AudioPlayerCubit(
+        progressRepository: gh<_i369.ProgressRepository>(),
       ),
     );
     gh.lazySingleton<_i519.AuthCubit>(

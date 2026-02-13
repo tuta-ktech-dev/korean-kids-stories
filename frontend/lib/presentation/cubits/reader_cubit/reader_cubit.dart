@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../../../data/models/chapter.dart';
 import '../../../data/models/chapter_audio.dart';
@@ -12,11 +11,17 @@ import '../../../data/repositories/reading_history_repository.dart';
 import '../../../data/repositories/story_repository.dart';
 import '../../../data/services/pocketbase_service.dart';
 import '../../../injection.dart';
+import '../audio_player_cubit/audio_player_cubit.dart';
 import 'reader_state.dart';
 export 'reader_state.dart';
 
 /// Default playback speed for kids (slower = easier to follow)
 const double _defaultPlaybackSpeed = 0.85;
+
+/// Luồng hoàn thành chapter/story:
+/// - Chapter có next (free): auto load + play chapter tiếp
+/// - Chapter cuối truyện (isLastChapterOfStory): gọi onStoryComplete
+/// - onStoryComplete: ReaderScreen xử lý dialog, quiz, hoặc (sau) auto chuyển story
 
 @injectable
 class ReaderCubit extends Cubit<ReaderState> {
@@ -24,24 +29,28 @@ class ReaderCubit extends Cubit<ReaderState> {
     StoryRepository? storyRepository,
     ProgressRepository? progressRepository,
     ReadingHistoryRepository? readingHistoryRepository,
+    AudioPlayerCubit? audioPlayerCubit,
   }) : _storyRepository = storyRepository ?? getIt<StoryRepository>(),
        _progressRepository = progressRepository ?? getIt<ProgressRepository>(),
        _historyRepository =
            readingHistoryRepository ?? getIt<ReadingHistoryRepository>(),
+       _audioCubit = audioPlayerCubit ?? getIt<AudioPlayerCubit>(),
        super(const ReaderInitial());
 
   final StoryRepository _storyRepository;
   final ProgressRepository _progressRepository;
   final ReadingHistoryRepository _historyRepository;
-  final AudioPlayer _player = AudioPlayer();
-  StreamSubscription<PlayerState>? _stateSub;
-  StreamSubscription<Duration>? _positionSub;
-  StreamSubscription<Duration?>? _durationSub;
-  String? _loadedAudioUrl;
-  Timer? _sleepTimer;
+  final AudioPlayerCubit _audioCubit;
 
-  /// Called when last chapter of story completes (audio done). Enables continuous + quiz flow.
-  void Function(String storyId, bool hasQuiz)? onStoryComplete;
+  StreamSubscription<AudioPlayerState>? _audioStateSub;
+  Timer? _sleepTimer;
+  bool _isHandlingChapterComplete = false;
+
+  /// Called when last chapter of story completes (audio done).
+  /// Enables dialog, quiz flow, và nâng cấp sau: auto chuyển story.
+  /// Parameters: storyId, completedChapterId (for quiz), hasQuiz
+  void Function(String storyId, String completedChapterId, bool hasQuiz)?
+      onStoryComplete;
 
   /// Load a chapter. Set [skipLoading] true to avoid showing loading spinner
   /// when switching between chapters (smoother UX).
@@ -61,6 +70,8 @@ class ReaderCubit extends Cubit<ReaderState> {
         return;
       }
 
+      final prevLoaded = state is ReaderLoaded ? state as ReaderLoaded : null;
+
       Chapter? prevChapter;
       Chapter? nextChapter;
       Chapter? nextChapterLocked; // Chương tiếp bị khóa (để hiển thị paywall)
@@ -77,7 +88,23 @@ class ReaderCubit extends Cubit<ReaderState> {
       }
 
       final audios = await _storyRepository.getChapterAudios(chapterId);
-      final selectedAudio = audios.isNotEmpty ? audios.first : null;
+      // Nhớ giọng user đang nghe: khi chuyển chương, chọn cùng narrator nếu có
+      // Chưa đặt mặc định thì ưu tiên giọng nữ (여자/KSS)
+      final preferredNarrator = prevLoaded?.selectedAudio?.narrator;
+      ChapterAudio? selectedAudio;
+      if (audios.isNotEmpty) {
+        if (preferredNarrator != null && preferredNarrator.isNotEmpty) {
+          try {
+            selectedAudio = audios.firstWhere(
+              (a) => (a.narrator ?? '').trim() == preferredNarrator.trim(),
+            );
+          } catch (_) {
+            selectedAudio = _defaultToFemaleVoice(audios);
+          }
+        } else {
+          selectedAudio = _defaultToFemaleVoice(audios);
+        }
+      }
       final story = await _storyRepository.getStory(chapter.storyId);
 
       final progress = await _progressRepository.getProgress(chapterId);
@@ -87,9 +114,11 @@ class ReaderCubit extends Cubit<ReaderState> {
           ? (lastPosMs / 1000.0)
           : null;
 
-      await _stopPlayer();
-      final prevSpeed = state is ReaderLoaded ? (state as ReaderLoaded).playbackSpeed : _defaultPlaybackSpeed;
-      final prevLoaded = state is ReaderLoaded ? state as ReaderLoaded : null;
+      // Stop any playback when switching chapters
+      await _audioCubit.stop();
+      _wireAudioCallbacks();
+
+      final prevSpeed = prevLoaded?.playbackSpeed ?? _defaultPlaybackSpeed;
       emit(
         ReaderLoaded(
           chapter: chapter,
@@ -121,11 +150,82 @@ class ReaderCubit extends Cubit<ReaderState> {
     }
   }
 
+  /// Mặc định chọn giọng nữ (여자/KSS) nếu có, không thì phần tử đầu
+  static ChapterAudio _defaultToFemaleVoice(List<ChapterAudio> audios) {
+    const femaleNames = ['여자', 'female', 'kss', 'nu', 'nữ', '새 목소리'];
+    for (final a in audios) {
+      final n = (a.narrator ?? '').trim();
+      final nLower = n.toLowerCase();
+      if (femaleNames.any((x) => n == x || nLower == x || nLower.contains(x))) {
+        return a;
+      }
+    }
+    return audios.first;
+  }
+
+  void _wireAudioCallbacks() {
+    _audioCubit.onSkipToNext = () {
+      if (state is ReaderLoaded) {
+        _goToChapterAndPlay((state as ReaderLoaded).nextChapter);
+      }
+    };
+
+    _audioCubit.onSkipToPrevious = () {
+      if (state is ReaderLoaded) {
+        _goToChapterAndPlay((state as ReaderLoaded).prevChapter);
+      }
+    };
+
+    _audioCubit.onChapterComplete = () async {
+      if (_isHandlingChapterComplete || state is! ReaderLoaded) return;
+      _isHandlingChapterComplete = true;
+      try {
+        final s = state as ReaderLoaded;
+
+        // Có chapter tiếp theo (free) → load và auto play
+        if (s.nextChapter != null) {
+          await _goToChapterAndPlay(s.nextChapter, delayBeforePlay: true);
+          return;
+        }
+
+        // Hết truyện (không còn chapter) → báo story complete
+        if (s.isLastChapterOfStory && onStoryComplete != null) {
+          onStoryComplete!.call(
+            s.chapter.storyId,
+            s.chapter.id,
+            s.story?.hasQuiz ?? false,
+          );
+        }
+      } finally {
+        _isHandlingChapterComplete = false;
+      }
+    };
+  }
+
+  /// Chuyển sang chapter và auto play. Dùng cho: skip next/prev, auto-next khi hết chapter.
+  /// Chuẩn bị cho nâng cấp: chuyển story khi hết truyện (qua onStoryComplete).
+  Future<void> _goToChapterAndPlay(Chapter? chapter,
+      {bool delayBeforePlay = false}) async {
+    if (chapter == null || state is! ReaderLoaded) return;
+    try {
+      await loadChapter(chapter.id, skipLoading: true);
+      if (state is! ReaderLoaded) return;
+      if (delayBeforePlay) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      if (state is ReaderLoaded && (state as ReaderLoaded).hasAudio) {
+        _startPlayback();
+      }
+    } catch (e) {
+      debugPrint('[ReaderCubit] _goToChapterAndPlay error: $e');
+    }
+  }
+
   /// Switch to a different narrator/voice
   Future<void> selectAudio(ChapterAudio audio) async {
     if (state is! ReaderLoaded) return;
     final s = state as ReaderLoaded;
-    if (s.isPlaying) await _player.pause();
+    if (s.isPlaying) await _audioCubit.pause();
     emit(s.copyWith(selectedAudio: audio, isPlaying: false, clearAudioPosition: true));
   }
 
@@ -137,7 +237,7 @@ class ReaderCubit extends Cubit<ReaderState> {
         playbackSpeed: playbackSpeed,
       ));
       if (playbackSpeed != null && currentState.isPlaying) {
-        _player.setSpeed(playbackSpeed);
+        _audioCubit.setSpeed(playbackSpeed);
       }
     }
   }
@@ -150,8 +250,7 @@ class ReaderCubit extends Cubit<ReaderState> {
 
   void updateProgress(double progress) {
     if (state is ReaderLoaded) {
-      final currentState = state as ReaderLoaded;
-      emit(currentState.copyWith(progress: progress));
+      emit((state as ReaderLoaded).copyWith(progress: progress));
     }
   }
 
@@ -159,52 +258,76 @@ class ReaderCubit extends Cubit<ReaderState> {
     if (state is! ReaderLoaded) return;
     final s = state as ReaderLoaded;
     if (!s.hasAudio || s.selectedAudio?.audioUrl == null) {
-      debugPrint('[ReaderCubit] togglePlaying: no audio or url. hasAudio=${s.hasAudio} url=${s.selectedAudio?.audioUrl}');
+      debugPrint('[ReaderCubit] togglePlaying: no audio or url.');
       return;
     }
 
-    if (s.isPlaying) {
-      await _player.pause();
+    // If already playing this chapter, pause
+    if (_audioCubit.isPlayingChapter(s.chapter.id)) {
+      await _audioCubit.pause();
       return;
     }
 
-    final url = s.selectedAudio!.audioUrl!;
-    debugPrint('[ReaderCubit] togglePlaying: loading url=$url');
+    await _startPlayback();
+  }
+
+  Future<void> _startPlayback() async {
+    if (state is! ReaderLoaded) return;
+    final s = state as ReaderLoaded;
+    final url = s.selectedAudio?.audioUrl;
+    if (url == null || url.isEmpty) return;
 
     try {
-      if (_loadedAudioUrl != url) {
-        await _player.setUrl(url);
-        _loadedAudioUrl = url;
-      }
-      final seekToSec = s.initialAudioPositionSec;
-      if (seekToSec != null && seekToSec > 0) {
-        await _player.seek(Duration(milliseconds: (seekToSec * 1000).round()));
-      }
-      await _player.setSpeed(s.playbackSpeed);
-      _listenToPlayerIfNeeded(s.chapter.id);
-      await _player.play();
+      final seekToSec = s.initialAudioPositionSec ?? 0;
+
+      await _audioCubit.loadChapter(
+        chapterId: s.chapter.id,
+        storyId: s.chapter.storyId,
+        chapterTitle: s.chapter.title,
+        storyTitle: s.story?.title ?? '',
+        audioUrl: url,
+        initialPositionSeconds: seekToSec,
+      );
+      await _audioCubit.setSpeed(s.playbackSpeed);
+      _listenToAudioCubitIfNeeded(s.chapter.id);
+      await _audioCubit.play();
+
       emit(s.copyWith(
         isPlaying: true,
-        audioPosition: seekToSec ?? 0,
+        audioPosition: seekToSec,
         clearPlaybackError: true,
         clearInitialAudioPosition: true,
       ));
-      debugPrint('[ReaderCubit] togglePlaying: play() started');
     } catch (e, st) {
       debugPrint('[ReaderCubit] togglePlaying error: $e\n$st');
-      emit(s.copyWith(isPlaying: false, playbackError: e.toString(), clearPlaybackError: false));
+      emit(s.copyWith(
+        isPlaying: false,
+        playbackError: e.toString(),
+        clearPlaybackError: false,
+      ));
     }
   }
 
-  Future<void> _stopPlayer() async {
-    await _player.stop();
-    _loadedAudioUrl = null;
-    _stateSub?.cancel();
-    _positionSub?.cancel();
-    _durationSub?.cancel();
-    _stateSub = null;
-    _positionSub = null;
-    _durationSub = null;
+  void _listenToAudioCubitIfNeeded(String chapterId) {
+    if (_audioStateSub != null) return;
+
+    _audioStateSub = _audioCubit.stream.listen((audioState) {
+      if (state is! ReaderLoaded) return;
+      final s = state as ReaderLoaded;
+      if (audioState is! AudioPlayerReady) return;
+      final ready = audioState;
+      // Luôn dùng chapter hiện tại để nhận update khi chuyển chapter
+      if (ready.chapterId != s.chapter.id) return;
+
+      final posSec = ready.position.inMilliseconds / 1000.0;
+      final durSec = ready.duration.inMilliseconds / 1000.0;
+
+      emit(s.copyWith(
+        isPlaying: ready.isPlaying,
+        audioPosition: posSec,
+        audioDurationSeconds: durSec > 0 ? durSec : null,
+      ));
+    });
   }
 
   /// Set sleep timer: 0 = off, else minutes until auto-pause.
@@ -230,7 +353,7 @@ class ReaderCubit extends Cubit<ReaderState> {
       _sleepTimer = null;
       if (state is! ReaderLoaded) return;
       final current = state as ReaderLoaded;
-      if (current.isPlaying) await _player.pause();
+      if (current.isPlaying) await _audioCubit.pause();
       emit(current.copyWith(
         isPlaying: false,
         sleepTimerMinutes: 0,
@@ -244,69 +367,37 @@ class ReaderCubit extends Cubit<ReaderState> {
     _sleepTimer = null;
   }
 
-  void _listenToPlayerIfNeeded(String chapterId) {
-    if (_stateSub != null) return;
-
-    _stateSub = _player.playerStateStream.listen((playerState) {
-      if (state is! ReaderLoaded) return;
-      final s = state as ReaderLoaded;
-      if (s.chapter.id != chapterId) return;
-      if (playerState.processingState == ProcessingState.completed && s.hasAudio) {
-        // Lưu 100% cho chapter vừa nghe xong
-        final durSec = s.audioDurationSeconds ?? s.selectedAudio?.audioDuration ?? 1.0;
-        _progressRepository.saveProgress(
-          chapterId: s.chapter.id,
-          percentRead: 100.0,
-          lastPosition: durSec * 1000,
-          isCompleted: true,
-        );
-        if (s.nextChapter != null) {
-          final nextId = s.nextChapter!.id;
-          loadChapter(nextId, skipLoading: true).then((_) {
-            final st = state;
-            if (st is ReaderLoaded && st.chapter.id == nextId) {
-              togglePlaying();
-            }
-          });
-        } else if (s.nextChapter == null && s.nextChapterLocked == null) {
-          // Last chapter of story - signal for next story / quiz
-          onStoryComplete?.call(
-            s.chapter.storyId,
-            s.story?.hasQuiz ?? false,
-          );
-        }
-        return;
-      }
-      final isPlaying = playerState.playing;
-      final processing = playerState.processingState == ProcessingState.loading ||
-          playerState.processingState == ProcessingState.buffering;
-      emit(s.copyWith(isPlaying: isPlaying && !processing));
-    });
-
-    _positionSub = _player.positionStream.listen((position) {
-      if (state is! ReaderLoaded) return;
-      final s = state as ReaderLoaded;
-      if (s.chapter.id != chapterId) return;
-      emit(s.copyWith(audioPosition: position.inMilliseconds / 1000.0));
-    });
-
-    _durationSub = _player.durationStream.listen((duration) {
-      if (state is! ReaderLoaded) return;
-      final s = state as ReaderLoaded;
-      if (s.chapter.id != chapterId) return;
-      if (duration != null) {
-        emit(s.copyWith(
-            audioDurationSeconds: duration.inMilliseconds / 1000.0));
-      }
-    });
-  }
-
   @override
   Future<void> close() async {
     _cancelSleepTimer();
-    await _stopPlayer();
-    await _player.dispose();
+    _audioStateSub?.cancel();
+    _audioStateSub = null;
+    _audioCubit.onSkipToNext = null;
+    _audioCubit.onSkipToPrevious = null;
+    _audioCubit.onChapterComplete = null;
+    await _audioCubit.stop();
     return super.close();
+  }
+
+  /// Seek audio to position
+  Future<void> seek(Duration position) async {
+    if (state is! ReaderLoaded) return;
+    final s = state as ReaderLoaded;
+    if (!s.hasAudio || s.selectedAudio?.audioUrl == null) return;
+
+    final posSec = position.inMilliseconds / 1000.0;
+
+    // If audio is loaded in AudioPlayerCubit (playing or paused), seek there
+    if (_audioCubit.isPlayingChapter(s.chapter.id) ||
+        _audioCubit.getCurrentPositionForChapter(s.chapter.id) != null) {
+      await _audioCubit.seek(position);
+    } else {
+      // Not yet loaded - update initial position for when user taps play
+      emit(s.copyWith(
+        initialAudioPositionSec: posSec,
+        audioPosition: posSec,
+      ));
+    }
   }
 
   /// Add bookmark at current progress with optional note

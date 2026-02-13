@@ -17,6 +17,7 @@ import 'presentation/cubits/home_cubit/home_cubit.dart';
 import 'presentation/cubits/note_cubit/note_cubit.dart';
 import 'presentation/cubits/progress_cubit/progress_cubit.dart';
 import 'presentation/cubits/search_cubit/search_cubit.dart';
+import 'presentation/cubits/audio_player_cubit/audio_player_cubit.dart';
 import 'presentation/cubits/settings_cubit/settings_cubit.dart';
 import 'presentation/cubits/stats_cubit/stats_cubit.dart';
 
@@ -67,6 +68,7 @@ class KoreanKidsStoriesApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<SearchCubit>()),
         BlocProvider(create: (_) => getIt<SettingsCubit>()..loadSettings()),
         BlocProvider(create: (_) => getIt<StatsCubit>()),
+        BlocProvider(create: (_) => getIt<AudioPlayerCubit>()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
