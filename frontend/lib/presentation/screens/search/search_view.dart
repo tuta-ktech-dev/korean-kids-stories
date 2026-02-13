@@ -145,7 +145,7 @@ class _SearchViewState extends State<SearchView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/empty_no_search.webp',
+              'assets/images/empty_no_search.png',
               width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),

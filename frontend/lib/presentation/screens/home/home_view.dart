@@ -362,7 +362,7 @@ class HomeView extends StatelessWidget {
         child: Column(
           children: [
             Image.asset(
-              'assets/images/empty_no_stories.webp',
+              'assets/images/empty_no_stories.png',
               width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),

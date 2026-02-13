@@ -51,7 +51,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     ];
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor(context),
+      backgroundColor: AppTheme.onboardingBackgroundColor(context),
       body: SafeArea(
         child: Column(
           children: [

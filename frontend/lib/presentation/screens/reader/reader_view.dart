@@ -238,7 +238,7 @@ class _ReaderViewState extends State<ReaderView> {
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
-                'assets/images/story_complete_shiba_sample.webp',
+                'assets/images/story_complete_shiba_sample.png',
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,

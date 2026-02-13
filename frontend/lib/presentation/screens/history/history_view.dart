@@ -256,7 +256,7 @@ Widget _buildEmptyState(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(
-          'assets/images/empty_reading_history.webp',
+          'assets/images/empty_reading_history.png',
           width: MediaQuery.sizeOf(context).width * 0.5,
           fit: BoxFit.contain,
         ),

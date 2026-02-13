@@ -23,6 +23,8 @@ class AppTheme {
   // Background colors (Light)
   static const Color backgroundCream = Color(0xFFFFF9F0);
   static const Color backgroundSoft = Color(0xFFF5F5F5);
+  /// Matches onboarding image background for seamless blend
+  static const Color onboardingBackground = Color(0xFFEADDCD);
 
   // Text colors (Light)
   static const Color textDark = Color(0xFF2D3436);
@@ -231,6 +233,12 @@ class AppTheme {
       Theme.of(context).brightness == Brightness.dark
           ? darkBackground
           : backgroundCream;
+
+  /// Onboarding/landing - matches illustration background for seamless blend
+  static Color onboardingBackgroundColor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? darkBackground
+          : onboardingBackground;
 
   static Color surfaceColor(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark

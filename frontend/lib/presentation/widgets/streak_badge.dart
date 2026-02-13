@@ -24,7 +24,7 @@ class StreakMilestone {
     if (days >= 30) {
       return const StreakMilestone(
         emoji: '👑',
-        imageAsset: 'assets/images/streak_30_days.webp',
+        imageAsset: 'assets/images/streak_30_days.png',
         colorStart: Color(0xFFFFD700),
         colorEnd: Color(0xFFFFA500),
         borderColor: Color(0xFFFFD700),
@@ -33,7 +33,7 @@ class StreakMilestone {
     if (days >= 14) {
       return const StreakMilestone(
         emoji: '🏆',
-        imageAsset: 'assets/images/streak_14_days.webp',
+        imageAsset: 'assets/images/streak_14_days.png',
         colorStart: Color(0xFF9F7AEA),
         colorEnd: Color(0xFF667EEA),
         borderColor: Color(0xFF9F7AEA),
@@ -42,7 +42,7 @@ class StreakMilestone {
     if (days >= 7) {
       return const StreakMilestone(
         emoji: '🔥',
-        imageAsset: 'assets/images/streak_7_days.webp',
+        imageAsset: 'assets/images/streak_7_days.png',
         colorStart: Color(0xFFFF9800),
         colorEnd: Color(0xFFF44336),
         borderColor: Color(0xFFFFB74D),
@@ -51,7 +51,7 @@ class StreakMilestone {
     if (days >= 3) {
       return const StreakMilestone(
         emoji: '⭐',
-        imageAsset: 'assets/images/streak_3_days.webp',
+        imageAsset: 'assets/images/streak_3_days.png',
         colorStart: Color(0xFFFFE082),
         colorEnd: Color(0xFFFFCA28),
         borderColor: Color(0xFFFFD54F),

@@ -339,7 +339,7 @@ class _LevelUpCongratsDialogState extends State<_LevelUpCongratsDialog>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
-                        'assets/images/level_up_shiba_sample.webp',
+                        'assets/images/level_up_shiba_sample.png',
                         width: 140,
                         height: 140,
                         fit: BoxFit.cover,
@@ -825,7 +825,7 @@ class _EmptyStoryStickers extends StatelessWidget {
         child: Column(
           children: [
             Image.asset(
-              'assets/images/empty_story_stickers.webp',
+              'assets/images/empty_story_stickers.png',
               width: MediaQuery.sizeOf(context).width * 0.5,
               fit: BoxFit.contain,
             ),

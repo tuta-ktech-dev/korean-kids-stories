@@ -87,7 +87,7 @@ class _FavoritesTabState extends State<_FavoritesTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_favorites.webp',
+                  'assets/images/empty_favorites.png',
                   width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),
@@ -176,7 +176,7 @@ class _BookmarksTabState extends State<_BookmarksTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_bookmarks.webp',
+                  'assets/images/empty_bookmarks.png',
                   width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),
@@ -265,7 +265,7 @@ class _NotesTabState extends State<_NotesTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_notes.webp',
+                  'assets/images/empty_notes.png',
                   width: MediaQuery.sizeOf(context).width * 0.5,
                   fit: BoxFit.contain,
                 ),

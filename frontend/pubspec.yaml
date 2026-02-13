@@ -131,19 +131,19 @@ flutter:
     - assets/images/onboarding_1.png
     - assets/images/onboarding_2.png
     - assets/images/onboarding_3.png
-    - assets/images/level_up_shiba_sample.webp
-    - assets/images/story_complete_shiba_sample.webp
-    - assets/images/empty_no_stories.webp
-    - assets/images/empty_no_search.webp
-    - assets/images/empty_favorites.webp
-    - assets/images/empty_reading_history.webp
-    - assets/images/empty_story_stickers.webp
-    - assets/images/empty_bookmarks.webp
-    - assets/images/empty_notes.webp
-    - assets/images/streak_3_days.webp
-    - assets/images/streak_7_days.webp
-    - assets/images/streak_14_days.webp
-    - assets/images/streak_30_days.webp
+    - assets/images/level_up_shiba_sample.png
+    - assets/images/story_complete_shiba_sample.png
+    - assets/images/empty_no_stories.png
+    - assets/images/empty_no_search.png
+    - assets/images/empty_favorites.png
+    - assets/images/empty_reading_history.png
+    - assets/images/empty_story_stickers.png
+    - assets/images/empty_bookmarks.png
+    - assets/images/empty_notes.png
+    - assets/images/streak_3_days.png
+    - assets/images/streak_7_days.png
+    - assets/images/streak_14_days.png
+    - assets/images/streak_30_days.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
