@@ -28,6 +28,9 @@ func EnsureIAPVerificationsCollection(app core.App) {
 	if AddTextField(collection, "platform", false) {
 		changes = true
 	}
+	if AddTextField(collection, "expires_at", false) {
+		changes = true
+	}
 	if AddSystemFields(collection) {
 		changes = true
 	}

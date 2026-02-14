@@ -9,7 +9,11 @@ import '../../core/config/app_config.dart';
 import 'pocketbase_service.dart';
 import 'premium_service.dart';
 
-const String _productId = 'premium';
+const List<String> _premiumProductIds = [
+  'com.hbstore.koreankids.monthly',
+  'com.hbstore.koreankids.threemonth',
+  'com.hbstore.koreankids.yearly',
+];
 
 /// IAP service: buy/restore Premium, verify via backend, deliver to PremiumService.
 class IapService {
@@ -122,18 +126,31 @@ class IapService {
     }
   }
 
-  /// Start purchase flow. Returns when user completes or cancels.
-  Future<bool> buyPremium() async {
+  /// Start purchase flow. [productId] preferred, falls back to first available.
+  Future<bool> buyPremium({String? productId}) async {
     if (!await _iap.isAvailable()) {
       debugPrint('[IapService] IAP not available');
       return false;
     }
-    final products = await _iap.queryProductDetails({_productId});
-    if (products.notFoundIDs.isNotEmpty || products.productDetails.isEmpty) {
-      debugPrint('[IapService] product not found: $_productId');
+    final ids = productId != null
+        ? {productId, ..._premiumProductIds}
+        : Set<String>.from(_premiumProductIds);
+    final products = await _iap.queryProductDetails(ids);
+    if (products.productDetails.isEmpty) {
+      debugPrint('[IapService] no products found: $ids');
       return false;
     }
-    final purchaseParam = PurchaseParam(productDetails: products.productDetails.first);
+    ProductDetails details;
+    if (productId != null) {
+      try {
+        details = products.productDetails.firstWhere((p) => p.id == productId);
+      } catch (_) {
+        details = products.productDetails.first;
+      }
+    } else {
+      details = products.productDetails.first;
+    }
+    final purchaseParam = PurchaseParam(productDetails: details);
     return _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 

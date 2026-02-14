@@ -8,7 +8,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pocketbase/pocketbase/core"
 	"google.golang.org/api/androidpublisher/v3"
@@ -59,6 +61,7 @@ type appleVerifyResp struct {
 		ProductID             string `json:"product_id"`
 		TransactionID         string `json:"transaction_id"`
 		OriginalTransactionID string `json:"original_transaction_id"`
+		ExpiresDateMs         string `json:"expires_date_ms"`
 	} `json:"latest_receipt_info"`
 }
 
@@ -124,20 +127,31 @@ func handleAppleVerify(app core.App, e *core.RequestEvent, req *VerifyRequest) e
 		})
 	}
 
-	// Find our product in in_app or latest_receipt_info
+	// Find our product in in_app or latest_receipt_info (subscription: use latest_receipt_info for expires_date_ms)
+	productID := req.ProductID
+	if productID == "" {
+		productID = productIDPremium
+	}
 	txID := ""
-	for _, item := range resp.Receipt.InApp {
-		if item.ProductID == req.ProductID {
+	var expiresAt string
+	// Prefer latest_receipt_info for subscriptions (has expires_date_ms)
+	for _, item := range resp.LatestReceiptInfo {
+		if item.ProductID == productID {
 			txID = item.OriginalTransactionID
 			if txID == "" {
 				txID = item.TransactionID
+			}
+			if item.ExpiresDateMs != "" {
+				if ms, err := strconv.ParseInt(item.ExpiresDateMs, 10, 64); err == nil && ms > 0 {
+					expiresAt = time.UnixMilli(ms).UTC().Format("2006-01-02 15:04:05.000Z")
+				}
 			}
 			break
 		}
 	}
 	if txID == "" {
-		for _, item := range resp.LatestReceiptInfo {
-			if item.ProductID == req.ProductID {
+		for _, item := range resp.Receipt.InApp {
+			if item.ProductID == productID {
 				txID = item.OriginalTransactionID
 				if txID == "" {
 					txID = item.TransactionID
@@ -147,9 +161,8 @@ func handleAppleVerify(app core.App, e *core.RequestEvent, req *VerifyRequest) e
 		}
 	}
 
-	// Store verified purchase for chapter is_premium (if device_id provided)
 	if req.DeviceID != "" && txID != "" {
-		_ = saveVerifiedPurchase(app, req.DeviceID, txID, req.ProductID, "ios")
+		_ = saveVerifiedPurchase(app, req.DeviceID, txID, productID, "ios", expiresAt)
 	}
 	return e.JSON(200, VerifyResponse{Verified: true, TransactionID: txID})
 }
@@ -219,7 +232,7 @@ func handleGoogleVerify(app core.App, e *core.RequestEvent, req *VerifyRequest) 
 	}
 
 	if req.DeviceID != "" && txID != "" {
-		_ = saveVerifiedPurchase(app, req.DeviceID, txID, productID, "android")
+		_ = saveVerifiedPurchase(app, req.DeviceID, txID, productID, "android", "")
 	}
 	return e.JSON(200, VerifyResponse{Verified: true, TransactionID: txID})
 }
@@ -248,16 +261,18 @@ func getGoogleAuthOptions() []option.ClientOption {
 	return nil
 }
 
-func saveVerifiedPurchase(app core.App, deviceID, transactionID, productID, platform string) error {
+func saveVerifiedPurchase(app core.App, deviceID, transactionID, productID, platform, expiresAt string) error {
 	col, err := app.FindCollectionByNameOrId("iap_verifications")
 	if err != nil {
 		return err
 	}
-	// Upsert: device_id + product_id unique - replace if exists
 	existing, _ := app.FindFirstRecordByFilter(col.Id, `device_id="`+escapeFilter(deviceID)+`" && product_id="`+escapeFilter(productID)+`"`)
 	if existing != nil {
 		existing.Set("transaction_id", transactionID)
 		existing.Set("platform", platform)
+		if expiresAt != "" {
+			existing.Set("expires_at", expiresAt)
+		}
 		return app.Save(existing)
 	}
 	record := core.NewRecord(col)
@@ -265,6 +280,9 @@ func saveVerifiedPurchase(app core.App, deviceID, transactionID, productID, plat
 	record.Set("transaction_id", transactionID)
 	record.Set("product_id", productID)
 	record.Set("platform", platform)
+	if expiresAt != "" {
+		record.Set("expires_at", expiresAt)
+	}
 	return app.Save(record)
 }
 

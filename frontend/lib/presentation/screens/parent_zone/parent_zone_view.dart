@@ -1020,16 +1020,35 @@ class _PremiumItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            await iap.buyPremium();
-                          },
-                          icon: const Icon(Icons.shopping_cart_outlined),
-                          label: Text(context.l10n.freeLimitUpgrade),
-                        ),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await iap.buyPremium(productId: 'com.hbstore.koreankids.monthly');
+                            },
+                            icon: const Icon(Icons.shopping_cart_outlined, size: 18),
+                            label: const Text('월 프리미엄'),
+                          ),
+                          FilledButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await iap.buyPremium(productId: 'com.hbstore.koreankids.threemonth');
+                            },
+                            icon: const Icon(Icons.shopping_cart_outlined, size: 18),
+                            label: const Text('3개월 프리미엄'),
+                          ),
+                          FilledButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await iap.buyPremium(productId: 'com.hbstore.koreankids.yearly');
+                            },
+                            icon: const Icon(Icons.shopping_cart_outlined, size: 18),
+                            label: const Text('연 프리미엄'),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 8),
                       SizedBox(

@@ -2,12 +2,20 @@ package hooks
 
 import (
 	"regexp"
+	"strings"
+	"time"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 const deviceIDHeader = "X-Device-ID"
+
+var premiumProductIDs = []string{
+	"com.hbstore.koreankids.monthly",
+	"com.hbstore.koreankids.threemonth",
+	"com.hbstore.koreankids.yearly",
+}
 
 // chapterFilterRe extracts chapter="xxx" from filter string
 var chapterFilterRe = regexp.MustCompile(`chapter\s*=\s*"([^"]+)"`)
@@ -83,10 +91,20 @@ func checkDevicePremium(app core.App, deviceID string) bool {
 	if err != nil {
 		return false
 	}
-	r, err := app.FindFirstRecordByFilter(col.Id,
-		`device_id="`+escapeFilter(deviceID)+`" && product_id="premium"`)
-	if err != nil || r == nil {
-		return false
+	now := time.Now().UTC().Format("2006-01-02 15:04:05.000Z")
+	for _, pid := range premiumProductIDs {
+		r, err := app.FindFirstRecordByFilter(col.Id,
+			`device_id="`+escapeFilter(deviceID)+`" && product_id="`+escapeFilter(pid)+`"`)
+		if err != nil || r == nil {
+			continue
+		}
+		exp := strings.TrimSpace(r.GetString("expires_at"))
+		if exp == "" {
+			return true // non-consumable or legacy
+		}
+		if exp > now {
+			return true // subscription still active
+		}
 	}
-	return true
+	return false
 }

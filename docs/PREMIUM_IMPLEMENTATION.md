@@ -3,7 +3,7 @@
 ## Model
 
 - **Free:** 15 phút audio/ngày (900 giây)
-- **Premium:** Unlimited audio (mua 1 lần, non-consumable IAP)
+- **Premium:** Unlimited audio (subscription: monthly/yearly)
 - **Storage:** Local only (SharedPreferences) – không dùng account/backend
 
 ## Done ✓
@@ -24,9 +24,11 @@
   - GET chapters (list + view): kiểm tra X-Device-ID trong iap_verifications
   - Client gửi X-Device-ID (tự động qua PocketBase custom http client)
 
-## Pending (Frontend)
+## Done (Frontend) ✓
 
 - **IAP** (`in_app_purchase`): Buy, restore, gọi verify API → `setPremiumPurchased()` khi verified
+- **IapService** – Parent Zone upgrade/restore buttons
+- **Setup:** Xem [docs/IOS_IAP_SETUP.md](IOS_IAP_SETUP.md)
 
 ## Flow
 
@@ -40,7 +42,7 @@
 | Component | Role |
 |-----------|------|
 | `PremiumService` | Local state (isPremium, daily usage), usage tracking ✓ |
-| `in_app_purchase` | Buy, restore, listen purchase stream (TODO) |
+| `in_app_purchase` | Buy, restore, listen purchase stream ✓ |
 | `ReaderCubit` | Gate play, track usage from position updates ✓ |
 
 ## Product ID (khi thêm IAP)
