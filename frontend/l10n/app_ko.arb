@@ -1,6 +1,6 @@
 {
   "@@locale": "ko",
-  "appTitle": "꼬마 동화",
+  "appTitle": "동화 속으로",
   "homeTab": "홈",
   "searchTab": "검색",
   "libraryTab": "보관함",
@@ -8,10 +8,10 @@
   "settingsLanguage": "언어",
   "settingsLanguageTitle": "언어 설정",
 
-  "landingTitle": "꼬마 동화",
+  "landingTitle": "동화 속으로",
   "landingSubtitle": "전통부터 역사까지, 아이들을 위한 한국 이야기",
   "landingStartButton": "시작하기",
-  "onboardingPage1Title": "꼬마 동화",
+  "onboardingPage1Title": "동화 속으로",
   "onboardingPage1Desc": "5-10세 아이들을 위한 한국 민화, 역사, 전설 이야기를 들어보세요.",
   "onboardingPage2Title": "이야기 읽기 & 뱃지 수집",
   "onboardingPage2Desc": "이야기를 읽고 오디오를 들으며 완료하면 스티커를 받아요. 기록에서 진행 상황을 확인하세요.",

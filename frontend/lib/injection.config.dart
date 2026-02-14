@@ -32,6 +32,7 @@ import 'data/repositories/sticker_repository.dart' as _i577;
 import 'data/repositories/story_repository.dart' as _i691;
 import 'data/repositories/user_preferences_repository.dart' as _i195;
 import 'data/repositories/user_stats_repository.dart' as _i1058;
+import 'data/services/iap_service.dart' as _i691;
 import 'data/services/pocketbase_service.dart' as _i700;
 import 'data/services/premium_service.dart' as _i526;
 import 'data/services/tracking_service.dart' as _i194;
@@ -82,6 +83,15 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i504.LocalBookmarkRepository(),
     );
     gh.lazySingleton<_i1055.SettingsCubit>(() => _i1055.SettingsCubit());
+    gh.factory<_i433.ReaderCubit>(
+      () => _i433.ReaderCubit(
+        storyRepository: gh<_i691.StoryRepository>(),
+        progressRepository: gh<_i369.ProgressRepository>(),
+        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
+        audioPlayerCubit: gh<_i678.AudioPlayerCubit>(),
+        premiumService: gh<_i526.PremiumService>(),
+      ),
+    );
     gh.lazySingleton<_i739.FavoriteCubit>(
       () => _i739.FavoriteCubit(
         favoriteRepository: gh<_i266.FavoriteRepository>(),
@@ -182,12 +192,10 @@ extension GetItInjectableX on _i174.GetIt {
         pocketbaseService: gh<_i700.PocketbaseService>(),
       ),
     );
-    gh.factory<_i433.ReaderCubit>(
-      () => _i433.ReaderCubit(
-        storyRepository: gh<_i691.StoryRepository>(),
-        progressRepository: gh<_i369.ProgressRepository>(),
-        readingHistoryRepository: gh<_i821.ReadingHistoryRepository>(),
-        audioPlayerCubit: gh<_i678.AudioPlayerCubit>(),
+    gh.lazySingleton<_i691.IapService>(
+      () => injectionModule.iapService(
+        gh<_i700.PocketbaseService>(),
+        gh<_i526.PremiumService>(),
       ),
     );
     gh.lazySingleton<_i678.AudioPlayerCubit>(

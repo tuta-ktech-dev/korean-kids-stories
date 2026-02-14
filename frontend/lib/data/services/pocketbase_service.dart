@@ -1,13 +1,47 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chapter_audio.dart';
 import '../models/story.dart';
 import '../../core/config/app_config.dart';
 import '../models/chapter.dart';
+
+const String _deviceIdKey = 'device_id';
+
+/// Device ID for IAP verification & chapter is_premium. Cached after first get.
+String? _cachedDeviceId;
+
+Future<String> getOrCreateDeviceId() async {
+  if (_cachedDeviceId != null) return _cachedDeviceId!;
+  final prefs = await SharedPreferences.getInstance();
+  var id = prefs.getString(_deviceIdKey);
+  if (id == null || id.isEmpty) {
+    final r = Random();
+    id = List.generate(32, (_) => r.nextInt(16).toRadixString(16)).join();
+    await prefs.setString(_deviceIdKey, id);
+  }
+  _cachedDeviceId = id;
+  return id;
+}
+
+/// HTTP client that adds X-Device-ID header for chapter is_premium API
+class _DeviceHeaderClient extends http.BaseClient {
+  _DeviceHeaderClient(this._deviceId);
+  final String _deviceId;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['X-Device-ID'] = _deviceId;
+    return _inner.send(request);
+  }
+
+  final _inner = http.Client();
+}
 
 /// Custom exception for Pocketbase service errors
 class PocketbaseException implements Exception {
@@ -44,6 +78,7 @@ class PocketbaseService {
 
     try {
       final prefs = await SharedPreferences.getInstance();
+      final deviceId = await getOrCreateDeviceId();
 
       final store = AsyncAuthStore(
         save: (String data) async => prefs.setString('pb_auth', data),
@@ -51,7 +86,11 @@ class PocketbaseService {
         clear: () async => prefs.remove('pb_auth'),
       );
 
-      _pb = PocketBase(baseUrl, authStore: store);
+      _pb = PocketBase(
+        baseUrl,
+        authStore: store,
+        httpClientFactory: () => _DeviceHeaderClient(deviceId),
+      );
 
       // When app restarts: token may be expired but we have stored auth.
       // Try authRefresh to get new token; clear if refresh fails.

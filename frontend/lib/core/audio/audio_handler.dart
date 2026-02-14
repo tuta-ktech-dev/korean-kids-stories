@@ -172,9 +172,9 @@ class StoryAudioHandler extends BaseAudioHandler with SeekHandler {
     mediaItem.add(
       MediaItem(
         id: _currentChapterId,
-        album: _storyTitle.isNotEmpty ? _storyTitle : '꼬마 동화',
+        album: _storyTitle.isNotEmpty ? _storyTitle : '동화 속으로',
         title: _chapterTitle.isNotEmpty ? _chapterTitle : 'Story',
-        artist: '꼬마 동화',
+        artist: '동화 속으로',
         duration: effectiveDuration,
         artUri: _artworkUrl != null ? Uri.parse(_artworkUrl!) : null,
         displayTitle: _chapterTitle,

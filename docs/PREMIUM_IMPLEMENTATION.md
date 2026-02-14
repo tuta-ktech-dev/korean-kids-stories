@@ -13,9 +13,20 @@
 3. **ReaderState** – `freeLimitReached` flag, dialog khi hết quota
 4. **Parent Zone** – Premium item hiện status (Premium active / X phút còn lại), sheet upgrade
 
-## Pending
+## Done (Backend) ✓
 
-- **IAP** (`in_app_purchase`): Buy, restore, gọi `setPremiumPurchased()` khi mua xong
+- **POST /api/iap/verify** – Server-side verification (PocketBase Go)
+  - **iOS:** Gọi Apple verifyReceipt API (production + sandbox 21007)
+  - **Android:** Gọi Google Play `purchases.products.get` API
+  - Body: `device_id` (required), `receipt_data` (iOS), `purchase_token` (Android)
+  - Env: `IAP_SHARED_SECRET` (Apple), `GOOGLE_APPLICATION_CREDENTIALS` hoặc `GOOGLE_IAP_CREDENTIALS_JSON`
+- **Chapter API** – Thêm `is_premium` vào response
+  - GET chapters (list + view): kiểm tra X-Device-ID trong iap_verifications
+  - Client gửi X-Device-ID (tự động qua PocketBase custom http client)
+
+## Pending (Frontend)
+
+- **IAP** (`in_app_purchase`): Buy, restore, gọi verify API → `setPremiumPurchased()` khi verified
 
 ## Flow
 

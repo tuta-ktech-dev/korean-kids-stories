@@ -10,6 +10,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/repositories/progress_repository.dart';
 import '../../../injection.dart';
 import '../../../data/repositories/app_config_repository.dart';
+import '../../../data/services/iap_service.dart';
 import '../../../data/services/premium_service.dart';
 import '../../components/buttons/settings_item.dart';
 import '../../components/cards/settings_section.dart';
@@ -192,7 +193,7 @@ class _ParentZoneContentBody extends StatelessWidget {
                 context,
                 type: ReportType.app,
                 targetId: 'app',
-                targetTitle: '꼬마 동화 App',
+                targetTitle: '동화 속으로 App',
               ),
             ),
             SettingsItem(
@@ -611,8 +612,8 @@ class _ParentZoneHelpers {
 
   static Future<void> shareApp(BuildContext context) async {
     await Share.share(
-      'Check out 꼬마 동화!\nhttps://play.google.com/store/apps',
-      subject: '꼬마 동화',
+      'Check out 동화 속으로!\nhttps://play.google.com/store/apps',
+      subject: '동화 속으로',
     );
   }
 }
@@ -948,6 +949,7 @@ class _PremiumItem extends StatelessWidget {
     PremiumService premium,
     bool isPremium,
   ) {
+    final iap = getIt<IapService>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1020,10 +1022,25 @@ class _PremiumItem extends StatelessWidget {
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: null,
+                        child: FilledButton.icon(
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            await iap.buyPremium();
+                          },
                           icon: const Icon(Icons.shopping_cart_outlined),
-                          label: Text(context.l10n.parentZoneComingSoon),
+                          label: Text(context.l10n.freeLimitUpgrade),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            await iap.restorePurchases();
+                          },
+                          icon: const Icon(Icons.restore),
+                          label: Text('Restore purchases'),
                         ),
                       ),
                     ],

@@ -28,4 +28,5 @@ func EnsureAllSchema(app core.App) {
 	EnsureStickersCollection(app)
 	EnsureUserStatsCollection(app)
 	EnsureUserStickersCollection(app)
+	EnsureIAPVerificationsCollection(app)
 }

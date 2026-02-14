@@ -76,7 +76,7 @@ class ReminderTask {
     if (shownDate == today) return; // Already shown today
 
     // Show notification - use localized strings, fallback to default
-    const title = '꼬마 동화';
+    const title = '동화 속으로';
     const body =
         'Đã cuối ngày rồi! Đọc truyện để giữ streak nhé 📚';
 

@@ -1,5 +1,5 @@
 name: korean_kids_stories
-description: "꼬마 동화 - Korean Kids Tales App for children"
+description: "동화 속으로 - Korean Kids Tales App for children"
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -76,6 +76,9 @@ dependencies:
 
   # Parent Zone - biometric / device auth
   local_auth: ^3.0.0
+
+  # In-app purchase (Premium)
+  in_app_purchase: ^3.2.0
 
   # Notifications - daily reading reminder
   flutter_local_notifications: ^17.2.3

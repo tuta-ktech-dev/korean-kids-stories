@@ -1,6 +1,7 @@
 import 'package:pocketbase/pocketbase.dart';
 
 /// Chapter model. Audio versions (multiple voices) are in chapter_audios collection.
+/// [isPremium] is added by API when X-Device-ID has verified IAP (backend source of truth).
 class Chapter {
   final String id;
   final String storyId;
@@ -11,6 +12,8 @@ class Chapter {
   final List<String> illustrations;
   final DateTime created;
   final DateTime updated;
+  /// From API when device has verified premium purchase. Null if not present.
+  final bool? isPremium;
 
   Chapter({
     required this.id,
@@ -22,6 +25,7 @@ class Chapter {
     this.illustrations = const [],
     required this.created,
     required this.updated,
+    this.isPremium,
   });
 
   factory Chapter.fromRecord(RecordModel record, {String baseUrl = ''}) {
@@ -37,6 +41,7 @@ class Chapter {
           DateTime.tryParse(record.getStringValue('created')) ?? DateTime.now(),
       updated:
           DateTime.tryParse(record.getStringValue('updated')) ?? DateTime.now(),
+      isPremium: record.data['is_premium'] as bool?,
     );
   }
 
@@ -50,6 +55,7 @@ class Chapter {
     List<String>? illustrations,
     DateTime? created,
     DateTime? updated,
+    bool? isPremium,
   }) {
     return Chapter(
       id: id ?? this.id,
@@ -61,6 +67,7 @@ class Chapter {
       illustrations: illustrations ?? this.illustrations,
       created: created ?? this.created,
       updated: updated ?? this.updated,
+      isPremium: isPremium ?? this.isPremium,
     );
   }
 }

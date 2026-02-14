@@ -58,7 +58,7 @@ class SettingsView extends StatelessWidget {
                       context,
                       type: ReportType.app,
                       targetId: 'app',
-                      targetTitle: '꼬마 동화 App',
+                      targetTitle: '동화 속으로 App',
                     ),
                   ),
                   SettingsItem(
@@ -259,8 +259,8 @@ class SettingsView extends StatelessWidget {
 
   Future<void> _shareApp(BuildContext context) async {
     await Share.share(
-      'Check out 꼬마 동화!\nhttps://play.google.com/store/apps',
-      subject: '꼬마 동화',
+      'Check out 동화 속으로!\nhttps://play.google.com/store/apps',
+      subject: '동화 속으로',
     );
   }
 

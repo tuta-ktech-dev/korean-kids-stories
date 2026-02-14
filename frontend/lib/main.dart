@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'data/services/iap_service.dart';
 import 'data/services/pocketbase_service.dart';
 import 'data/services/tracking_service.dart';
 import 'injection.dart';
@@ -28,6 +29,7 @@ void main() async {
   // Initialize services
   await getIt<PocketbaseService>().initialize();
   getIt<TrackingService>().startSession(null);
+  getIt<IapService>().initialize();
 
   runApp(KoreanKidsStoriesApp());
 }

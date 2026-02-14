@@ -9,7 +9,7 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => '꼬마 동화';
+  String get appTitle => '동화 속으로';
 
   @override
   String get homeTab => '홈';
@@ -30,7 +30,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsLanguageTitle => '언어 설정';
 
   @override
-  String get landingTitle => '꼬마 동화';
+  String get landingTitle => '동화 속으로';
 
   @override
   String get landingSubtitle => '전통부터 역사까지, 아이들을 위한 한국 이야기';
@@ -39,7 +39,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get landingStartButton => '시작하기';
 
   @override
-  String get onboardingPage1Title => '꼬마 동화';
+  String get onboardingPage1Title => '동화 속으로';
 
   @override
   String get onboardingPage1Desc => '5-10세 아이들을 위한 한국 민화, 역사, 전설 이야기를 들어보세요.';

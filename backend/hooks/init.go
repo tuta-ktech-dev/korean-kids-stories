@@ -15,6 +15,7 @@ func SetupHooks(app *pocketbase.PocketBase) {
 	RegisterReportsHooks(app)
 	RegisterReadingProgressHooks(app)
 	RegisterChapterAudiosHooks(app)
+	RegisterChaptersPremiumHooks(app)
 
 	log.Println("✅ Hooks configured successfully")
 }

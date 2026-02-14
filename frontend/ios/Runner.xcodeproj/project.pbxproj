@@ -473,7 +473,7 @@
 				DEVELOPMENT_TEAM = 68E8T4642G;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "꼬마 동화";
+				INFOPLIST_KEY_CFBundleDisplayName = "동화 속으로";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -657,7 +657,7 @@
 				DEVELOPMENT_TEAM = 68E8T4642G;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "꼬마 동화";
+				INFOPLIST_KEY_CFBundleDisplayName = "동화 속으로";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -681,7 +681,7 @@
 				DEVELOPMENT_TEAM = 94872LJGV9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "꼬마 동화";
+				INFOPLIST_KEY_CFBundleDisplayName = "동화 속으로";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

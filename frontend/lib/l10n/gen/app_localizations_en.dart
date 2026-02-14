@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Kkoma Tales';
+  String get appTitle => 'Into the Story';
 
   @override
   String get homeTab => 'Home';
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageTitle => 'Language Settings';
 
   @override
-  String get landingTitle => 'Kkoma Tales';
+  String get landingTitle => 'Into the Story';
 
   @override
   String get landingSubtitle =>
@@ -40,7 +40,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landingStartButton => 'Start';
 
   @override
-  String get onboardingPage1Title => 'Kkoma Tales';
+  String get onboardingPage1Title => 'Into the Story';
 
   @override
   String get onboardingPage1Desc =>

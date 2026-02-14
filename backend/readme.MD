@@ -32,3 +32,6 @@ curl http://trananhtu.vn:8090/api/popular-searches
 ## Biến môi trường
 
 - `CRON_SECRET` – Secret cho refresh API (mặc định: change-me-in-production)
+- **IAP (Apple):** `IAP_SHARED_SECRET` – App-Specific Shared Secret từ App Store Connect
+- **IAP (Google):** `GOOGLE_APPLICATION_CREDENTIALS` (path to service-account.json) hoặc `GOOGLE_IAP_CREDENTIALS_JSON` (JSON string)
+- `GOOGLE_PACKAGE_NAME` – optional, mặc định `com.hbstore.koreankids`
