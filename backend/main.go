@@ -28,6 +28,7 @@ func main() {
 		schema.SeedLevelStickers(app)
 		api.RegisterPopularRoutes(se)
 		api.RegisterIAPRoutes(se)
+		api.RegisterReportRoutes(se)
 
 		// Refresh popular searches every 24h
 		go runPopularRefreshCron(app)

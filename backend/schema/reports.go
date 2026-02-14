@@ -17,8 +17,16 @@ func EnsureReportsCollection(app core.App) {
 		changes = true
 	}
 
-	if AddRelationField(app, collection, "user", "users", true, 1, false) {
+	// user: optional for web form submissions (no auth)
+	if AddRelationField(app, collection, "user", "users", false, 1, false) {
 		changes = true
+	}
+	// Ensure existing user field is optional (for web reports)
+	if f := collection.Fields.GetByName("user"); f != nil {
+		if rf, ok := f.(*core.RelationField); ok && rf.Required {
+			rf.Required = false
+			changes = true
+		}
 	}
 	if AddSelectField(collection, "type", true, []string{"story", "chapter", "app", "question", "other"}, 1) {
 		changes = true
@@ -41,6 +49,12 @@ func EnsureReportsCollection(app core.App) {
 			Name:     "admin_note",
 			Required: false,
 		})
+		changes = true
+	}
+	if AddTextField(collection, "contact_email", false) {
+		changes = true
+	}
+	if AddTextField(collection, "source", false) {
 		changes = true
 	}
 

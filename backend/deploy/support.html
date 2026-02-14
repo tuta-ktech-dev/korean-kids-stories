@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>고객 지원 - 꼬마 한동화</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 24px; line-height: 1.6; color: #333; }
+    h1 { font-size: 1.5rem; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 0.5em; }
+    h2 { font-size: 1.2rem; margin-top: 1.5em; }
+    p { margin: 0.75em 0; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    a { color: #1976d2; }
+    form { margin: 1em 0; }
+    label { display: block; margin-top: 0.75em; font-weight: 500; }
+    input, select, textarea { width: 100%; max-width: 400px; padding: 8px 12px; margin-top: 4px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; font-family: inherit; }
+    textarea { min-height: 100px; resize: vertical; }
+    button { margin-top: 1em; padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #1565c0; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .msg { margin-top: 1em; padding: 10px; border-radius: 6px; }
+    .msg.success { background: #e8f5e9; color: #2e7d32; }
+    .msg.error { background: #ffebee; color: #c62828; }
+  </style>
+</head>
+<body>
+  <h1>고객 지원</h1>
+  <p><strong>꼬마 한동화</strong></p>
+
+  <h2>문의/신고 보내기</h2>
+  <form id="reportForm">
+    <label for="type">유형</label>
+    <select id="type" name="type" required>
+      <option value="app">앱 문제</option>
+      <option value="question">질문</option>
+      <option value="other">기타</option>
+    </select>
+    <label for="reason">내용 <span style="color:#c00">*</span></label>
+    <textarea id="reason" name="reason" required placeholder="문제나 문의 내용을 입력해 주세요."></textarea>
+    <label for="contact_email">이메일 (선택, 답변 받으실 경우)</label>
+    <input type="email" id="contact_email" name="contact_email" placeholder="your@email.com">
+    <button type="submit" id="submitBtn">보내기</button>
+  </form>
+  <div id="msg" class="msg" style="display:none;"></div>
+
+  <h2>문의하기</h2>
+  <p>앱 내 <strong>설정</strong> 또는 <strong>부모 영역</strong>에서 <strong>문의하기</strong>를 통해 이메일, 전화 등으로 연락해 주세요.</p>
+
+  <h2>자주 묻는 질문</h2>
+  <ul>
+    <li><strong>앱이 작동하지 않아요:</strong> 인터넷 연결을 확인하고 앱을 다시 실행해 보세요.</li>
+    <li><strong>오디오가 재생되지 않아요:</strong> 무료 사용자는 하루 15분 제한이 있습니다. 프리미엄으로 업그레이드하면 무제한 이용 가능합니다.</li>
+    <li><strong>결제/복원 문제:</strong> 앱 내 부모 영역에서 <strong>Restore purchases</strong>를 시도하거나 문의해 주세요.</li>
+    <li><strong>개인정보:</strong> <a href="https://trananhtu.vn/privacy-policy.html">개인정보 처리방침</a>을 참고해 주세요.</li>
+  </ul>
+
+  <h2>관련 링크</h2>
+  <p>
+    <a href="https://trananhtu.vn/privacy-policy.html">개인정보 처리방침</a> ·
+    <a href="https://trananhtu.vn/terms-of-service.html">이용약관</a> ·
+    <a href="https://trananhtu.vn/age-suitability.html">연령 적합성</a>
+  </p>
+
+  <script>
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      var msgEl = document.getElementById('msg');
+      btn.disabled = true;
+      msgEl.style.display = 'none';
+      var body = JSON.stringify({
+        type: document.getElementById('type').value,
+        reason: document.getElementById('reason').value.trim(),
+        contact_email: document.getElementById('contact_email').value.trim()
+      });
+      try {
+        var res = await fetch('https://trananhtu.vn/api/reports/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: body
+        });
+        var data = await res.json().catch(function() { return {}; });
+        if (res.ok) {
+          msgEl.className = 'msg success';
+          msgEl.textContent = '접수되었습니다. 검토 후 연락드리겠습니다.';
+          msgEl.style.display = 'block';
+          document.getElementById('reportForm').reset();
+        } else {
+          msgEl.className = 'msg error';
+          msgEl.textContent = data.error || '전송에 실패했습니다. 다시 시도해 주세요.';
+          msgEl.style.display = 'block';
+        }
+      } catch (err) {
+        msgEl.className = 'msg error';
+        msgEl.textContent = '전송에 실패했습니다. 네트워크를 확인해 주세요.';
+        msgEl.style.display = 'block';
+      }
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>
